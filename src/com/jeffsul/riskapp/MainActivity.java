@@ -2,7 +2,9 @@ package com.jeffsul.riskapp;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -24,6 +26,23 @@ public class MainActivity extends Activity {
 				android.R.layout.simple_spinner_item, objects);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
+		
+		Spinner mapSpinner = (Spinner) findViewById(R.id.spinner_map_type);
+		ArrayAdapter<CharSequence> mapAdapter = ArrayAdapter.createFromResource(this,
+				R.array.option_map_types, android.R.layout.simple_spinner_item);
+		mapAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mapSpinner.setAdapter(mapAdapter);
+		
+		Spinner cardsSpinner = (Spinner) findViewById(R.id.spinner_cards_setting);
+		ArrayAdapter<CharSequence> cardsAdapter = ArrayAdapter.createFromResource(this,
+				R.array.option_cards_settings, android.R.layout.simple_spinner_item);
+		cardsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		cardsSpinner.setAdapter(cardsAdapter);
+	}
+	
+	public void sendMessage(View view) {
+		Intent intent = new Intent(this, GameActivity.class);
+		startActivity(intent);
 	}
 
 	@Override

@@ -19,7 +19,7 @@
     
     <LinearLayout 
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal" >
         
         <TextView
@@ -31,5 +31,48 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/option_map_type" />
+        <Spinner
+            android:id="@+id/spinner_map_type"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/option_cards_setting" />
+        <Spinner
+            android:id="@+id/spinner_cards_setting"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    
+    <Button
+        android:id="@+id/button_start_game"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/play_game_button"
+        android:onClick="sendMessage" />
+    
+    <Button
+        android:id="@+id/button_load_game"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/load_game_button" />
 
 </LinearLayout>
