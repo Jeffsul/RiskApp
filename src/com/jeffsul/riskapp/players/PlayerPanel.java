@@ -8,6 +8,8 @@ import com.jeffsul.riskapp.GameActivity.CardSetting;
 import com.jeffsul.riskapp.players.Player;
 
 public class PlayerPanel extends LinearLayout {
+	private static final int PADDING = 10;
+
 	private Player player;
 	
 	private CardSetting cardType;
@@ -20,6 +22,8 @@ public class PlayerPanel extends LinearLayout {
 	
 	public PlayerPanel(Context ctx, Player p, CardSetting cardType) {
 		super(ctx);
+		this.setOrientation(VERTICAL);
+		this.setPadding(PADDING, PADDING, PADDING, PADDING);
 		player = p;
 		this.cardType = cardType;
 		
@@ -45,24 +49,12 @@ public class PlayerPanel extends LinearLayout {
 		
 		nameLbl = new TextView(ctx);
 		nameLbl.setText(player.name);
-		//nameLbl.setBorder(BorderFactory.createEmptyBorder(1, 5, 0, 0));
-		//nameLbl.setForeground(Color.BLACK);
-		
-		/*troopCount.setForeground(Color.BLACK);
-		troopCount.setBorder(EMPTY_BORDER);
-		terrCount.setForeground(Color.BLACK);
-		terrCount.setBorder(EMPTY_BORDER);
-		bonusCount.setForeground(Color.BLACK);
-		bonusCount.setBorder(EMPTY_BORDER);*/
 		
 		if (cardType != CardSetting.NONE) {
 			cardCount = new TextView(ctx);
 			cardCount.setText("0 cards");
-			//cardCount.setBorder(EMPTY_BORDER);
 		}
-		
-		//setPreferredSize(new Dimension(100, Math.max((int) (500.0 / Math.ceil(numPlayers / 2.0)), 85)));
-		
+				
 		addView(nameLbl);
 		addView(troopCount);
 		addView(terrCount);

@@ -9,7 +9,6 @@ import com.jeffsul.riskapp.entities.Card;
 import com.jeffsul.riskapp.entities.Continent;
 import com.jeffsul.riskapp.entities.Map;
 import com.jeffsul.riskapp.entities.Territory;
-import com.jeffsul.riskapp.players.AIPlayer;
 import com.jeffsul.riskapp.players.Player;
 import com.jeffsul.riskapp.players.PlayerPanel;
 
@@ -17,9 +16,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -35,9 +34,6 @@ public class GameActivity extends Activity {
 	public static enum State {PLACE, DEPLOY, ATTACK, ADVANCE, FORTIFY};
 	public static enum CardSetting {REGULAR, NONE, MODIFIED};
 	
-	private TextView actionLbl;
-	public Button actionBtn;
-
 	private int numPlayers;
 	public Player[] players;
 	private HashMap<Player, PlayerPanel> playerPnlHash = new HashMap<Player, PlayerPanel>();
@@ -94,7 +90,7 @@ public class GameActivity extends Activity {
 		int half = (int) Math.ceil(numPlayers / 2.0);
 		for (int i = 0; i < numPlayers; i++) {
 			//if (!playerType[i].isSelected()) {
-				players[i] = new Player(i + 1, "Player " + i, PLAYER_COLOURS[i]);
+				players[i] = new Player(i + 1, "Player " + (i + 1), PLAYER_COLOURS[i]);
 			//} else {
 			//	players[i] = new AIPlayer(i + 1, PLAYER_COLOURS[i], this);
 			//}
@@ -134,97 +130,29 @@ public class GameActivity extends Activity {
 		}
 		log("Game Initialized.");
 		
-		//ImageIcon img = (useEpicMap) ? new ImageIcon(getClass().getResource("Epic.jpg")) : new ImageIcon(getClass().getResource("Regular.jpg"));
-		//JLabel imgLbl = new JLabel(img);
-		//gamePnl.add(imgLbl);
-		//imgLbl.setBounds(0, 0, img.getIconWidth(), img.getIconHeight());
-		
 		//saveGame();
 		beginPlacement();
 	}
 	
+	public void sendMessage(View view) {
+		if (view.getId() == R.id.action_button) {
+			switch (state) {
+				case ATTACK:
+					endAttacks();
+					break;
+				case ADVANCE:
+					endAdvance();
+					break;
+				case FORTIFY:
+					endFortifications();
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	
 	private void initGUI() {
-		//gameScreen = new JPanel(new BorderLayout());
-		
-		/*final JTabbedPane tabs = new JTabbedPane();
-		addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent event) {
-				if (tabs.getSelectedIndex() != 1) {
-					tabs.requestFocus();
-				}
-			}
-		});
-		
-		tabs.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent event) {
-				if (tabs.getSelectedIndex() == 1) {
-					updateStats();
-					statsScreen.requestFocus();
-				} else {
-					tabs.requestFocus();
-				}
-			}
-		});
-		
-		tabs.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_SHIFT)
-					shiftKeyDown = true;
-				else if (event.getKeyCode() == KeyEvent.VK_CONTROL)
-					ctrlKeyDown = true;
-			}
-			
-			public void keyReleased(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_SHIFT)
-					shiftKeyDown = false;
-				else if (event.getKeyCode() == KeyEvent.VK_CONTROL)
-					ctrlKeyDown = false;
-			}
-		});*/
-		
-		//JPanel playPnl = new JPanel();
-		//playPnl.setLayout(new BorderLayout());
-		//tabs.addTab("Game", playPnl);
-		
-		//gamePnl = new JPanel();
-		//playPnl.add(gamePnl, BorderLayout.CENTER);
-		/*if (useEpicMap)
-			gamePnl.setPreferredSize(new Dimension(900, 618));
-		else
-			tabs.setPreferredSize(new Dimension(794, 618));*/
-		//gamePnl.setLayout(null);
-		//gameScreen.add(tabs, BorderLayout.CENTER);
-		
-		/*actionLbl = new JLabel();
-		actionLbl.setAlignmentX(CENTER_ALIGNMENT);
-		actionLbl.setFont(new Font("Helvetica", Font.BOLD, 16));*/
-		
-		/*JPanel optionPnl = new JPanel();
-		optionPnl.setLayout(new BoxLayout(optionPnl, BoxLayout.Y_AXIS));
-		if (actionBtn == null) {
-			actionBtn = new JButton(ACTION_END_ATTACKS);
-			actionBtn.setAlignmentX(CENTER_ALIGNMENT);
-			actionBtn.setFocusable(false);
-			actionBtn.setEnabled(false);
-			actionBtn.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
-					switch (state) {
-						case ATTACK:
-							endAttacks();
-							break;
-						case ADVANCE:
-							endAdvance();
-							break;
-						case FORTIFY:
-							endFortifications();
-							break;
-					default:
-						break;
-					}
-				}
-			});
-		}*/
-		
 		/*JPanel actionPnl = new JPanel();
 		if (troopAmountCombo == null) {
 			troopAmountCombo = new JComboBox<String>(new String[] {"1", "2", "3", "5", "10", "All"});
@@ -251,40 +179,14 @@ public class GameActivity extends Activity {
 		});
 		actionPnl.add(logBtn);*/
 		
-		/*autoPlayBtn = new JButton("Autoplay");
-		autoPlayBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				// TODO(jeffsul): Implement.
-			}
-		});
-		actionPnl.add(autoPlayBtn);*/
-		
-		/*if (cardType == CardSetting.REGULAR) {
-			cashInLbl = new JLabel(Integer.toString(CASH_IN[0]));
-			actionPnl.add(new JLabel("Next Cash-In:"));
-			actionPnl.add(cashInLbl);
-			actionPnl.add(new JLabel("troops"));
+		TextView cashInLabel = (TextView) findViewById(R.id.cash_in_label);
+		if (cardType == CardSetting.NONE) {
+			((ViewGroup) cashInLabel.getParent()).removeView(cashInLabel);
+		} else {
+			cashInLabel.setText(getResources().getString(R.id.cash_in_label, CASH_IN[0]));
 		}
-		optionPnl.add(actionPnl);*/
 		
 		//statsScreen = new StatsScreen(players);
-		//tabs.addTab("Statistics", statsScreen);
-		
-		//optionPnl.add(actionLbl);
-		//playPnl.add(optionPnl, BorderLayout.PAGE_END);
-		
-		/*sidePnl1 = new JPanel();
-		sidePnl2 = new JPanel();
-		JScrollPane sp1 = new JScrollPane(sidePnl1);
-		JScrollPane sp2 = new JScrollPane(sidePnl2);
-		int rows = (int) Math.ceil(numPlayers / 2.0);
-		sidePnl1.setLayout(new GridLayout(rows, 1));
-		sidePnl2.setLayout(new GridLayout(rows, 1));
-		Dimension dim = (useEpicMap) ? new Dimension(120, 640) : new Dimension(120, 500);
-		sp1.setPreferredSize(dim);
-		sp2.setPreferredSize(dim);
-		gameScreen.add(sp1, BorderLayout.LINE_START);
-		gameScreen.add(sp2, BorderLayout.LINE_END);*/
 	}
 	
 	private void handleTurn() {
@@ -358,9 +260,9 @@ public class GameActivity extends Activity {
 		fromTerrit = null;
 		toTerrit = null;
 		
-		actionBtn.setText("End Attacks");
+		Button actionBtn = (Button) findViewById(R.id.action_button);
+		actionBtn.setText(R.string.action_end_attacks);
 		actionBtn.setEnabled(false);
-		//autoPlayBtn.setEnabled(true);
 		
 		Continent[] conts = map.getContinents();
 		for (Continent cont : conts) {
@@ -512,8 +414,7 @@ public class GameActivity extends Activity {
 	
 	private void enterAttackState() {
 		state = State.ATTACK;
-		actionBtn.setEnabled(true);
-		//autoPlayBtn.setEnabled(false);
+		((Button) findViewById(R.id.action_button)).setEnabled(true);
 		message("Attack - click from your territory to an adjacent one to attack.");
 	}
 	
@@ -532,7 +433,7 @@ public class GameActivity extends Activity {
 			return;
 		
 		state = State.ATTACK;
-		actionBtn.setText("End Attacks");
+		((Button) findViewById(R.id.action_button)).setText(R.string.action_end_attacks);
 		if (toTerrit.units != 1) {
 			fromTerrit.unhilite();
 			fromTerrit = toTerrit;
@@ -580,7 +481,7 @@ public class GameActivity extends Activity {
 			if (activePlayer.getCardCount() >= 5) {
 				deployNum = playSet();
 				state = State.DEPLOY;
-				actionBtn.setEnabled(false);
+				((Button) findViewById(R.id.action_button)).setEnabled(false);
 				message(activePlayer.name + " you have " + deployNum + " troops to place from your cash-in.");
 			}
 		}
@@ -591,7 +492,7 @@ public class GameActivity extends Activity {
 			return;
 		
 		state = State.FORTIFY;
-		actionBtn.setText("End Fortification");
+		((Button) findViewById(R.id.action_button)).setText(R.string.action_end_fortifications);
 		if (fromTerrit != null)
 			fromTerrit.unhilite();
 		fromTerrit = null;
@@ -654,8 +555,8 @@ public class GameActivity extends Activity {
 				
 				if (fromTerrit.units > 1) {
 					state = State.ADVANCE;
-					message(actionLbl.getText() + " - Click to advance your armies.");
-					actionBtn.setText("Advance Troops");
+					message(((Button) findViewById(R.id.action_button)).getText() + " - Click to advance your armies.");
+					((Button) findViewById(R.id.action_button)).setText(R.string.action_advance_troops);
 					fromTerrit.hilite();
 					toTerrit.hilite();
 				} else {
@@ -931,7 +832,7 @@ public class GameActivity extends Activity {
 	}
 	
 	public void message(String msg) {
-		//actionLbl.setText(msg);
+		((TextView) findViewById(R.id.action_label)).setText(msg);
 	}
 	
 	public void log(String msg) {

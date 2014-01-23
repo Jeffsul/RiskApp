@@ -21,5 +21,8 @@
     
     <string name="action_button_default">Action Button</string>
     <string name="action_end_attacks">End Attacks</string>
+    <string name="action_end_fortifications">End Fortifications</string>
+    <string name="action_advance_troops">Advance Troops</string>
+    <string name="initial_cash_in">Next Cash-In: %1 troops</string>
 
 </resources>

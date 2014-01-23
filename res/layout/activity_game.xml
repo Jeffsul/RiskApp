@@ -8,10 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:orientation="vertical" >
-        
-        <TextView android:text="@string/action_button_default"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+
     </LinearLayout>
     
     <RelativeLayout
@@ -32,10 +29,7 @@
         android:layout_height="match_parent"
         android:layout_toRightOf="@id/game_panel"
         android:orientation="vertical" >
-        
-        <TextView android:text="@string/action_button_default"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+
     </LinearLayout>
 
     <LinearLayout 
@@ -45,13 +39,31 @@
         android:orientation="horizontal"
         android:layout_below="@id/game_panel"
         android:layout_toRightOf="@id/side_panel_left"
-        android:layout_toLeftOf="@id/side_panel_right" >
+        android:layout_toLeftOf="@id/side_panel_right"
+        android:gravity="center" >
         
         <Button
             android:id="@+id/action_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/action_button_default" />
+            android:text="@string/action_button_default"
+            android:onClick="sendMessage" />
+        
+        <TextView 
+            android:id="@+id/cash_in_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/initial_cash_in" />
     </LinearLayout>
+    
+    <TextView 
+        android:id="@+id/action_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/action_button_default"
+        android:layout_below="@id/options_panel"
+        android:layout_toRightOf="@id/side_panel_left"
+        android:layout_toLeftOf="@id/side_panel_right"
+        android:gravity="center_horizontal" />
 
 </RelativeLayout>
