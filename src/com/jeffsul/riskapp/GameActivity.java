@@ -17,6 +17,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class GameActivity extends Activity {
 	public static final String NUM_PLAYERS_EXTRA = "com.jeffsul.risk.NUM_PLAYERS";
@@ -29,6 +34,9 @@ public class GameActivity extends Activity {
 
 	public static enum State {PLACE, DEPLOY, ATTACK, ADVANCE, FORTIFY};
 	public static enum CardSetting {REGULAR, NONE, MODIFIED};
+	
+	private TextView actionLbl;
+	public Button actionBtn;
 
 	private int numPlayers;
 	public Player[] players;
@@ -55,9 +63,6 @@ public class GameActivity extends Activity {
 	public CardSetting cardType = CardSetting.REGULAR;
 	
 	public RiskCalculator riskCalc = new RiskCalculator(false);
-	
-	private boolean shiftKeyDown;
-	private boolean ctrlKeyDown;
 	
 	public boolean gameOver;
 	
@@ -88,23 +93,28 @@ public class GameActivity extends Activity {
 		
 		int half = (int) Math.ceil(numPlayers / 2.0);
 		for (int i = 0; i < numPlayers; i++) {
-			if (!playerType[i].isSelected()) {
-				players[i] = new Player(i + 1, playerNames[i].getText(), PLAYER_COLOURS[i]);
-			} else {
-				players[i] = new AIPlayer(i + 1, PLAYER_COLOURS[i], this);
-			}
+			//if (!playerType[i].isSelected()) {
+				players[i] = new Player(i + 1, "Player " + i, PLAYER_COLOURS[i]);
+			//} else {
+			//	players[i] = new AIPlayer(i + 1, PLAYER_COLOURS[i], this);
+			//}
 			
-			PlayerPanel playerPnl = new PlayerPanel(players[i]);
+			ViewGroup sidePanelLeft = (ViewGroup) findViewById(R.id.side_panel_left);
+			ViewGroup sidePanelRight = (ViewGroup) findViewById(R.id.side_panel_right);
+			PlayerPanel playerPnl = new PlayerPanel(this, players[i], cardType);
+			playerPnlHash.put(players[i], playerPnl);
 			if (i < half) {
-				sidePnl1.add(playerPnl);
+				sidePanelLeft.addView(playerPnl);
 			} else {
-				sidePnl2.add(playerPnl);
+				sidePanelRight.addView(playerPnl);
 			}
 		}
 		
 		activePlayer = players[index];
 		playerPnlHash.get(activePlayer).setActive(true);
 		message(activePlayer.name + ", you have " + placeNum + " armies left to place.");
+		
+		RelativeLayout gamePnl = (RelativeLayout) findViewById(R.id.game_panel);
 		
 		ArrayList<Territory> territories = map.getTerritories();
 		int terrCount = territories.size();
@@ -113,7 +123,10 @@ public class GameActivity extends Activity {
 			Territory territ = territories.remove((int) (Math.random() * territories.size()));
 			territ.setOwner(players[i % numPlayers]);
 			deck.add(new Card(territ, i % 3));
-			gamePnl.add(territ.getButton());
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(40, 30);
+			params.leftMargin = territ.x;
+			params.topMargin = territ.y;
+			gamePnl.addView(territ.getButton(), params);
 		}
 		
 		for (Player player : players) {
@@ -121,19 +134,19 @@ public class GameActivity extends Activity {
 		}
 		log("Game Initialized.");
 		
-		ImageIcon img = (useEpicMap) ? new ImageIcon(getClass().getResource("Epic.jpg")) : new ImageIcon(getClass().getResource("Regular.jpg"));
-		JLabel imgLbl = new JLabel(img);
-		gamePnl.add(imgLbl);
-		imgLbl.setBounds(0, 0, img.getIconWidth(), img.getIconHeight());
+		//ImageIcon img = (useEpicMap) ? new ImageIcon(getClass().getResource("Epic.jpg")) : new ImageIcon(getClass().getResource("Regular.jpg"));
+		//JLabel imgLbl = new JLabel(img);
+		//gamePnl.add(imgLbl);
+		//imgLbl.setBounds(0, 0, img.getIconWidth(), img.getIconHeight());
 		
-		saveGame();
+		//saveGame();
 		beginPlacement();
 	}
 	
 	private void initGUI() {
-		gameScreen = new JPanel(new BorderLayout());
+		//gameScreen = new JPanel(new BorderLayout());
 		
-		final JTabbedPane tabs = new JTabbedPane();
+		/*final JTabbedPane tabs = new JTabbedPane();
 		addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent event) {
 				if (tabs.getSelectedIndex() != 1) {
@@ -167,26 +180,26 @@ public class GameActivity extends Activity {
 				else if (event.getKeyCode() == KeyEvent.VK_CONTROL)
 					ctrlKeyDown = false;
 			}
-		});
+		});*/
 		
-		JPanel playPnl = new JPanel();
-		playPnl.setLayout(new BorderLayout());
-		tabs.addTab("Game", playPnl);
+		//JPanel playPnl = new JPanel();
+		//playPnl.setLayout(new BorderLayout());
+		//tabs.addTab("Game", playPnl);
 		
-		gamePnl = new JPanel();
-		playPnl.add(gamePnl, BorderLayout.CENTER);
-		if (useEpicMap)
+		//gamePnl = new JPanel();
+		//playPnl.add(gamePnl, BorderLayout.CENTER);
+		/*if (useEpicMap)
 			gamePnl.setPreferredSize(new Dimension(900, 618));
 		else
-			tabs.setPreferredSize(new Dimension(794, 618));
-		gamePnl.setLayout(null);
-		gameScreen.add(tabs, BorderLayout.CENTER);
+			tabs.setPreferredSize(new Dimension(794, 618));*/
+		//gamePnl.setLayout(null);
+		//gameScreen.add(tabs, BorderLayout.CENTER);
 		
-		actionLbl = new JLabel();
+		/*actionLbl = new JLabel();
 		actionLbl.setAlignmentX(CENTER_ALIGNMENT);
-		actionLbl.setFont(new Font("Helvetica", Font.BOLD, 16));
+		actionLbl.setFont(new Font("Helvetica", Font.BOLD, 16));*/
 		
-		JPanel optionPnl = new JPanel();
+		/*JPanel optionPnl = new JPanel();
 		optionPnl.setLayout(new BoxLayout(optionPnl, BoxLayout.Y_AXIS));
 		if (actionBtn == null) {
 			actionBtn = new JButton(ACTION_END_ATTACKS);
@@ -210,18 +223,18 @@ public class GameActivity extends Activity {
 					}
 				}
 			});
-		}
+		}*/
 		
-		JPanel actionPnl = new JPanel();
+		/*JPanel actionPnl = new JPanel();
 		if (troopAmountCombo == null) {
 			troopAmountCombo = new JComboBox<String>(new String[] {"1", "2", "3", "5", "10", "All"});
 			troopAmountCombo.setFocusable(false);
 		}
 		actionPnl.add(actionBtn);
 		actionPnl.add(new JLabel("Troops/click:"));
-		actionPnl.add(troopAmountCombo);
+		actionPnl.add(troopAmountCombo);*/
 		
-		gameLog = new JTextArea(6, 5);
+		/*gameLog = new JTextArea(6, 5);
 		gameLog.setEditable(false);
 		JScrollPane sp = new JScrollPane(gameLog);
 		sp.setPreferredSize(new Dimension(400, 300));
@@ -236,31 +249,31 @@ public class GameActivity extends Activity {
 				logWin.setVisible(true);
 			}
 		});
-		actionPnl.add(logBtn);
+		actionPnl.add(logBtn);*/
 		
-		autoPlayBtn = new JButton("Autoplay");
+		/*autoPlayBtn = new JButton("Autoplay");
 		autoPlayBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				// TODO(jeffsul): Implement.
 			}
 		});
-		actionPnl.add(autoPlayBtn);
+		actionPnl.add(autoPlayBtn);*/
 		
-		if (cardType == REGULAR) {
+		/*if (cardType == CardSetting.REGULAR) {
 			cashInLbl = new JLabel(Integer.toString(CASH_IN[0]));
 			actionPnl.add(new JLabel("Next Cash-In:"));
 			actionPnl.add(cashInLbl);
 			actionPnl.add(new JLabel("troops"));
 		}
-		optionPnl.add(actionPnl);
+		optionPnl.add(actionPnl);*/
 		
-		statsScreen = new StatsScreen(players);
-		tabs.addTab("Statistics", statsScreen);
+		//statsScreen = new StatsScreen(players);
+		//tabs.addTab("Statistics", statsScreen);
 		
-		optionPnl.add(actionLbl);
-		playPnl.add(optionPnl, BorderLayout.PAGE_END);
+		//optionPnl.add(actionLbl);
+		//playPnl.add(optionPnl, BorderLayout.PAGE_END);
 		
-		sidePnl1 = new JPanel();
+		/*sidePnl1 = new JPanel();
 		sidePnl2 = new JPanel();
 		JScrollPane sp1 = new JScrollPane(sidePnl1);
 		JScrollPane sp2 = new JScrollPane(sidePnl2);
@@ -271,17 +284,17 @@ public class GameActivity extends Activity {
 		sp1.setPreferredSize(dim);
 		sp2.setPreferredSize(dim);
 		gameScreen.add(sp1, BorderLayout.LINE_START);
-		gameScreen.add(sp2, BorderLayout.LINE_END);
+		gameScreen.add(sp2, BorderLayout.LINE_END);*/
 	}
 	
 	private void handleTurn() {
-		if (activePlayer.isAI())
-			handleAITurn();
-		else
+		//if (activePlayer.isAI())
+		//	handleAITurn();
+		//else
 			beginTurn();
 	}
 	
-	private void handleAITurn() {
+	/*private void handleAITurn() {
 		while (activePlayer.isAI()) {
 			AIPlayer aiPlayer = (AIPlayer) activePlayer;
 			beginTurn();
@@ -290,11 +303,11 @@ public class GameActivity extends Activity {
 			aiPlayer.fortify();
 			
 			playerPnlHash.get(activePlayer).update();
-			gamePnl.paintImmediately(0, 0, gamePnl.getWidth(), gamePnl.getHeight());
-			sidePnl1.paintImmediately(0, 0, sidePnl1.getWidth(), sidePnl1.getHeight());
-			sidePnl2.paintImmediately(0, 0, sidePnl2.getWidth(), sidePnl2.getHeight());
+			//gamePnl.paintImmediately(0, 0, gamePnl.getWidth(), gamePnl.getHeight());
+			//sidePnl1.paintImmediately(0, 0, sidePnl1.getWidth(), sidePnl1.getHeight());
+			//sidePnl2.paintImmediately(0, 0, sidePnl2.getWidth(), sidePnl2.getHeight());
 		}
-	}
+	}*/
 	
 	private void incrementTurn() {
 		index++;
@@ -313,8 +326,8 @@ public class GameActivity extends Activity {
 		playerPnlHash.get(activePlayer).setActive(false);
 		activePlayer = players[index];
 		
-		if (saveFile != null)
-			saveGame();
+		//if (saveFile != null)
+		//	saveGame();
 		
 		if (!activePlayer.isAI())
 			handleTurn();
@@ -347,7 +360,7 @@ public class GameActivity extends Activity {
 		
 		actionBtn.setText("End Attacks");
 		actionBtn.setEnabled(false);
-		autoPlayBtn.setEnabled(true);
+		//autoPlayBtn.setEnabled(true);
 		
 		Continent[] conts = map.getContinents();
 		for (Continent cont : conts) {
@@ -380,13 +393,13 @@ public class GameActivity extends Activity {
 		}
 		
 		int extra = 0;
-		if (cardType == REGULAR)
+		if (cardType == CardSetting.REGULAR)
 			extra = (cashes >= CASH_IN.length) ? 5 * cashes - 10 : CASH_IN[cashes];
-		else if (cardType == MODIFIED)
+		else if (cardType == CardSetting.MODIFIED)
 			extra = (activePlayer.cashes >= CASH_IN.length) ? 5 * activePlayer.cashes - 10 : CASH_IN[activePlayer.cashes];
 		
 		String setChosen = null;
-		if (!activePlayer.isAI()) {
+		/*if (!activePlayer.isAI()) {
 			if (activePlayer.getCardCount() >= 5) {
 				while (setChosen == null) {
 					setChosen = (String) JOptionPane.showInputDialog(this, "You have a set to play for " + extra + " extra troops. Choose a set:", "Play a Set",
@@ -398,10 +411,10 @@ public class GameActivity extends Activity {
 			}
 		} else {
 			setChosen = setTexts[0];
-		}
+		}*/
 		
 		if (setChosen != null) {
-			if (cardType == REGULAR)
+			if (cardType == CardSetting.REGULAR)
 				cashes++;
 			else
 				activePlayer.cashes++;
@@ -425,13 +438,13 @@ public class GameActivity extends Activity {
 				}
 			}
 			
-			if (activePlayer.isAI())
-				((AIPlayer) activePlayer).message(activePlayer.name + " played a set worth " + extra + " troops.");
+			//if (activePlayer.isAI())
+			//	((AIPlayer) activePlayer).message(activePlayer.name + " played a set worth " + extra + " troops.");
 			log(activePlayer.name + " played a set worth " + extra + " troops.");
 			
-			if (cardType == REGULAR) {
+			if (cardType == CardSetting.REGULAR) {
 				int nextCashIn = (cashes >= CASH_IN.length) ? extra + 5 : CASH_IN[cashes];
-				cashInLbl.setText(Integer.toString(nextCashIn));
+				//cashInLbl.setText(Integer.toString(nextCashIn));
 			}
 			
 			playerPnlHash.get(activePlayer).update();
@@ -451,9 +464,9 @@ public class GameActivity extends Activity {
 	}
 	
 	private void handleAIPlacement() {
-		while (activePlayer.isAI()) {
-			((AIPlayer) activePlayer).place();
-		}
+		//while (activePlayer.isAI()) {
+			//((AIPlayer) activePlayer).place();
+		//}
 	}
 	
 	private void incrementPlacementTurn() {
@@ -483,7 +496,7 @@ public class GameActivity extends Activity {
 	public void deploy(Territory territ, boolean all) {
 		if (territ.owner != activePlayer)
 			return;
-		String placing = troopAmountCombo.getSelectedItem().toString();
+		String placing = "1";//troopAmountCombo.getSelectedItem().toString();
 		int toPlace = (all || placing.equals("All")) ? deployNum : Math.min(Integer.parseInt(placing), deployNum);
 		territ.addUnits(toPlace);
 		deployNum -= toPlace;
@@ -500,7 +513,7 @@ public class GameActivity extends Activity {
 	private void enterAttackState() {
 		state = State.ATTACK;
 		actionBtn.setEnabled(true);
-		autoPlayBtn.setEnabled(false);
+		//autoPlayBtn.setEnabled(false);
 		message("Attack - click from your territory to an adjacent one to attack.");
 	}
 	
@@ -549,13 +562,13 @@ public class GameActivity extends Activity {
 					count++;
 			}
 			
-			if (eliminatedPlayer.isAI())
-				((AIPlayer) eliminatedPlayer).message("Argh!", RiskGame.this);
+			//if (eliminatedPlayer.isAI())
+			//	((AIPlayer) eliminatedPlayer).message("Argh!", RiskGame.this);
 			
 			if (count <= 1) {
 				activePlayer.setStats(Player.TERRITORIES, map.getTerritoryCount(activePlayer));
 				activePlayer.setStats(Player.TROOPS, map.getTroopCount(activePlayer));
-				JOptionPane.showMessageDialog(null, activePlayer.name + " won the game!", "Congratulations!", JOptionPane.INFORMATION_MESSAGE);
+				//JOptionPane.showMessageDialog(null, activePlayer.name + " won the game!", "Congratulations!", JOptionPane.INFORMATION_MESSAGE);
 				gameOver = true;
 				return;
 			}
@@ -771,7 +784,7 @@ public class GameActivity extends Activity {
 	}
 	
 	private int getTroopTransferCount(boolean all, int max) {
-		String amountString = troopAmountCombo.getSelectedItem().toString();
+		String amountString = "1";//troopAmountCombo.getSelectedItem().toString();
 		return (all || amountString.equals("All")) ? max : Math.min(max, Integer.parseInt(amountString));
 	}
 	
@@ -918,29 +931,29 @@ public class GameActivity extends Activity {
 	}
 	
 	public void message(String msg) {
-		actionLbl.setText(msg);
+		//actionLbl.setText(msg);
 	}
 	
 	public void log(String msg) {
-		gameLog.append(msg + "\n");
+		//gameLog.append(msg + "\n");
 	}
 	
 	public void error(String msg) {
-		JOptionPane.showMessageDialog(this, msg, "Oops!", JOptionPane.ERROR_MESSAGE);
+		//JOptionPane.showMessageDialog(this, msg, "Oops!", JOptionPane.ERROR_MESSAGE);
 	}
 	
 	public void hiliteTerritories(Territory[] territories) {
-		for (Territory territ : territories) {
-			JButton btn = territ.getButton();
-			if (btn.getBorder() == null)
-				btn.setBorder(Territory.BORDER_HIGHLIGHT);
-		}
+		//for (Territory territ : territories) {
+			//Button btn = territ.getButton();
+			//if (btn.getBorder() == null)
+			//	btn.setBorder(Territory.BORDER_HIGHLIGHT);
+		//}
 	}
 	
 	public void unhiliteTerritories(Territory[] territories) {
-		for (Territory territ : territories) {
-			if (territ != fromTerrit && territ != toTerrit)
-				territ.getButton().setBorder(null);
-		}
+		//for (Territory territ : territories) {
+		//	if (territ != fromTerrit && territ != toTerrit)
+		//		territ.getButton().setBorder(null);
+		//}
 	}
 }

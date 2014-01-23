@@ -7,9 +7,9 @@ import com.jeffsul.riskapp.entities.Continent;
 import com.jeffsul.riskapp.entities.Map;
 import com.jeffsul.riskapp.entities.Territory;
 
-public class AIPlayer extends Player
+public class AIPlayer //extends Player
 {	
-	public static final int QUOTE_ELIMINATED = 0;
+/*	public static final int QUOTE_ELIMINATED = 0;
 	
 	private static final double THREAT_LIMIT = 2.0;
 	
@@ -943,5 +943,5 @@ public class AIPlayer extends Player
 		if (max < 0)
 			return null;
 		return cont;
-	}
+	}*/
 }

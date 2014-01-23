@@ -1,8 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
     
+    <LinearLayout
+        android:id="@+id/side_panel_left"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+        
+        <TextView android:text="@string/action_button_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    
+    <RelativeLayout
+	     android:id="@+id/game_panel"
+	     android:layout_width="wrap_content"
+	     android:layout_height="wrap_content"
+	     android:layout_toRightOf="@id/side_panel_left" >
+        	
+       <ImageView
+       			android:layout_width="wrap_content"
+          	android:layout_height="wrap_content"
+          	android:src="@drawable/classic_map" />
+    </RelativeLayout>
+    
+    <LinearLayout
+        android:id="@+id/side_panel_right"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/game_panel"
+        android:orientation="vertical" >
+        
+        <TextView android:text="@string/action_button_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
-</LinearLayout>
+    <LinearLayout 
+        android:id="@+id/options_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/game_panel"
+        android:layout_toRightOf="@id/side_panel_left"
+        android:layout_toLeftOf="@id/side_panel_right" >
+        
+        <Button
+            android:id="@+id/action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_button_default" />
+    </LinearLayout>
+
+</RelativeLayout>

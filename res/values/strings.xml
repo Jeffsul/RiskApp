@@ -19,6 +19,7 @@
     <string name="play_game_button">Start Game</string>
     <string name="load_game_button">Load Game</string>
     
-    <string name="actoin_end_attacks">End Attacks</string>
+    <string name="action_button_default">Action Button</string>
+    <string name="action_end_attacks">End Attacks</string>
 
 </resources>

@@ -30,7 +30,6 @@ public class PlayerPanel extends LinearLayout {
 		bonusCount = new TextView(ctx);
 		bonusCount.setText("0 bonus");
 		
-		//playerPnlHash.put(player, this);
 		//setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		/*addMouseListener(new MouseAdapter() {
 			public void mouseEntered(MouseEvent event) {
