@@ -18,5 +18,7 @@
     </string-array>
     <string name="play_game_button">Start Game</string>
     <string name="load_game_button">Load Game</string>
+    
+    <string name="actoin_end_attacks">End Attacks</string>
 
 </resources>

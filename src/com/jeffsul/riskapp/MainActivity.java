@@ -42,6 +42,8 @@ public class MainActivity extends Activity {
 	
 	public void sendMessage(View view) {
 		Intent intent = new Intent(this, GameActivity.class);
+		intent.putExtra(GameActivity.NUM_PLAYERS_EXTRA,
+				((Spinner) findViewById(R.id.number_players_spinner)).getSelectedItemPosition() + MIN_NUM_PLAYERS);
 		startActivity(intent);
 	}
 
