@@ -13,15 +13,11 @@ import com.jeffsul.riskapp.players.Player;
 
 public class Territory {
 	private static final int DEFAULT_UNITS = 3;
-	//private static final int X_OFFSET = -41;
-	//private static final int Y_OFFSET = -51;
-	//private static final int BTN_WIDTH = 22;
-	//private static final int BTN_HEIGHT = 16;
-	
 	private static final int REDUCE_FONT_LIMIT = 100;
 	
-	//public static final Border BORDER_HIGHLIGHT = BorderFactory.createLineBorder(Color.WHITE, 2);
-	
+	private static final float SMALL_FONT = 10;
+	private static final float LARGE_FONT = 11;
+		
 	public String name;
 	public int x;
 	public int y;
@@ -31,18 +27,15 @@ public class Territory {
 	private Territory[] connectors;
 	private final Button btn;
 	
-	private static final float SMALL_FONT = 10;
-	private static final float LARGE_FONT = 11;
-	
 	public Territory(Context ctx, String name, int x, int y) {
 		this.name = name;
 		this.x = x;
 		this.y = y;
 		
 		btn = new Button(ctx);
-		btn.setText("3");
+		btn.setText(Integer.toString(units));
 		btn.setTextSize(LARGE_FONT);
-		btn.setFocusable(false);
+		//btn.setFocusable(false);
 		btn.setTextColor(Color.BLACK);
 	}
 	
@@ -59,10 +52,11 @@ public class Territory {
 		if (num != 0) {
 			units += num;
 			btn.setText(Integer.toString(units));
-			if (units >= REDUCE_FONT_LIMIT)
+			if (units >= REDUCE_FONT_LIMIT) {
 				btn.setTextSize(SMALL_FONT);
-			else
+			} else {
 				btn.setTextSize(LARGE_FONT);
+			}
 		}
 	}
 	
@@ -70,10 +64,11 @@ public class Territory {
 		if (num != units) {
 			units = num;
 			btn.setText(Integer.toString(units));
-			if (units >= REDUCE_FONT_LIMIT)
+			if (units >= REDUCE_FONT_LIMIT) {
 				btn.setTextSize(SMALL_FONT);
-			else
+			} else {
 				btn.setTextSize(LARGE_FONT);
+			}
 		}
 	}
 	
@@ -87,12 +82,12 @@ public class Territory {
 	}
 	
 	public void hilite() {
-		//btn.setBorder(BORDER_HIGHLIGHT);
+		// TODO(jeffsul): Add border
 		btn.setTextColor(Color.WHITE);
 	}
 	
 	public void unhilite() {
-		//btn.setBorder(null);
+		// TODO(jeffsul): Remove border
 		btn.setTextColor(Color.BLACK);
 	}
 	
@@ -103,8 +98,9 @@ public class Territory {
 	public Territory[] getFriendlyConnectors(Player player) {
 		ArrayList<Territory> friends = new ArrayList<Territory>();
 		for (int i = 0; i < connectors.length; i++) {
-			if (connectors[i].owner == player)
+			if (connectors[i].owner == player) {
 				friends.add(connectors[i]);
+			}
 		}
 		Territory[] friendTerrits = new Territory[friends.size()];
 		friends.toArray(friendTerrits);
@@ -113,20 +109,26 @@ public class Territory {
 	
 	public Territory[] getEnemyConnectors(Player player) {
 		ArrayList<Territory> enemies = new ArrayList<Territory>();
-		for (int i = 0; i < connectors.length; i++)
-		{
-			if (connectors[i].owner != player)
+		for (int i = 0; i < connectors.length; i++) {
+			if (connectors[i].owner != player) {
 				enemies.add(connectors[i]);
+			}
 		}
 		Territory[] enemyTerrits = new Territory[enemies.size()];
 		enemies.toArray(enemyTerrits);
 		return enemyTerrits;
 	}
 	
+	/**
+	 * To check whether a territory is connected (i.e., can be attacked from) this one.
+	 * @param territ
+	 * @return true if territ is connected to this one
+	 */
 	public boolean isConnecting(Territory territ) {
 		for (Territory conn : connectors) {
-			if (conn == territ)
+			if (conn == territ) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -140,14 +142,16 @@ public class Territory {
 		territs.add(this);
 		while (territs.size() > 0) {
 			Territory territ = territs.remove(0);
-			if (target == territ)
+			if (target == territ) {
 				return true;
+			}
 			checked.put(territ, true);
 			
 			Territory[] conns = territ.getFriendlyConnectors(owner);
 			for (Territory conn : conns) {
-				if (!checked.containsKey(conn))
+				if (!checked.containsKey(conn)) {
 					territs.add(conn);
+				}
 			}
 		}
 		return false;
