@@ -2,20 +2,22 @@ package com.jeffsul.riskapp.players;
 
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
+
+import com.jeffsul.riskapp.GameActivity;
+import com.jeffsul.riskapp.R;
 import com.jeffsul.riskapp.RiskCalculator;
+import com.jeffsul.riskapp.dialogs.AutoGameDialogFragment;
 import com.jeffsul.riskapp.entities.Continent;
 import com.jeffsul.riskapp.entities.Map;
 import com.jeffsul.riskapp.entities.Territory;
 
-public class AIPlayer //extends Player
-{	
-/*	public static final int QUOTE_ELIMINATED = 0;
+public class AIPlayer extends Player {	
+	public static final int QUOTE_ELIMINATED = 0;
 	
 	private static final double THREAT_LIMIT = 2.0;
 	
-	private static final String[] OPTIONS = {"Continue", "Pause", "Simulate 1 Round", "Simulate 5 Rounds", "Simulate 10 Rounds", "Simulate Game"};
-	
-	protected ImageIcon img;
+	protected int imgResId;
 	
 	private ArrayList<Territory> attackers;
 	private ArrayList<Territory> conquests;
@@ -23,59 +25,41 @@ public class AIPlayer //extends Player
 	private ArrayList<Territory> borders;
 	private Continent optimalCont;
 	
-	protected RiskGame game;
+	protected GameActivity game;
 	
-	public AIPlayer(int num, Color color, RiskGame rg) 
-	{
+	public AIPlayer(int num, int color, GameActivity rg) {
 		super(num, "Achilles", color);
 		game = rg;
 		isAI = true;
-		img = new ImageIcon(getClass().getResource("ai/" + name + ".jpg"));
+		//img = new ImageIcon(getClass().getResource("ai/" + name + ".jpg"));
 	}
 	
-	public void message(String msg)
-	{
-		if (game.simulate)
+	public void message(String msg) {
+		if (game.simulate) {
 			return;
-		if (game.autoGame)
-		{
-			String ans = (String) JOptionPane.showInputDialog(game.actionBtn, msg, name + " says...", JOptionPane.INFORMATION_MESSAGE, img, OPTIONS, OPTIONS[0]);
-			if (ans != null)
-			{
-				if (ans.equals(OPTIONS[1]))
-					game.pauseGame();
-				else if (ans.equals(OPTIONS[2]))
-					game.simulate(1);
-				else if (ans.equals(OPTIONS[3]))
-					game.simulate(5);
-				else if (ans.equals(OPTIONS[4]))
-					game.simulate(10);
-				else if (ans.equals(OPTIONS[5]))
-					game.simulate(-1);
-			}
 		}
-		else
-			JOptionPane.showMessageDialog(game.actionBtn, msg, name + " says...", JOptionPane.INFORMATION_MESSAGE, img);
+		if (game.autoGame) {
+			AutoGameDialogFragment dialogFragment = AutoGameDialogFragment.newInstance(game.getResources().getString(R.string.ai_player_message_title, name), msg);
+			dialogFragment.show(game.getFragmentManager(), "autogame");
+		} else {
+			AlertDialog messageDialog = new AlertDialog.Builder(game).create();
+			messageDialog.setTitle(game.getResources().getString(R.string.ai_player_message_title, name));
+			messageDialog.setMessage(msg);
+			messageDialog.setIcon(imgResId);
+			messageDialog.show();
+		}
 	}
 	
-	public void message(String msg, Component comp)
-	{
-		JOptionPane.showMessageDialog(comp, msg, name + " has been eliminated...", JOptionPane.INFORMATION_MESSAGE, img);
-	}
-	
-	public void attack(Territory from, Territory to, boolean all)
-	{
+	public void attack(Territory from, Territory to, boolean all) {
 		message("Attacking from " + from.name + " to " + to.name + ".");
 		game.attack(from, to, true);
-		if (all)
-		{
-			while (game.state != RiskGame.State.ADVANCE && from.units > 1)
+		if (all) {
+			while (game.state != GameActivity.State.ADVANCE && from.units > 1)
 				game.attack(to, true);
 		}
 	}
 	
-	public void place()
-	{
+	public void place() {
 		Territory deployTerrit = null;
 		Continent[] conts = game.getMap().getContinents();
 		Continent targetCont = null;
@@ -93,8 +77,7 @@ public class AIPlayer //extends Player
 			}
 		}
 		
-		if (max >= 0)
-		{
+		if (max >= 0) {
 			Territory[] territs = targetCont.getFriendlyTerritories(this);
 			max = Integer.MIN_VALUE;
 			for (Territory t : territs)
@@ -106,17 +89,13 @@ public class AIPlayer //extends Player
 					deployTerrit = t;
 				}
 			}
-		}
-		else
-		{
+		} else {
 			Territory[] territs = game.getMap().getTerritories(this);
 			max = Integer.MIN_VALUE;
-			for (Territory t : territs)
-			{
+			for (Territory t : territs) {
 				int n = t.getFriendlyConnectors(this).length;
 				int score = (t.getConnectors().length - n) * n;
-				if (score > max)
-				{
+				if (score > max) {
 					max = score;
 					deployTerrit = t;
 				}
@@ -125,8 +104,7 @@ public class AIPlayer //extends Player
 		game.place(deployTerrit);
 	}
 	
-	public void deploy()
-	{
+	public void deploy() {
 		Map map = game.getMap();
 		RiskCalculator riskCalc = game.riskCalc;
 		
@@ -386,8 +364,7 @@ public class AIPlayer //extends Player
 						message("Attacking from " + att.name + " to " + con.name);
 					else
 						noAttack.add(att);
-					while (att.units >= maxOtherEnemy + 3 && game.state != RiskGame.State.ADVANCE)
-					{
+					while (att.units >= maxOtherEnemy + 3 && game.state != GameActivity.State.ADVANCE) {
 						game.attack(att, con, false);
 					}
 				}
@@ -401,23 +378,19 @@ public class AIPlayer //extends Player
 			}
 			borders = new ArrayList<Territory>();
 			Continent[] conts = map.getContinents();
-			for (Continent c : conts)
-			{
-				if (c.hasContinent(this))
-				{
+			for (Continent c : conts) {
+				if (c.hasContinent(this)) {
 					ArrayList<Territory> o = fortifyBorders(c, false);
 					if (o != null)
 						borders.addAll(o);
 				}
 			}
 			Territory[] conns = att.getEnemyConnectors(this);
-			for (int i = 0; i < conns.length; i++)
-			{
+			for (int i = 0; i < conns.length; i++) {
 				if (conns[i].units > maxEnemy && conns[i] != con)
 					maxEnemy = conns[i].units;
 			}
-			if (game.state == RiskGame.State.ADVANCE)
-			{
+			if (game.state == GameActivity.State.ADVANCE) {
 				Territory[] cons = con.getConnectors();
 				double maxOdds = 0.0;
 				Territory next = null;
@@ -496,7 +469,8 @@ public class AIPlayer //extends Player
 								game.endAdvance();
 							}
 						}
-						else if (moveCount > 0 && continents.indexOf(map.getContinent(con)) > -1 && (continents.indexOf(map.getContinent(con)) < continents.indexOf(map.getContinent(att)) || continents.indexOf(map.getContinent(att)) == -1))
+						else if (moveCount > 0 && continents.indexOf(map.getContinent(con)) > -1
+								&& (continents.indexOf(map.getContinent(con)) < continents.indexOf(map.getContinent(att)) || continents.indexOf(map.getContinent(att)) == -1))
 							game.advance(con, true);
 						else
 						{
@@ -525,8 +499,7 @@ public class AIPlayer //extends Player
 				}
 			}
 		}
-		if (!game.conqueredTerritory && game.cardType != RiskGame.NONE)
-		{
+		if (!game.conqueredTerritory && game.cardType != GameActivity.CardSetting.NONE) {
 			double maxScore = 0.0;
 			Territory from = null;
 			Territory to = null;
@@ -548,7 +521,7 @@ public class AIPlayer //extends Player
 				}
 			}
 			attack(from, to, false);
-			if (game.state == RiskGame.State.ADVANCE)
+			if (game.state == GameActivity.State.ADVANCE)
 				game.advance(from, true);
 		}
 		game.endAttacks();
@@ -556,7 +529,7 @@ public class AIPlayer //extends Player
 	
 	public void fortify()
 	{
-		if (game.state != RiskGame.State.FORTIFY)
+		if (game.state != GameActivity.State.FORTIFY)
 			return;
 		Map map = game.getMap();
 		Continent[] conts = map.getContinents();
@@ -579,7 +552,7 @@ public class AIPlayer //extends Player
 		}
 		if (fortify(borders))
 			return;
-		if (game.state == RiskGame.State.FORTIFY)
+		if (game.state == GameActivity.State.FORTIFY)
 		{
 			for (Continent c : continents)
 			{
@@ -593,7 +566,7 @@ public class AIPlayer //extends Player
 			if (fortify(borders))
 				return;
 		}
-		if (game.state == RiskGame.State.FORTIFY)
+		if (game.state == GameActivity.State.FORTIFY)
 		{
 			int minVal = Integer.MAX_VALUE;
 			Territory toFortify = null;
@@ -943,5 +916,5 @@ public class AIPlayer //extends Player
 		if (max < 0)
 			return null;
 		return cont;
-	}*/
+	}
 }

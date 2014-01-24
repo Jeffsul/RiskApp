@@ -5,14 +5,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import com.jeffsul.riskapp.RiskCalculator;
+import com.jeffsul.riskapp.dialogs.AutoGameDialogFragment;
+import com.jeffsul.riskapp.dialogs.PlaySetDialogFragment;
 import com.jeffsul.riskapp.entities.Card;
 import com.jeffsul.riskapp.entities.Continent;
 import com.jeffsul.riskapp.entities.Map;
 import com.jeffsul.riskapp.entities.Territory;
+import com.jeffsul.riskapp.players.AIPlayer;
 import com.jeffsul.riskapp.players.Player;
 import com.jeffsul.riskapp.players.PlayerPanel;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -22,7 +26,8 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class GameActivity extends Activity {
+public class GameActivity extends Activity implements AutoGameDialogFragment.Listener,
+		PlaySetDialogFragment.Listener, View.OnClickListener, View.OnLongClickListener {
 	public static final String NUM_PLAYERS_EXTRA = "com.jeffsul.risk.NUM_PLAYERS";
 	
 	public static final int[] PLAYER_COLOURS = {Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA, Color.YELLOW,
@@ -40,6 +45,8 @@ public class GameActivity extends Activity {
 	private Player activePlayer;
 	private Player eliminatedPlayer;
 	public boolean conqueredTerritory;
+	
+	private HashMap<View, Territory> buttonMap;
 	
 	private int index;
 	private int round;
@@ -113,15 +120,18 @@ public class GameActivity extends Activity {
 		RelativeLayout gamePnl = (RelativeLayout) findViewById(R.id.game_panel);
 		
 		ArrayList<Territory> territories = map.getTerritories();
+		buttonMap = new HashMap<View, Territory>();
 		int terrCount = territories.size();
 		deck.removeAll(deck);
 		for (int i = 0; i < terrCount; i++) {
 			Territory territ = territories.remove((int) (Math.random() * territories.size()));
 			territ.setOwner(players[i % numPlayers]);
+			buttonMap.put(territ.getButton(), territ);
+			territ.addMouseListener(this, this);
 			deck.add(new Card(territ, i % 3));
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(40, 30);
-			params.leftMargin = territ.x;
-			params.topMargin = territ.y;
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(25, 25);
+			params.leftMargin = territ.x - 41;
+			params.topMargin = territ.y - 51;
 			gamePnl.addView(territ.getButton(), params);
 		}
 		
@@ -158,7 +168,6 @@ public class GameActivity extends Activity {
 			troopAmountCombo = new JComboBox<String>(new String[] {"1", "2", "3", "5", "10", "All"});
 			troopAmountCombo.setFocusable(false);
 		}
-		actionPnl.add(actionBtn);
 		actionPnl.add(new JLabel("Troops/click:"));
 		actionPnl.add(troopAmountCombo);*/
 		
@@ -190,13 +199,13 @@ public class GameActivity extends Activity {
 	}
 	
 	private void handleTurn() {
-		//if (activePlayer.isAI())
-		//	handleAITurn();
-		//else
+		if (activePlayer.isAI())
+			handleAITurn();
+		else
 			beginTurn();
 	}
 	
-	/*private void handleAITurn() {
+	private void handleAITurn() {
 		while (activePlayer.isAI()) {
 			AIPlayer aiPlayer = (AIPlayer) activePlayer;
 			beginTurn();
@@ -205,11 +214,8 @@ public class GameActivity extends Activity {
 			aiPlayer.fortify();
 			
 			playerPnlHash.get(activePlayer).update();
-			//gamePnl.paintImmediately(0, 0, gamePnl.getWidth(), gamePnl.getHeight());
-			//sidePnl1.paintImmediately(0, 0, sidePnl1.getWidth(), sidePnl1.getHeight());
-			//sidePnl2.paintImmediately(0, 0, sidePnl2.getWidth(), sidePnl2.getHeight());
 		}
-	}*/
+	}
 	
 	private void incrementTurn() {
 		index++;
@@ -246,15 +252,22 @@ public class GameActivity extends Activity {
 		
 		playerPnlHash.get(activePlayer).setActive(true);
 		
+		state = State.DEPLOY;
+		deployNum = 0;
+		continueTurnAfterSet(0);
+	}
+	
+	private void continueTurnAfterSet(int extra) {
+		deployNum += extra;
+		if (activePlayer.hasSet()) {
+			playSet();
+			return;
+		}
+		
 		int troopCount = Math.max(map.getTerritoryCount(activePlayer) / 3, 3);
 		log(activePlayer.name + " gets " + troopCount + " troops for " + map.getTerritoryCount(activePlayer) + " territories.");
 		
-		int extra = 0;
-		if (activePlayer.hasSet())
-			extra += playSet();
 		troopCount += extra;
-		
-		state = State.DEPLOY;
 		
 		conqueredTerritory = false;
 		fromTerrit = null;
@@ -276,11 +289,8 @@ public class GameActivity extends Activity {
 		deployNum = troopCount;
 	}
 	
-	public int playSet() {
+	public void playSet() {
 		Card[][] sets = activePlayer.getSets();
-		if (sets.length == 0)
-			return 0;
-		
 		String[] setTexts = new String[sets.length];
 		Arrays.fill(setTexts, "");
 		for (int i = 0; i < sets.length; i++) {
@@ -296,67 +306,20 @@ public class GameActivity extends Activity {
 		
 		int extra = 0;
 		if (cardType == CardSetting.REGULAR)
-			extra = (cashes >= CASH_IN.length) ? 5 * cashes - 10 : CASH_IN[cashes];
+			extra = (cashes >= CASH_IN.length) ? CASH_IN_INCREMENT * cashes - 10 : CASH_IN[cashes];
 		else if (cardType == CardSetting.MODIFIED)
-			extra = (activePlayer.cashes >= CASH_IN.length) ? 5 * activePlayer.cashes - 10 : CASH_IN[activePlayer.cashes];
+			extra = (activePlayer.cashes >= CASH_IN.length) ? CASH_IN_INCREMENT * activePlayer.cashes - 10 : CASH_IN[activePlayer.cashes];
 		
-		String setChosen = null;
-		/*if (!activePlayer.isAI()) {
+		if (!activePlayer.isAI()) {
 			if (activePlayer.getCardCount() >= 5) {
-				while (setChosen == null) {
-					setChosen = (String) JOptionPane.showInputDialog(this, "You have a set to play for " + extra + " extra troops. Choose a set:", "Play a Set",
-							JOptionPane.QUESTION_MESSAGE, null, setTexts, "");
-				}
-			} else {
-				setChosen = (String) JOptionPane.showInputDialog(this, "You have a set to play for " + extra + " extra troops. Choose a set or cancel:", "Play a Set",
-						JOptionPane.QUESTION_MESSAGE, null, setTexts, "");
+				// TODO(jeffsul): Disallow cancel button.
 			}
+			PlaySetDialogFragment dialogFragment = PlaySetDialogFragment.newInstance(setTexts, extra);
+			dialogFragment.show(getFragmentManager(), "playset");
 		} else {
-			setChosen = setTexts[0];
-		}*/
-		
-		if (setChosen != null) {
-			if (cardType == CardSetting.REGULAR)
-				cashes++;
-			else
-				activePlayer.cashes++;
-			
-			Card[] setPlayed = null;
-			for (int i = 0; i < setTexts.length; i++) {
-				if (setTexts[i].equals(setChosen)) {
-					setPlayed = sets[i];
-					break;
-				}
-			}
-			if (setPlayed == null)
-				return 0;
-			
-			activePlayer.playSet(setPlayed);
-			
-			for (int i = 0; i < 3; i++) {
-				if (setPlayed[i].territory.owner == activePlayer) {
-					setPlayed[i].territory.addUnits(2);
-					activePlayer.updateStats(Player.TROOPS_DEPLOYED, 2);
-				}
-			}
-			
-			//if (activePlayer.isAI())
-			//	((AIPlayer) activePlayer).message(activePlayer.name + " played a set worth " + extra + " troops.");
-			log(activePlayer.name + " played a set worth " + extra + " troops.");
-			
-			if (cardType == CardSetting.REGULAR) {
-				int nextCashIn = (cashes >= CASH_IN.length) ? extra + 5 : CASH_IN[cashes];
-				//cashInLbl.setText(Integer.toString(nextCashIn));
-			}
-			
-			playerPnlHash.get(activePlayer).update();
-			if (activePlayer.hasSet())
-				extra += playSet();
+			// TODO(jeffsul): Make AI smarter.
+			onPlaySet(0, extra);
 		}
-		else
-			return 0;
-		
-		return extra;
 	}
 	
 	private void beginPlacement() {
@@ -366,9 +329,9 @@ public class GameActivity extends Activity {
 	}
 	
 	private void handleAIPlacement() {
-		//while (activePlayer.isAI()) {
-			//((AIPlayer) activePlayer).place();
-		//}
+		while (activePlayer.isAI()) {
+			((AIPlayer) activePlayer).place();
+		}
 	}
 	
 	private void incrementPlacementTurn() {
@@ -463,8 +426,8 @@ public class GameActivity extends Activity {
 					count++;
 			}
 			
-			//if (eliminatedPlayer.isAI())
-			//	((AIPlayer) eliminatedPlayer).message("Argh!", RiskGame.this);
+			if (eliminatedPlayer.isAI())
+				((AIPlayer) eliminatedPlayer).message("Argh!");
 			
 			if (count <= 1) {
 				activePlayer.setStats(Player.TERRITORIES, map.getTerritoryCount(activePlayer));
@@ -479,10 +442,7 @@ public class GameActivity extends Activity {
 			eliminatedPlayer = null;
 			
 			if (activePlayer.getCardCount() >= 5) {
-				deployNum = playSet();
-				state = State.DEPLOY;
-				((Button) findViewById(R.id.action_button)).setEnabled(false);
-				message(activePlayer.name + " you have " + deployNum + " troops to place from your cash-in.");
+				playSet();
 			}
 		}
 	}
@@ -822,6 +782,15 @@ public class GameActivity extends Activity {
 		return Math.max((int) (map.getTerritoryCount(player) / 3), 3) + total;
 	}
 	
+	public void resumeGame() {
+		paused = false;
+		((Button) findViewById(R.id.action_button)).setText("");
+	}
+	
+	public void pauseGame() {
+		paused = true;
+	}
+	
 	public void simulate(int n) {
 		simulate = true;
 		simulateCount = n;
@@ -835,12 +804,19 @@ public class GameActivity extends Activity {
 		((TextView) findViewById(R.id.action_label)).setText(msg);
 	}
 	
+	public Map getMap() {
+		return map;
+	}
+	
 	public void log(String msg) {
 		//gameLog.append(msg + "\n");
 	}
 	
 	public void error(String msg) {
-		//JOptionPane.showMessageDialog(this, msg, "Oops!", JOptionPane.ERROR_MESSAGE);
+		AlertDialog.Builder builder = new AlertDialog.Builder(this)
+				.setTitle(R.string.error_alert_title)
+				.setMessage(msg);
+		builder.create().show();
 	}
 	
 	public void hiliteTerritories(Territory[] territories) {
@@ -856,5 +832,115 @@ public class GameActivity extends Activity {
 		//	if (territ != fromTerrit && territ != toTerrit)
 		//		territ.getButton().setBorder(null);
 		//}
+	}
+
+	@Override
+	public void onGameContinue() {
+		
+	}
+
+	@Override
+	public void onGamePause() {
+		pauseGame();
+	}
+
+	@Override
+	public void onGameSimulate(int rounds) {
+		simulate(rounds);
+	}
+
+	@Override
+	public void onPlaySet(int which, int extra) {
+		if (state != State.DEPLOY) {
+			state = State.DEPLOY;
+			deployNum = extra;
+			((Button) findViewById(R.id.action_button)).setEnabled(false);
+			message(activePlayer.name + " you have " + deployNum + " troops to place from your cash-in.");
+			return;
+		}
+		
+		if (cardType == CardSetting.REGULAR) {
+			cashes++;
+		} else {
+			activePlayer.cashes++;
+		}
+		
+		Card[] setPlayed = activePlayer.getSets()[which];
+		activePlayer.playSet(setPlayed);
+		
+		for (int i = 0; i < 3; i++) {
+			if (setPlayed[i].territory.owner == activePlayer) {
+				setPlayed[i].territory.addUnits(2);
+				activePlayer.updateStats(Player.TROOPS_DEPLOYED, 2);
+			}
+		}
+		
+		if (activePlayer.isAI())
+			((AIPlayer) activePlayer).message(activePlayer.name + " played a set worth " + extra + " troops.");
+		log(activePlayer.name + " played a set worth " + extra + " troops.");
+		
+		if (cardType == CardSetting.REGULAR) {
+			int nextCashIn = (cashes >= CASH_IN.length) ? extra + 5 : CASH_IN[cashes];
+			((TextView) findViewById(R.id.cash_in_label)).setText(Integer.toString(nextCashIn));
+		}
+		
+		playerPnlHash.get(activePlayer).update();
+		continueTurnAfterSet(extra);
+	}
+
+	@Override
+	public void onCancelSet() {
+		continueTurnAfterSet(0);
+	}
+
+	@Override
+	public void onClick(View v) {
+		Territory territ = buttonMap.get(v);
+		if (territ == null) {
+			return;
+		}
+		switch (state) {
+		case PLACE:
+			place(territ);
+			break;
+		case DEPLOY:
+			deploy(territ, false);
+			break;
+		case ATTACK:
+			attack(territ, false);
+			break;
+		case ADVANCE:
+			advance(territ, false);
+			break;
+		case FORTIFY:
+			fortify(territ, false);
+			break;
+		}
+	}
+
+	@Override
+	public boolean onLongClick(View v) {
+		Territory territ = buttonMap.get(v);
+		if (territ == null) {
+			return false;
+		}
+		switch (state) {
+		case PLACE:
+			place(territ);
+			break;
+		case DEPLOY:
+			deploy(territ, true);
+			break;
+		case ATTACK:
+			attack(territ, true);
+			break;
+		case ADVANCE:
+			advance(territ, true);
+			break;
+		case FORTIFY:
+			fortify(territ, true);
+			break;
+		}
+		return true;
 	}
 }

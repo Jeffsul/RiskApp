@@ -24,5 +24,21 @@
     <string name="action_end_fortifications">End Fortifications</string>
     <string name="action_advance_troops">Advance Troops</string>
     <string name="initial_cash_in">Next Cash-In: %1 troops</string>
+    
+    <string name="error_alert_title">Oops!</string>
+    
+    <string name="play_set_dialog_title">Play a Set</string>
+    <string name="play_set_message">You have a set to play for %1 troops.</string>
+    <string name="play_set_negative">No Set</string>
+    
+    <string name="ai_player_message_title">%1 says…</string>
+    <string-array name="ai_simulate_options">
+        <item>Continue</item>
+        <item>Pause</item>
+        <item>Simulate 1 Round</item>
+        <item>Simulate 5 Rounds</item>
+        <item>Simulate 10 Rounds</item>
+        <item>Simulate Game</item>
+    </string-array>
 
 </resources>

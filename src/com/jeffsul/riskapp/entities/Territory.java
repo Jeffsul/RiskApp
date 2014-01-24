@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.Button;
 
 import com.jeffsul.riskapp.players.Player;
@@ -38,16 +40,16 @@ public class Territory {
 		this.y = y;
 		
 		btn = new Button(ctx);
-		btn.setText(name);
+		btn.setText("3");
 		btn.setTextSize(LARGE_FONT);
 		btn.setFocusable(false);
 		btn.setTextColor(Color.BLACK);
-		//btn.setBounds(x + X_OFFSET, y + Y_OFFSET, BTN_WIDTH, BTN_HEIGHT);
 	}
 	
-	/*public void addMouseListener(MouseListener listener) {
-		btn.addMouseListener(listener);
-	}*/
+	public void addMouseListener(OnClickListener listener, OnLongClickListener listener2) {
+		btn.setOnClickListener(listener);
+		btn.setOnLongClickListener(listener2);
+	}
 	
 	public void connect(Territory[] conns) {
 		connectors = conns;
