@@ -30,8 +30,12 @@ public class AIPlayer extends Player {
 	public AIPlayer(int num, int color, GameActivity rg) {
 		super(num, "Achilles", color);
 		game = rg;
-		isAI = true;
 		//img = new ImageIcon(getClass().getResource("ai/" + name + ".jpg"));
+	}
+
+	@Override
+	public boolean isAI() {
+		return true;
 	}
 	
 	public void message(String msg) {

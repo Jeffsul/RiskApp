@@ -40,5 +40,10 @@
         <item>Simulate 10 Rounds</item>
         <item>Simulate Game</item>
     </string-array>
+    
+    <string name="pp_troops">%1 troops</string>
+    <string name="pp_territories">%1 territories</string>
+    <string name="pp_cards">%1 cards</string>
+    <string name="pp_bonus">%1 bonus</string>
 
 </resources>
