@@ -26,8 +26,9 @@ public class Map {
 			Territory cam = new Territory(ctx, "Central America", 156, 304);
 			Territory[] namTerrits = {ala,nwt,wca,cca,eca,gre,wus,eus,cam};
 			Continent nam = new Continent("North America", 5, namTerrits, new Territory[] {gre,ala,cam});
-			for (Territory t : namTerrits)
+			for (Territory t : namTerrits) {
 				territs.put(t.name, t);
+			}
 			conts.put(nam.name, nam);
 			
 			Territory ven = new Territory(ctx, "Venezuala", 227, 374);
@@ -36,8 +37,9 @@ public class Map {
 			Territory bra = new Territory(ctx, "Brazil", 280, 421);
 			Territory[] samTerrits = {ven,per,arg,bra};
 			Continent sam = new Continent("South America", 2, samTerrits, new Territory[] {ven,bra});
-			for (Territory t : samTerrits)
+			for (Territory t : samTerrits) {
 				territs.put(t.name, t);
+			}
 			conts.put(sam.name, sam);
 			
 			Territory naf = new Territory(ctx, "North Africa", 400, 339);
@@ -48,8 +50,9 @@ public class Map {
 			Territory egy = new Territory(ctx, "Egypt", 465, 311);
 			Territory[] afrTerrits = {naf,con,saf,mad,eaf,egy};
 			Continent afr = new Continent("Africa", 3, afrTerrits, new Territory[] {naf,egy,eaf});
-			for (Territory t : afrTerrits)
+			for (Territory t : afrTerrits) {
 				territs.put(t.name, t);
+			}
 			conts.put(afr.name, afr);
 			
 			Territory ice = new Territory(ctx, "Iceland", 377, 129);
@@ -61,8 +64,9 @@ public class Map {
 			Territory ukr = new Territory(ctx, "Ukraine", 501, 178);
 			Territory[] eurTerrits = {ice,sca,gbr,weu,neu,seu,ukr};
 			Continent eur = new Continent("Europe", 5, eurTerrits, new Territory[] {ice,ukr,seu,weu});
-			for (Territory t : eurTerrits)
+			for (Territory t : eurTerrits) {
 				territs.put(t.name, t);
+			}
 			conts.put(eur.name, eur);
 			
 			Territory ino = new Territory(ctx, "Indonesia", 688, 400);
@@ -71,8 +75,9 @@ public class Map {
 			Territory eau = new Territory(ctx, "Eastern Australia", 759, 530);
 			Territory[] oceTerrits = {ino,ngu,wau,eau};
 			Continent oce = new Continent("Oceania", 2, oceTerrits, new Territory[] {ino});
-			for (Territory t : oceTerrits)
+			for (Territory t : oceTerrits) {
 				territs.put(t.name, t);
+			}
 			conts.put(oce.name, oce);
 			
 			Territory mea = new Territory(ctx, "Middle East", 524, 293);
@@ -89,8 +94,9 @@ public class Map {
 			Territory kam = new Territory(ctx, "Kamchatka", 809, 123);
 			Territory[] asiTerrits = {mea,afg,ind,sia,chi,ura,sib,mon,jap,irk,yak,kam};
 			Continent asi = new Continent("Asia", 7, asiTerrits, new Territory[] {mea,afg,sia,kam,sib});
-			for (Territory t : asiTerrits)
+			for (Territory t : asiTerrits) {
 				territs.put(t.name, t);
+			}
 			conts.put(asi.name, asi);
 			
 			ala.connect(new Territory[] {kam,nwt,wca});
@@ -275,8 +281,9 @@ public class Map {
 			Territory[] cont3 = {mex,guat,pan};
 			conts.put("Central America", new Continent("Central America", 2, cont3, new Territory[] {mex,pan}));
 			Territory[] cont4 = {ala,yuk,nun,gre,locan,upcan,pra,bc,westus,midus,neweng,southus,mex,cuba,guat,carib,pan};
-			for (Territory t : cont4)
+			for (Territory t : cont4) {
 				territs.put(t.name, t);
+			}
 			conts.put("North America", new Continent("North America", 2, cont4, new Territory[] {mex,pan,gre,ala}));
 			
 			Territory[] cont5 = {col,ven,ecua,peru,amaz,bol};
@@ -284,8 +291,9 @@ public class Map {
 			Territory[] cont6 = {paran,para,uru,arg};
 			conts.put("La Plata", new Continent("La Plata", 3, cont6, new Territory[] {arg,para,paran}));
 			Territory[] cont7 = {col,ven,guy,ecua,peru,amaz,bol,paran,para,uru,arg,tier,chile,nebra};
-			for (Territory t : cont7)
+			for (Territory t : cont7) {
 				territs.put(t.name, t);
+			}
 			conts.put("South America", new Continent("South America", 2, cont7, new Territory[] {tier,nebra,col}));
 			
 			Territory[] cont8 = {nor,swe,fin};
@@ -293,8 +301,9 @@ public class Map {
 			Territory[] cont9 = {ibe,fra,brit,ger,ita,pol};
 			conts.put("Western Europe", new Continent("Western Europe", 3, cont9, new Territory[] {pol,brit,ibe}));
 			Territory[] cont10 = {nor,swe,fin,ibe,fra,brit,ger,ita,pol,ice,grc,ukr,balt,mosk};
-			for (Territory t : cont10)
+			for (Territory t : cont10) {
 				territs.put(t.name, t);
+			}
 			conts.put("Europe", new Continent("Europe", 6, cont10, new Territory[] {ice,mosk,grc,ibe}));
 			
 			Territory[] cont11 = {mor,alg,maur,mali,niger,nig,cote,sen,guin};
@@ -304,8 +313,9 @@ public class Map {
 			Territory[] cont13 = {sud,eth,som,ken};
 			conts.put("The Horn", new Continent("The Horn", 3, cont13, new Territory[] {ken,som,sud}));
 			Territory[] cont14 = {mor,alg,maur,mali,niger,nig,cote,sen,guin,con,tan,mad,moz,zim,ang,nam,safr,sud,eth,som,ken,cam,chad,lib,egy};
-			for (Territory t : cont14)
+			for (Territory t : cont14) {
 				territs.put(t.name, t);
+			}
 			conts.put("Africa", new Continent("Africa", 3, cont14, new Territory[] {safr,som,egy,mor,guin}));
 			
 			Territory[] cont15 = {yem,oma,saud,iraq,lev,turk,iran};
@@ -317,8 +327,9 @@ public class Map {
 			Territory[] cont18 = {mon,kor,jap,tai,china};
 			conts.put("Far East", new Continent("Far East", 4, cont18, new Territory[] {tai,china,mon}));
 			Territory[] cont19 = {yem,oma,saud,iraq,lev,turk,iran,kom,yug,eve,irk,sak,nep,pak,ind,sri,mon,kor,jap,tai,china,kaz,turkm,afg,thai,indo};
-			for (Territory t : cont19)
+			for (Territory t : cont19) {
 				territs.put(t.name, t);
+			}
 			conts.put("Asia", new Continent("Asia", 3, cont19, new Territory[] {yem,lev,turk,iran,kaz,kom,thai,tai,sak}));
 			
 			Territory[] cont20 = {waust,eaust,caust};
@@ -326,8 +337,9 @@ public class Map {
 			Territory[] cont21 = {phil,bor,sum,sula,irian,java};
 			conts.put("East Indies", new Continent("East Indies", 4, cont21, new Territory[] {irian,java,sum,phil}));
 			Territory[] cont22 = {haw,phil,bor,sum,java,sula,irian,papua,newcal,newzeal,eaust,caust,waust};
-			for (Territory t : cont22)
+			for (Territory t : cont22) {
 				territs.put(t.name, t);
+			}
 			conts.put("Oceania", new Continent("Oceania", 3, cont22, new Territory[] {phil,haw,sum,waust}));
 			
 			Territory[] cont23 = {chclaim,norclaim,austclaim,britclaim};
@@ -454,21 +466,27 @@ public class Map {
 			caust.connect(new Territory[] {waust,eaust});
 			waust.connect(new Territory[] {java,caust,austclaim});
 		}
-		
-		//ArrayList<Territory> territs = getTerritories();
-		//for (Territory territ : territs)
-			//territ.addMouseListener(listener);
 	}
-	
-	public Territory getTerritory(String n) {
-		return territs.get(n);
+
+	/**
+	 * Return the Territory with the given name.
+	 */
+	public Territory getTerritory(String name) {
+		return territs.get(name);
 	}
-	
-	public Continent getContinent(String n) {
-		return conts.get(n);
+
+	/**
+	 * Return the Continent with the given name.
+	 */
+	public Continent getContinent(String name) {
+		return conts.get(name);
 	}
-	
+
+	/**
+	 * Get the smallest Continent containing the given Territory.
+	 */
 	public Continent getContinent(Territory t) {
+		// TODO(jeffsul): Cache this with HashMap.
 		Continent c = null;
 		Collection<Continent> cont = conts.values();
 		Iterator<Continent> itr = cont.iterator();

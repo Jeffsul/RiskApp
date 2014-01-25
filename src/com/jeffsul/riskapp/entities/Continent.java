@@ -4,14 +4,18 @@ import java.util.ArrayList;
 
 import com.jeffsul.riskapp.players.Player;
 
+/**
+ * Continent represents a collection of territories that provide a bonus when all are
+ * owned by the same player.
+ */
 public class Continent {
 	public String name;
 	private int bonus;
 	private Territory[] territs;
 	private Territory[] borders;
 	
-	public Continent(String nm, int bonus, Territory[] territs, Territory[] borders) {
-		name = nm;
+	public Continent(String name, int bonus, Territory[] territs, Territory[] borders) {
+		this.name = name;
 		this.bonus = bonus;
 		this.territs = territs;
 		this.borders = borders;

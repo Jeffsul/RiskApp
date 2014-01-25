@@ -11,6 +11,10 @@ import android.widget.Button;
 
 import com.jeffsul.riskapp.players.Player;
 
+/**
+ * Territory represents one of the locations on the map, abstractly and by
+ * managing the associated UI button element.
+ */
 public class Territory {
 	private static final int DEFAULT_UNITS = 3;
 	private static final int REDUCE_FONT_LIMIT = 100;
@@ -35,10 +39,9 @@ public class Territory {
 		btn = new Button(ctx);
 		btn.setText(Integer.toString(units));
 		btn.setTextSize(LARGE_FONT);
-		//btn.setFocusable(false);
-		btn.setTextColor(Color.BLACK);
 	}
-	
+
+	// TODO(jeffsul): Implement custom listener.
 	public void addMouseListener(OnClickListener listener, OnLongClickListener listener2) {
 		btn.setOnClickListener(listener);
 		btn.setOnLongClickListener(listener2);
