@@ -4,17 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import com.jeffsul.riskapp.RiskCalculator;
-import com.jeffsul.riskapp.dialogs.AutoGameDialogFragment;
-import com.jeffsul.riskapp.dialogs.PlaySetDialogFragment;
-import com.jeffsul.riskapp.entities.Card;
-import com.jeffsul.riskapp.entities.Continent;
-import com.jeffsul.riskapp.entities.Map;
-import com.jeffsul.riskapp.entities.Territory;
-import com.jeffsul.riskapp.players.AIPlayer;
-import com.jeffsul.riskapp.players.Player;
-import com.jeffsul.riskapp.players.PlayerPanel;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -25,6 +14,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.jeffsul.riskapp.dialogs.AutoGameDialogFragment;
+import com.jeffsul.riskapp.dialogs.PlaySetDialogFragment;
+import com.jeffsul.riskapp.entities.Card;
+import com.jeffsul.riskapp.entities.Continent;
+import com.jeffsul.riskapp.entities.Map;
+import com.jeffsul.riskapp.entities.Territory;
+import com.jeffsul.riskapp.players.AIPlayer;
+import com.jeffsul.riskapp.players.Player;
+import com.jeffsul.riskapp.players.PlayerPanel;
 
 public class GameActivity extends Activity implements AutoGameDialogFragment.Listener,
 		PlaySetDialogFragment.Listener, View.OnClickListener, View.OnLongClickListener {
@@ -129,7 +128,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			buttonMap.put(territ.getButton(), territ);
 			territ.addMouseListener(this, this);
 			deck.add(new Card(territ, i % 3));
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(25, 25);
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(40, 30);
 			params.leftMargin = territ.x - 41;
 			params.topMargin = territ.y - 51;
 			gamePnl.addView(territ.getButton(), params);
