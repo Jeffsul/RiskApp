@@ -106,7 +106,6 @@ public class AIPlayer extends Player {
 	
 	public void deploy() {
 		Map map = game.getMap();
-		RiskCalculator riskCalc = game.riskCalc;
 		
 		conquests = new ArrayList<Territory>();
 		attackers = new ArrayList<Territory>();
@@ -184,8 +183,8 @@ public class AIPlayer extends Player {
 					if (enemyCon.owner == threat) {
 						Continent cont = map.getContinent(enemyCon);
 						if (!conquests.contains(enemyCon) && cont.hasContinent(threat)) {
-							if (riskCalc.getWinningOdds(myTerrit.units + game.deployNum, enemyCon.units) > Math.random() / 7 + 0.5) {
-								while (game.deployNum > 0 && riskCalc.getWinningOdds(myTerrit.units, enemyCon.units) < 0.75) {
+							if (RiskCalculator.getWinningOdds(myTerrit.units + game.deployNum, enemyCon.units) > Math.random() / 7 + 0.5) {
+								while (game.deployNum > 0 && RiskCalculator.getWinningOdds(myTerrit.units, enemyCon.units) < 0.75) {
 									game.deploy(myTerrit, false);
 								}
 								attackers.add(myTerrit);
@@ -239,8 +238,8 @@ public class AIPlayer extends Player {
 						}
 						Continent c = map.getContinent(con);
 						if (c.hasContinent(con.owner) && !conquests.contains(con)) {
-							if (game.riskCalc.getWinningOdds(t.units + game.deployNum, con.units) > Math.random() / 5 + 0.75) {
-								while (game.deployNum > 0 && game.riskCalc.getWinningOdds(t.units, con.units) < 0.8) {
+							if (RiskCalculator.getWinningOdds(t.units + game.deployNum, con.units) > Math.random() / 5 + 0.75) {
+								while (game.deployNum > 0 && RiskCalculator.getWinningOdds(t.units, con.units) < 0.8) {
 									game.deploy(t, false);
 								}
 								attackers.add(t);
@@ -316,7 +315,7 @@ public class AIPlayer extends Player {
 					continue;
 				}
 			}
-			double ods = game.riskCalc.getWinningOdds(att.units, con.units);
+			double ods = RiskCalculator.getWinningOdds(att.units, con.units);
 			if (ods < 0.5 + Math.random() / 8) {
 				continue;
 			}
@@ -383,7 +382,7 @@ public class AIPlayer extends Player {
 					if (map.getContinent(cons[i]) != newCont && !continents.contains(map.getContinent(cons[i])) && !map.getContinent(cons[i]).hasContinent(cons[i].owner)) {
 						continue;
 					}
-					double odds = game.riskCalc.getWinningOdds(att.units, cons[i].units);
+					double odds = RiskCalculator.getWinningOdds(att.units, cons[i].units);
 					if (odds > maxOdds) {
 						maxOdds = odds;
 						next = cons[i];
@@ -397,7 +396,7 @@ public class AIPlayer extends Player {
 								enemies += conquests.get(i).units;
 							}
 						}
-						while (game.riskCalc.getWinningOdds(att.units, enemies) > 0.85 && game.riskCalc.getWinningOdds(con.units, next.units) < 0.8) {
+						while (RiskCalculator.getWinningOdds(att.units, enemies) > 0.85 && RiskCalculator.getWinningOdds(con.units, next.units) < 0.8) {
 							game.advance(con, false);
 						}
 						if (con.units > 1) {
@@ -478,7 +477,7 @@ public class AIPlayer extends Player {
 					if (cons[j].owner == this) {
 						continue;
 					}
-					double odds = game.riskCalc.getWinningOdds(myTerrits[i].units, cons[j].units);
+					double odds = RiskCalculator.getWinningOdds(myTerrits[i].units, cons[j].units);
 					if (odds > maxScore) {
 						maxScore = odds;
 						from = myTerrits[i];

@@ -65,8 +65,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	private Map map;
 	public CardSetting cardType;
 	
-	public RiskCalculator riskCalc = new RiskCalculator(false);
-	
 	private boolean gameOver;
 	
 	public boolean autoGame;
@@ -732,7 +730,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				error(getResources().getString(R.string.error_does_not_connect, fromTerrit.name, t.name));
 				return;
 			}
-			message(riskCalc.getResults(fromTerrit.units, t.units));
+			message(RiskCalculator.getResults(fromTerrit.units, t.units));
 		}
 	}
 	
