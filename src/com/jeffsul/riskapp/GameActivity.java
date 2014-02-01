@@ -65,12 +65,9 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	private Map map;
 	public CardSetting cardType;
 	
-	private boolean gameOver;
-	
 	public boolean autoGame;
 	public boolean simulate;
 	private int simulateCount;
-	private boolean paused;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +105,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		playerPnlHash = new HashMap<Player, PlayerPanel>();
 		
 		TextView cashInLabel = (TextView) findViewById(R.id.cash_in_label);
-		if (cardType == CardSetting.NONE) {
+		if (cardType != CardSetting.REGULAR) {
 			((ViewGroup) cashInLabel.getParent()).removeView(cashInLabel);
 		} else {
 			cashInLabel.setText(getResources().getString(R.id.cash_in_label, CASH_IN[0]));
@@ -363,19 +360,15 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		log(activePlayer.name + " placed " + toPlace + " troops on " + territ.name + ".");
 		
 		if (deployNum == 0) {
-			enterAttackState();
+			state = State.ATTACK;
+			((Button) findViewById(R.id.action_button)).setEnabled(true);
+			message(getResources().getString(R.string.message_attack));
 		} else {
 			message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, deployNum));
 		}
 		playerPnlHash.get(activePlayer).update();
 	}
-	
-	private void enterAttackState() {
-		state = State.ATTACK;
-		((Button) findViewById(R.id.action_button)).setEnabled(true);
-		message(getResources().getString(R.string.message_attack));
-	}
-	
+
 	public void attack(Territory from, Territory to, boolean all) {
 		fromTerrit = from;
 		attack(to, all);
@@ -428,7 +421,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				activePlayer.setStats(Player.TERRITORIES, map.getTerritoryCount(activePlayer));
 				activePlayer.setStats(Player.TROOPS, map.getTroopCount(activePlayer));
 				// TODO(jeffsul): Game win message.
-				gameOver = true;
 				return;
 			}
 			activePlayer.giveCards(eliminatedPlayer.takeAllCards());
@@ -713,6 +705,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 	}
 	
+	// TODO(jeffsul): Provide way to see attack odds.
 	private void calculate(Territory t) {
 		if (fromTerrit == null && t.owner != activePlayer)
 			return;
@@ -756,8 +749,9 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	private void updateRound() {
 		updateStats();
 		for (Player player : players) {
-			if (player.isLiving())
+			if (player.isLiving()) {
 				player.updateRound();
+			}
 		}
 	}
 	
@@ -769,15 +763,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				total += cont.getBonus();
 		}
 		return Math.max((int) (map.getTerritoryCount(player) / 3), 3) + total;
-	}
-	
-	public void resumeGame() {
-		paused = false;
-		((Button) findViewById(R.id.action_button)).setText("");
-	}
-	
-	public void pauseGame() {
-		paused = true;
 	}
 	
 	public void simulate(int n) {
@@ -821,12 +806,12 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 
 	@Override
 	public void onGameContinue() {
-		
+		// TODO(jeffsul): Implement
 	}
 
 	@Override
 	public void onGamePause() {
-		pauseGame();
+		// TODO(jeffsul): Implement
 	}
 
 	@Override
