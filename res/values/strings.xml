@@ -45,5 +45,8 @@
     <string name="pp_territories">%1$d territories</string>
     <string name="pp_cards">%1$d cards</string>
     <string name="pp_bonus">%1$d bonus</string>
+    
+    <string name="message_deploy_armies">%1$s, you have %2$d troops left to deploy.</string>
+    <string name="message_dice">%1$s vs. %2$s</string>
 
 </resources>
