@@ -23,15 +23,17 @@
     <string name="action_end_attacks">End Attacks</string>
     <string name="action_end_fortifications">End Fortifications</string>
     <string name="action_advance_troops">Advance Troops</string>
-    <string name="initial_cash_in">Next Cash-In: %1 troops</string>
+    <string name="initial_cash_in">Next Cash-In: %1$d troops</string>
     
     <string name="error_alert_title">Oops!</string>
+    <string name="error_attack_1_troop">You cannot attack with 1 troop!</string>
+    <string name="error_does_not_connect">%1$s does not connect with %2$s!</string>
     
     <string name="play_set_dialog_title">Play a Set</string>
-    <string name="play_set_message">You have a set to play for %1 troops.</string>
+    <string name="play_set_message">You have a set to play for %1$d troops.</string>
     <string name="play_set_negative">No Set</string>
     
-    <string name="ai_player_message_title">%1 says…</string>
+    <string name="ai_player_message_title">%1$s says…</string>
     <string-array name="ai_simulate_options">
         <item>Continue</item>
         <item>Pause</item>
@@ -46,7 +48,20 @@
     <string name="pp_cards">%1$d cards</string>
     <string name="pp_bonus">%1$d bonus</string>
     
+    <string name="log_beginning_round">Beginning Round %1$d.</string>
+    <string name="log_continent_bonus">%1$s gets %2$d troops for holding %3$s.</string>
+    <string name="log_game_initialized">Game Initialized.</string>
+    <string name="log_gets_card">%1$s gets a card.</string>
+    <string name="log_territory_bonus">%1$s gets %2$d troops for %1$d territories.</string>
+    <string name="log_fortified">%1$s fortified %2$s with %3$d troops from %4$s.</string>
+    <string name="log_player_eliminated">%1$s eliminated %2$s from the game.</string>
+    <string name="log_territory_conquered">%1$s conquered %2$s from %3$s.</string>
+    
+    <string name="message_attack">Attack - click from your territory to an adjacent one to attack.</string>
+    <string name="message_attack_from">Attack from %1$s to an adjacent territory.</string>
     <string name="message_deploy_armies">%1$s, you have %2$d troops left to deploy.</string>
     <string name="message_dice">%1$s vs. %2$s</string>
+    <string name="message_fortify">Fortify - click from one territory to another to fortify troops.</string>
+    <string name="message_fortify_from">Click to fortify from %1$s.</string>
 
 </resources>

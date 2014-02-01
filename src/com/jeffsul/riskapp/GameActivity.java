@@ -114,7 +114,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		
 		activePlayer = players[index];
 		playerPnlHash.get(activePlayer).setActive(true);
-		message(activePlayer.name + ", you have " + placeNum + " armies left to place.");
+		message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, placeNum));
 		
 		RelativeLayout gamePnl = (RelativeLayout) findViewById(R.id.game_panel);
 		
@@ -137,7 +137,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		for (Player player : players) {
 			playerPnlHash.get(player).update();
 		}
-		log("Game Initialized.");
+		log(getResources().getString(R.string.log_game_initialized));
 		
 		//saveGame();
 		beginPlacement();
@@ -206,7 +206,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		if (index == firstPlayerIndex) {
 			updateRound();
 			round++;
-			log("Beginning Round " + round);
+			log(getResources().getString(R.string.log_beginning_round, round));
 		}
 			
 		playerPnlHash.get(activePlayer).setActive(false);
@@ -243,7 +243,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 		
 		int troopCount = Math.max(map.getTerritoryCount(activePlayer) / 3, 3);
-		log(activePlayer.name + " gets " + troopCount + " troops for " + map.getTerritoryCount(activePlayer) + " territories.");
+		log(getResources().getString(R.string.log_territory_bonus, activePlayer.name, troopCount, map.getTerritoryCount(activePlayer)));
 		
 		troopCount += extra;
 		
@@ -259,11 +259,11 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		for (Continent cont : conts) {
 			if (cont.hasContinent(activePlayer)) {
 				troopCount += cont.getBonus();
-				log(activePlayer.name + " gets " + cont.getBonus() + " troops for holding " + cont.name + ".");
+				log(getResources().getString(R.string.log_continent_bonus, activePlayer.name, cont.getBonus(), cont.name));
 			}
 		}
 		activePlayer.updateStats(Player.BONUS, troopCount - extra);
-		message(activePlayer.name + ", you have " + troopCount + " troops to place.");
+		message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, troopCount));
 		deployNum = troopCount;
 	}
 	
@@ -317,8 +317,9 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		index++;
 		activePlayer = players[index % numPlayers];
 		playerPnlHash.get(activePlayer).setActive(true);
-		if (index % numPlayers == firstPlayerIndex)
+		if (index % numPlayers == firstPlayerIndex) {
 			placeNum--;
+		}
 		if (placeNum > 0) {
 			message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, placeNum));
 		} else {
@@ -328,8 +329,9 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	}
 	
 	public void place(Territory territ) {
-		if (territ.owner != activePlayer)
+		if (territ.owner != activePlayer) {
 			return;
+		}
 		territ.addUnits(1);
 		playerPnlHash.get(activePlayer).update();
 		log(activePlayer.name + " placed 1 troop on " + territ.name + ".");
@@ -346,17 +348,18 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		activePlayer.updateStats(Player.TROOPS_DEPLOYED, toPlace);
 		log(activePlayer.name + " placed " + toPlace + " troops on " + territ.name + ".");
 		
-		if (deployNum == 0)
+		if (deployNum == 0) {
 			enterAttackState();
-		else
-			message(activePlayer.name + ", you have " + deployNum + " troops to place.");
+		} else {
+			message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, deployNum));
+		}
 		playerPnlHash.get(activePlayer).update();
 	}
 	
 	private void enterAttackState() {
 		state = State.ATTACK;
 		((Button) findViewById(R.id.action_button)).setEnabled(true);
-		message("Attack - click from your territory to an adjacent one to attack.");
+		message(getResources().getString(R.string.message_attack));
 	}
 	
 	public void attack(Territory from, Territory to, boolean all) {
@@ -383,10 +386,10 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			toTerrit.unhilite();
 		toTerrit = null;
 		
-		message("Attack - click from your territory to an adjacent one to attack.");
+		message(getResources().getString(R.string.message_attack));
 		
 		if (eliminatedPlayer != null) {
-			log(activePlayer.name + " eliminated " + eliminatedPlayer.name + " from the game.");
+			log(getResources().getString(R.string.log_player_eliminated, activePlayer.name, eliminatedPlayer.name));
 			if (eliminatedPlayer.number - 1 == firstPlayerIndex) {
 				int i = firstPlayerIndex;
 				while (true) {
@@ -410,7 +413,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			if (count <= 1) {
 				activePlayer.setStats(Player.TERRITORIES, map.getTerritoryCount(activePlayer));
 				activePlayer.setStats(Player.TROOPS, map.getTroopCount(activePlayer));
-				//JOptionPane.showMessageDialog(null, activePlayer.name + " won the game!", "Congratulations!", JOptionPane.INFORMATION_MESSAGE);
+				// TODO(jeffsul): Game win message.
 				gameOver = true;
 				return;
 			}
@@ -436,7 +439,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			fromTerrit.unhilite();
 		}
 		fromTerrit = null;
-		message("Fortify - click from one territory to another to fortify troops.");
+		message(getResources().getString(R.string.message_fortify));
 	}
 	
 	public void endFortifications() {
@@ -456,30 +459,43 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			}
 			
 			if (territ.units == 1) {
-				error("You cannot attack with 1 troop!");
+				error(getResources().getString(R.string.error_attack_1_troop));
 				return;
 			}
 			
 			fromTerrit = territ;
 			fromTerrit.hilite();
-			message("Attack from " + fromTerrit.name + " to an adjacent territory.");
+			message(getResources().getString(R.string.message_attack_from, fromTerrit.name));
 		} else if (fromTerrit != null) {
 			if (fromTerrit.units == 1) {
-				error("You cannot attack with 1 troop!");
+				error(getResources().getString(R.string.error_attack_1_troop));
 				return;
 			}
 			
 			if (!fromTerrit.isConnecting(territ)) {
-				error(fromTerrit.name + " does not connect with " + territ.name + "!");
+				error(getResources().getString(R.string.error_does_not_connect, fromTerrit.name, territ.name));
 				return;
 			}
 			
 			toTerrit = territ;
 			Player otherPlayer = toTerrit.owner;
 			
-			int[] outcome = getAttackOutcome(fromTerrit.units, toTerrit.units);
+			int[] attackDice;
+			int[] defendDice;
+			if (fromTerrit.units >= 4) {
+				attackDice = rollDice(3);
+			} else if (fromTerrit.units == 3) {
+				attackDice = rollDice(2);
+			} else {
+				attackDice = rollDice(1);
+			}
+			defendDice = rollDice(toTerrit.units >= 2 ? 2 : 1);
+			int[] outcome = getAttackOutcome(attackDice, defendDice);
+			message(getResources().getString(R.string.message_dice, printDice(attackDice), printDice(defendDice)));
+			updatePlayerDiceStats(attackDice.length, defendDice.length, outcome);
 			fromTerrit.addUnits(outcome[0]);
 			toTerrit.addUnits(outcome[1]);
+			
 			activePlayer.updateStats(Player.TROOPS_KILLED, -outcome[1]);
 			activePlayer.updateStats(Player.TROOPS_LOST, -outcome[0]);
 			otherPlayer.updateStats(Player.TROOPS_KILLED, -outcome[0]);
@@ -508,7 +524,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 					fromTerrit.unhilite();
 				}
 				
-				log(activePlayer.name + " conquered " + territ.name + " from " + territ.owner.name + ".");
+				log(getResources().getString(R.string.log_territory_conquered, activePlayer.name, territ.name, territ.owner.name));
 				activePlayer.updateStats(Player.TERRITORIES_CONQUERED, 1);
 				otherPlayer.updateStats(Player.TERRITORIES_LOST, 1);
 			} else if (all && fromTerrit.units > 3) {
@@ -541,65 +557,58 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		return ret;
 	}
 
-	private int[] getAttackOutcome(int attackers, int defenders) {		
-		int[] attackDice;
-		int[] defendDice;
-		if (attackers >= 4) {
-			attackDice = rollDice(3);
-		} else if (attackers == 3) {
-			attackDice = rollDice(2);
-		} else {
-			attackDice = rollDice(1);
-		}
-		defendDice = rollDice(defenders >= 2 ? 2 : 1);
-
+	/**
+	 * 
+	 * @param attackDice Attacker's dice rolls, sorted in ascending order.
+	 * @param defendDice Defender's dice rolls, sorted in ascending order.
+	 * @return
+	 */
+	private static int[] getAttackOutcome(int[] attackDice, int[] defendDice) {
 		Arrays.sort(attackDice);
 		Arrays.sort(defendDice);
-
-		message(getResources().getString(R.string.message_dice, printDice(attackDice), printDice(defendDice)));
-		
 		int[] outcome = {0, 0};
 		for (int i = attackDice.length - 1, j = defendDice.length - 1; i >= 0 && j >= 0; i--, j--) {
-			outcome[attackDice[i] > defendDice[j] ? 1 : 0]++;
+			outcome[attackDice[i] > defendDice[j] ? 1 : 0]--;
 		}
-		
-		if (attackDice.length == 3 && defendDice.length == 2) {
+		return outcome;
+	}
+
+	private void updatePlayerDiceStats(int attackDice, int defendDice, int[] outcome) {
+		if (attackDice == 3 && defendDice == 2) {
 			if (outcome[0] == 0 && outcome[1] == -2)
 				activePlayer.updateDiceStats(Player.W3V2);
 			else if (outcome[0] == -1 && outcome[1] == -1)
 				activePlayer.updateDiceStats(Player.T3V2);
 			else
 				activePlayer.updateDiceStats(Player.L3V2);
-		} else if (attackDice.length == 2 && defendDice.length == 2) {
+		} else if (attackDice == 2 && defendDice == 2) {
 			if (outcome[0] == 0 && outcome[1] == -2)
 				activePlayer.updateDiceStats(Player.W2V2);
 			else if (outcome[0] == -1 && outcome[1] == -1)
 				activePlayer.updateDiceStats(Player.T2V2);
 			else
 				activePlayer.updateDiceStats(Player.L2V2);
-		} else if (attackDice.length == 3 && defendDice.length == 1) {
+		} else if (attackDice == 3 && defendDice == 1) {
 			if (outcome[0] == 0 && outcome[1] == -1)
 				activePlayer.updateDiceStats(Player.W3V1);
 			else
 				activePlayer.updateDiceStats(Player.L3V1);
-		} else if (attackDice.length == 2 && defendDice.length == 1) {
+		} else if (attackDice == 2 && defendDice == 1) {
 			if (outcome[0] == 0 && outcome[1] == -1)
 				activePlayer.updateDiceStats(Player.W2V1);
 			else
 				activePlayer.updateDiceStats(Player.L2V1);
-		} else if (attackDice.length == 1 && defendDice.length == 1) {
+		} else if (attackDice == 1 && defendDice == 1) {
 			if (outcome[0] == 0 && outcome[1] == -1)
 				activePlayer.updateDiceStats(Player.W1V1);
 			else
 				activePlayer.updateDiceStats(Player.L1V1);
-		} else if (attackDice.length == 1 && defendDice.length == 2) {
+		} else if (attackDice == 1 && defendDice == 2) {
 			if (outcome[0] == 0 && outcome[1] == -1)
 				activePlayer.updateDiceStats(Player.W1V2);
 			else
 				activePlayer.updateDiceStats(Player.L1V2);
 		}
-		
-		return outcome;
 	}
 	
 	private int getTroopTransferCount(boolean all, int max) {
@@ -636,14 +645,15 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 		
 		if (fromTerrit == null) {
-			if (territ.units == 1)
+			if (territ.units == 1) {
 				return;
+			}
 			fromTerrit = territ;
 			fromTerrit.hilite();
-			message("Click to fortify from " + fromTerrit.name + ".");
+			message(getResources().getString(R.string.message_fortify_from, fromTerrit.name));
 		} else if (toTerrit == null) {
 			if (!fromTerrit.isFortifyConnecting(territ)) {
-				error(fromTerrit.name + " does not connect with " + territ.name + "!");
+				error(getResources().getString(R.string.error_does_not_connect, fromTerrit.name, territ.name));
 				return;
 			}
 			
@@ -653,33 +663,35 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			toTerrit.addUnits(toPlace);
 			fromTerrit.addUnits(-toPlace);
 			
-			log(activePlayer.name + " fortified " + toTerrit.name + " with " + toPlace + " troops from " + fromTerrit.name + ".");
+			log(getResources().getString(R.string.log_fortified, activePlayer.name, toTerrit.name, toPlace, fromTerrit.name));
 			
 			if (all) {
 				endFortifications();
 			}
 		} else if (territ == toTerrit) {
-			if (fromTerrit.units == 1)
+			if (fromTerrit.units == 1) {
 				return;
+			}
 			
 			int toPlace = getTroopTransferCount(all, fromTerrit.units - 1);
 			toTerrit.addUnits(toPlace);
 			fromTerrit.addUnits(-toPlace);
 			
-			log(activePlayer.name + " fortified " + territ.name + " with " + toPlace + " troops from " + fromTerrit.name + ".");
+			log(getResources().getString(R.string.log_fortified, activePlayer.name, territ.name, toPlace, fromTerrit.name));
 			
 			if (all) {
 				endFortifications();
 			}
 		} else if (territ == fromTerrit) {
-			if (toTerrit.units == 1)
+			if (toTerrit.units == 1) {
 				return;
+			}
 			
 			int toPlace = getTroopTransferCount(all, toTerrit.units - 1);
 			toTerrit.addUnits(-toPlace);
 			fromTerrit.addUnits(toPlace);
 			
-			log(activePlayer.name + " fortified " + territ.name + " with " + toPlace + " troops from " + toTerrit.name + ".");
+			log(getResources().getString(R.string.log_fortified, activePlayer.name, territ.name, toPlace, toTerrit.name));
 			
 			if (all) {
 				endFortifications();
@@ -692,7 +704,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			return;
 		if (fromTerrit == null || t.owner == activePlayer) {
 			if (t.units == 1) {
-				error("Cannot attack with only 1 troop!");
+				error(getResources().getString(R.string.error_attack_1_troop));
 				return;
 			}
 			if (fromTerrit != null)
@@ -701,7 +713,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			fromTerrit.hilite();
 		} else {
 			if (!fromTerrit.isConnecting(t)) {
-				error(fromTerrit.name + " does not connect with " + t.name + "!");
+				error(getResources().getString(R.string.error_does_not_connect, fromTerrit.name, t.name));
 				return;
 			}
 			message(riskCalc.getResults(fromTerrit.units, t.units));
@@ -711,7 +723,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	public void endTurn() {
 		if (cardType != CardSetting.NONE && conqueredTerritory) {
 			activePlayer.giveCard(deck.get((int) (Math.random() * deck.size())));
-			log(activePlayer.name + " gets a card.");
+			log(getResources().getString(R.string.log_gets_card, activePlayer.name));
 		}
 		playerPnlHash.get(activePlayer).update();
 		incrementTurn();
