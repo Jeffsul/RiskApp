@@ -28,8 +28,10 @@ import com.jeffsul.riskapp.players.PlayerPanel;
 public class GameActivity extends Activity implements AutoGameDialogFragment.Listener,
 		PlaySetDialogFragment.Listener, View.OnClickListener, View.OnLongClickListener {
 	public static final String NUM_PLAYERS_EXTRA = "com.jeffsul.risk.NUM_PLAYERS";
+	public static final String CARD_SETTING_EXTRA = "com.jeffsul.risk.CARD_SETTING";
+	public static final String MAP_EXTRA = "com.jeffsul.risk.MAP";
 	
-	public static final int[] PLAYER_COLOURS = {Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA, Color.YELLOW,
+	private static final int[] PLAYER_COLOURS = {Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA, Color.YELLOW,
 		Color.CYAN};
 	private static final int[] CASH_IN = {4, 6, 8, 10, 12, 15};
 	private static final int CASH_IN_INCREMENT = 5;
@@ -40,7 +42,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	
 	private int numPlayers;
 	public Player[] players;
-	private HashMap<Player, PlayerPanel> playerPnlHash = new HashMap<Player, PlayerPanel>();
+	private HashMap<Player, PlayerPanel> playerPnlHash;
 	private Player activePlayer;
 	private Player eliminatedPlayer;
 	public boolean conqueredTerritory;
@@ -61,17 +63,16 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	private Territory toTerrit;
 	
 	private Map map;
-	private boolean useEpicMap;
-	public CardSetting cardType = CardSetting.REGULAR;
+	public CardSetting cardType;
 	
 	public RiskCalculator riskCalc = new RiskCalculator(false);
 	
-	public boolean gameOver;
+	private boolean gameOver;
 	
 	public boolean autoGame;
 	public boolean simulate;
-	public int simulateCount;
-	public boolean paused;
+	private int simulateCount;
+	private boolean paused;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +81,25 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		
 		Intent intent = getIntent();
 		numPlayers = intent.getIntExtra(NUM_PLAYERS_EXTRA, 2);
+		switch (intent.getIntExtra(MAP_EXTRA, 0)) {
+		case 0:
+			map = new Map(this, false);
+			break;
+		case 1:
+			map = new Map(this, true);
+			break;
+		}
+		switch (intent.getIntExtra(CARD_SETTING_EXTRA, 0)) {
+		case 0:
+			cardType = CardSetting.REGULAR;
+			break;
+		case 1:
+			cardType = CardSetting.NONE;
+			break;
+		case 2:
+			cardType = CardSetting.MODIFIED;
+			break;
+		}
 		initializeGame();
 	}
 
@@ -87,11 +107,14 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		players = new Player[numPlayers];
 		firstPlayerIndex = (int) (numPlayers * Math.random());
 		index = firstPlayerIndex;
-		playerPnlHash.clear();
+		playerPnlHash = new HashMap<Player, PlayerPanel>();
 		
-		initGUI();
-		
-		map = new Map(this, useEpicMap);
+		TextView cashInLabel = (TextView) findViewById(R.id.cash_in_label);
+		if (cardType == CardSetting.NONE) {
+			((ViewGroup) cashInLabel.getParent()).removeView(cashInLabel);
+		} else {
+			cashInLabel.setText(getResources().getString(R.id.cash_in_label, CASH_IN[0]));
+		}
 		
 		int half = (int) Math.ceil(numPlayers / 2.0);
 		for (int i = 0; i < numPlayers; i++) {
@@ -165,15 +188,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 	}
 	
-	private void initGUI() {
-		TextView cashInLabel = (TextView) findViewById(R.id.cash_in_label);
-		if (cardType == CardSetting.NONE) {
-			((ViewGroup) cashInLabel.getParent()).removeView(cashInLabel);
-		} else {
-			cashInLabel.setText(getResources().getString(R.id.cash_in_label, CASH_IN[0]));
-		}
-	}
-	
 	private void handleTurn() {
 		if (activePlayer.isAI()) {
 			handleAITurn();
@@ -215,16 +229,18 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		//if (saveFile != null)
 		//	saveGame();
 		
-		if (!activePlayer.isAI())
+		if (!activePlayer.isAI()) {
 			handleTurn();
+		}
 	}
 	
 	public void beginTurn() {
 		if (!autoGame) {
 			autoGame = true;
 			for (int i = 0; i < numPlayers; i++) {
-				if (!players[i].isAI() && players[i].isLiving())
+				if (!players[i].isAI() && players[i].isLiving()) {
 					autoGame = false;
+				}
 			}
 		}
 		

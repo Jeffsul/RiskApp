@@ -44,6 +44,9 @@ public class MainActivity extends Activity {
 		Intent intent = new Intent(this, GameActivity.class);
 		intent.putExtra(GameActivity.NUM_PLAYERS_EXTRA,
 				((Spinner) findViewById(R.id.number_players_spinner)).getSelectedItemPosition() + MIN_NUM_PLAYERS);
+		intent.putExtra(GameActivity.MAP_EXTRA, ((Spinner) findViewById(R.id.spinner_cards_setting)).getSelectedItemPosition());
+		intent.putExtra(GameActivity.CARD_SETTING_EXTRA, 
+				((Spinner) findViewById(R.id.spinner_cards_setting)).getSelectedItemPosition());
 		startActivity(intent);
 	}
 
