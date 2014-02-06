@@ -3,12 +3,15 @@ package com.jeffsul.riskapp.entities;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Button;
 
+import com.jeffsul.riskapp.R;
 import com.jeffsul.riskapp.players.Player;
 
 /**
@@ -20,7 +23,7 @@ public class Territory {
 	private static final int REDUCE_FONT_LIMIT = 100;
 	
 	private static final float SMALL_FONT = 10;
-	private static final float LARGE_FONT = 11;
+	private static final float LARGE_FONT = 14;
 		
 	public String name;
 	public int x;
@@ -31,13 +34,16 @@ public class Territory {
 	private Territory[] connectors;
 	private final Button btn;
 	
+	@SuppressLint("NewApi")
 	public Territory(Context ctx, String name, int x, int y) {
 		this.name = name;
 		this.x = x;
 		this.y = y;
 		
 		btn = new Button(ctx);
+		btn.setBackground(ctx.getResources().getDrawable(R.drawable.territory_button));
 		btn.setText(Integer.toString(units));
+		btn.setTypeface(null, Typeface.BOLD);
 		btn.setTextSize(LARGE_FONT);
 	}
 
@@ -55,11 +61,11 @@ public class Territory {
 		if (num != 0) {
 			units += num;
 			btn.setText(Integer.toString(units));
-			if (units >= REDUCE_FONT_LIMIT) {
+			/*if (units >= REDUCE_FONT_LIMIT) {
 				btn.setTextSize(SMALL_FONT);
 			} else {
 				btn.setTextSize(LARGE_FONT);
-			}
+			}*/
 		}
 	}
 	
@@ -67,17 +73,17 @@ public class Territory {
 		if (num != units) {
 			units = num;
 			btn.setText(Integer.toString(units));
-			if (units >= REDUCE_FONT_LIMIT) {
+			/*if (units >= REDUCE_FONT_LIMIT) {
 				btn.setTextSize(SMALL_FONT);
 			} else {
 				btn.setTextSize(LARGE_FONT);
-			}
+			}*/
 		}
 	}
 	
 	public void setOwner(Player newOwner) {
 		owner = newOwner;
-		btn.setBackgroundColor(newOwner.color);
+		btn.setTextColor(newOwner.color);
 	}
 	
 	public Button getButton() {

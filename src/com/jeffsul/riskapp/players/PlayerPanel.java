@@ -5,8 +5,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.jeffsul.riskapp.GameActivity;
-import com.jeffsul.riskapp.R;
 import com.jeffsul.riskapp.GameActivity.CardSetting;
+import com.jeffsul.riskapp.R;
 import com.jeffsul.riskapp.players.Player;
 
 public class PlayerPanel extends LinearLayout {

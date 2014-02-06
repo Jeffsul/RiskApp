@@ -1,69 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:orientation="horizontal" >
     
     <LinearLayout
         android:id="@+id/side_panel_left"
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" >
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="2" >
 
     </LinearLayout>
     
-    <RelativeLayout
-	     android:id="@+id/game_panel"
-	     android:layout_width="wrap_content"
-	     android:layout_height="wrap_content"
-	     android:layout_toRightOf="@id/side_panel_left" >
-        	
-       <ImageView
-       			android:layout_width="wrap_content"
-          	android:layout_height="wrap_content"
-          	android:src="@drawable/classic_map" />
-    </RelativeLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="0" >
+        <RelativeLayout
+			      android:id="@+id/game_panel"
+			      android:layout_width="900dp"
+			      android:layout_height="wrap_content"
+			      android:gravity="left" >
+		        	
+		        <ImageView
+		       			 android:layout_width="wrap_content"
+		          	 android:layout_height="600dp"
+		          	 android:src="@drawable/classic_map" />
+    		</RelativeLayout>
+    		
+        <LinearLayout 
+		        android:id="@+id/options_panel"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="horizontal"
+		        android:gravity="center" >
+		        
+		        <Button
+		            android:id="@+id/action_button"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:text="@string/action_button_default"
+		            android:onClick="sendMessage" />
+		        
+		        <TextView 
+		            android:id="@+id/cash_in_label"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:text="@string/initial_cash_in" />
+		    </LinearLayout>
+		    
+        <TextView 
+		        android:id="@+id/action_label"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:text="@string/action_button_default"
+		        android:gravity="center_horizontal" />
+    </LinearLayout>
+    
     
     <LinearLayout
         android:id="@+id/side_panel_right"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_toRightOf="@id/game_panel"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:layout_weight="2" >
 
     </LinearLayout>
 
-    <LinearLayout 
-        android:id="@+id/options_panel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@id/game_panel"
-        android:layout_toRightOf="@id/side_panel_left"
-        android:layout_toLeftOf="@id/side_panel_right"
-        android:gravity="center" >
-        
-        <Button
-            android:id="@+id/action_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/action_button_default"
-            android:onClick="sendMessage" />
-        
-        <TextView 
-            android:id="@+id/cash_in_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/initial_cash_in" />
-    </LinearLayout>
-    
-    <TextView 
-        android:id="@+id/action_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/action_button_default"
-        android:layout_below="@id/options_panel"
-        android:layout_toRightOf="@id/side_panel_left"
-        android:layout_toLeftOf="@id/side_panel_right"
-        android:gravity="center_horizontal" />
-
-</RelativeLayout>
+</LinearLayout>

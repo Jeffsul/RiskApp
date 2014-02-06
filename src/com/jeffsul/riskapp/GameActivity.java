@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.jeffsul.riskapp.dialogs.AutoGameDialogFragment;
 import com.jeffsul.riskapp.dialogs.PlaySetDialogFragment;
@@ -56,7 +57,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	public int deployNum;
 	private int firstPlayerIndex;
 	
-	public ArrayList<Card> deck = new ArrayList<Card>();
+	public ArrayList<Card> deck;
 	private int cashes;
 	
 	private Territory fromTerrit;
@@ -112,16 +113,17 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 		
 		int half = (int) Math.ceil(numPlayers / 2.0);
+		int panelHeight = getResources().getDisplayMetrics().heightPixels / half;
+		ViewGroup sidePanelLeft = (ViewGroup) findViewById(R.id.side_panel_left);
+		ViewGroup sidePanelRight = (ViewGroup) findViewById(R.id.side_panel_right);
 		for (int i = 0; i < numPlayers; i++) {
 			//if (!playerType[i].isSelected()) {
 				players[i] = new Player(i + 1, "Player " + (i + 1), PLAYER_COLOURS[i]);
 			//} else {
 			//	players[i] = new AIPlayer(i + 1, PLAYER_COLOURS[i], this);
 			//}
-			
-			ViewGroup sidePanelLeft = (ViewGroup) findViewById(R.id.side_panel_left);
-			ViewGroup sidePanelRight = (ViewGroup) findViewById(R.id.side_panel_right);
 			PlayerPanel playerPnl = new PlayerPanel(this, players[i], cardType);
+			playerPnl.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, panelHeight));
 			playerPnlHash.put(players[i], playerPnl);
 			if (i < half) {
 				sidePanelLeft.addView(playerPnl);
@@ -135,20 +137,19 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, placeNum));
 		
 		RelativeLayout gamePnl = (RelativeLayout) findViewById(R.id.game_panel);
-		
 		ArrayList<Territory> territories = map.getTerritories();
 		buttonMap = new HashMap<View, Territory>();
 		int terrCount = territories.size();
-		deck.removeAll(deck);
+		deck = new ArrayList<Card>();
 		for (int i = 0; i < terrCount; i++) {
 			Territory territ = territories.remove((int) (Math.random() * territories.size()));
 			territ.setOwner(players[i % numPlayers]);
 			buttonMap.put(territ.getButton(), territ);
 			territ.addMouseListener(this, this);
 			deck.add(new Card(territ, i % 3));
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(40, 30);
-			params.leftMargin = territ.x - 41;
-			params.topMargin = territ.y - 51;
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(35, 35);
+			params.leftMargin = territ.x - 10;
+			params.topMargin = territ.y - 10;
 			gamePnl.addView(territ.getButton(), params);
 		}
 		
