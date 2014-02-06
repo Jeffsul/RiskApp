@@ -34,14 +34,13 @@ public class Territory {
 	private Territory[] connectors;
 	private final Button btn;
 	
-	@SuppressLint("NewApi")
 	public Territory(Context ctx, String name, int x, int y) {
 		this.name = name;
 		this.x = x;
 		this.y = y;
 		
 		btn = new Button(ctx);
-		btn.setBackground(ctx.getResources().getDrawable(R.drawable.territory_button));
+		btn.setBackgroundResource(R.drawable.territory_button);
 		btn.setText(Integer.toString(units));
 		btn.setTypeface(null, Typeface.BOLD);
 		btn.setTextSize(LARGE_FONT);
