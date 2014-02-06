@@ -50,9 +50,10 @@
     
     <string name="log_beginning_round">Beginning Round %1$d.</string>
     <string name="log_continent_bonus">%1$s gets %2$d troops for holding %3$s.</string>
+    <string name="log_deployed_troops">%1$s placed %2$d troops on %3$s.</string>
     <string name="log_game_initialized">Game Initialized.</string>
     <string name="log_gets_card">%1$s gets a card.</string>
-    <string name="log_territory_bonus">%1$s gets %2$d troops for %1$d territories.</string>
+    <string name="log_territory_bonus">%1$s gets %2$d troops for %3$d territories.</string>
     <string name="log_fortified">%1$s fortified %2$s with %3$d troops from %4$s.</string>
     <string name="log_player_eliminated">%1$s eliminated %2$s from the game.</string>
     <string name="log_territory_conquered">%1$s conquered %2$s from %3$s.</string>

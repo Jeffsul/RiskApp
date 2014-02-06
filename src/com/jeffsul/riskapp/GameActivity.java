@@ -313,11 +313,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	
 	private void beginPlacement() {
 		state = State.PLACE;
-		if (activePlayer.isAI())
-			handleAIPlacement();
-	}
-	
-	private void handleAIPlacement() {
+		// TODO(jeffsul): Replace with player state listener.
 		while (activePlayer.isAI()) {
 			((AIPlayer) activePlayer).place();
 		}
@@ -345,19 +341,19 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 		territ.addUnits(1);
 		playerPnlHash.get(activePlayer).update();
-		log(activePlayer.name + " placed 1 troop on " + territ.name + ".");
+		log(getResources().getString(R.string.log_deployed_troops, activePlayer.name, 1, territ.name));
 		incrementPlacementTurn();
 	}
 	
 	public void deploy(Territory territ, boolean all) {
-		if (territ.owner != activePlayer)
+		if (territ.owner != activePlayer) {
 			return;
-		String placing = "1";//troopAmountCombo.getSelectedItem().toString();
-		int toPlace = (all || placing.equals("All")) ? deployNum : Math.min(Integer.parseInt(placing), deployNum);
+		}
+		int toPlace = all ? deployNum : 1;
 		territ.addUnits(toPlace);
 		deployNum -= toPlace;
 		activePlayer.updateStats(Player.TROOPS_DEPLOYED, toPlace);
-		log(activePlayer.name + " placed " + toPlace + " troops on " + territ.name + ".");
+		log(getResources().getString(R.string.log_deployed_troops, activePlayer.name, toPlace, territ.name));
 		
 		if (deployNum == 0) {
 			state = State.ATTACK;
@@ -727,7 +723,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 	}
 	
-	public void endTurn() {
+	private void endTurn() {
 		if (cardType != CardSetting.NONE && conqueredTerritory) {
 			activePlayer.giveCard(deck.get((int) (Math.random() * deck.size())));
 			log(getResources().getString(R.string.log_gets_card, activePlayer.name));
