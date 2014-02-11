@@ -109,7 +109,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		if (cardType != CardSetting.REGULAR) {
 			((ViewGroup) cashInLabel.getParent()).removeView(cashInLabel);
 		} else {
-			cashInLabel.setText(getResources().getString(R.id.cash_in_label, CASH_IN[0]));
+			cashInLabel.setText(getResources().getString(R.string.next_cash_in, CASH_IN[0]));
 		}
 		
 		int half = (int) Math.ceil(numPlayers / 2.0);
@@ -756,8 +756,9 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		Continent[] continents = map.getContinents();
 		int total = 0;
 		for (Continent cont : continents) {
-			if (cont.hasContinent(player))
+			if (cont.hasContinent(player)) {
 				total += cont.getBonus();
+			}
 		}
 		return Math.max((int) (map.getTerritoryCount(player) / 3), 3) + total;
 	}
@@ -786,19 +787,16 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		builder.create().show();
 	}
 	
-	public void hiliteTerritories(Territory[] territories) {
-		//for (Territory territ : territories) {
-			//Button btn = territ.getButton();
-			//if (btn.getBorder() == null)
-			//	btn.setBorder(Territory.BORDER_HIGHLIGHT);
-		//}
+	public static void hiliteTerritories(Territory[] territories) {
+		for (Territory territ : territories) {
+			territ.hilite();
+		}
 	}
 	
-	public void unhiliteTerritories(Territory[] territories) {
-		//for (Territory territ : territories) {
-		//	if (territ != fromTerrit && territ != toTerrit)
-		//		territ.getButton().setBorder(null);
-		//}
+	public static void unhiliteTerritories(Territory[] territories) {
+		for (Territory territ : territories) {
+			territ.unhilite();
+		}
 	}
 
 	@Override

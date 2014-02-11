@@ -23,7 +23,7 @@
     <string name="action_end_attacks">End Attacks</string>
     <string name="action_end_fortifications">End Fortifications</string>
     <string name="action_advance_troops">Advance Troops</string>
-    <string name="initial_cash_in">Next Cash-In: %1$d troops</string>
+    <string name="next_cash_in">Next Cash-In: %1$d troops</string>
     
     <string name="error_alert_title">Oops!</string>
     <string name="error_attack_1_troop">You cannot attack with 1 troop!</string>
