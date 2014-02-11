@@ -3,9 +3,7 @@ package com.jeffsul.riskapp.entities;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -19,10 +17,7 @@ import com.jeffsul.riskapp.players.Player;
  * managing the associated UI button element.
  */
 public class Territory {
-	private static final int DEFAULT_UNITS = 3;
-	private static final int REDUCE_FONT_LIMIT = 100;
-	
-	private static final float SMALL_FONT = 10;
+	private static final int DEFAULT_UNITS = 3;	
 	private static final float LARGE_FONT = 14;
 		
 	public String name;
@@ -57,26 +52,13 @@ public class Territory {
 	}
 	
 	public void addUnits(int num) {
-		if (num != 0) {
-			units += num;
-			btn.setText(Integer.toString(units));
-			/*if (units >= REDUCE_FONT_LIMIT) {
-				btn.setTextSize(SMALL_FONT);
-			} else {
-				btn.setTextSize(LARGE_FONT);
-			}*/
-		}
+		setUnits(units + num);
 	}
 	
 	public void setUnits(int num) {
 		if (num != units) {
 			units = num;
 			btn.setText(Integer.toString(units));
-			/*if (units >= REDUCE_FONT_LIMIT) {
-				btn.setTextSize(SMALL_FONT);
-			} else {
-				btn.setTextSize(LARGE_FONT);
-			}*/
 		}
 	}
 	
@@ -90,13 +72,11 @@ public class Territory {
 	}
 	
 	public void hilite() {
-		// TODO(jeffsul): Add border
-		btn.setTextColor(Color.WHITE);
+		btn.setBackgroundResource(R.drawable.territory_button_highlighted);
 	}
 	
 	public void unhilite() {
-		// TODO(jeffsul): Remove border
-		btn.setTextColor(Color.BLACK);
+		btn.setBackgroundResource(R.drawable.territory_button);
 	}
 	
 	public Territory[] getConnectors() {
@@ -142,8 +122,9 @@ public class Territory {
 	}
 	
 	public boolean isFortifyConnecting(Territory target) {
-		if (isConnecting(target))
+		if (isConnecting(target)) {
 			return true;
+		}
 		
 		HashMap<Territory, Boolean> checked  = new HashMap<Territory, Boolean>();
 		ArrayList<Territory> territs = new ArrayList<Territory>();
