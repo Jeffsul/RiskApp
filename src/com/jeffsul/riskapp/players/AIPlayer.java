@@ -30,7 +30,6 @@ public class AIPlayer extends Player {
 	public AIPlayer(int num, int color, GameActivity rg) {
 		super(num, "Achilles", color);
 		game = rg;
-		//img = new ImageIcon(getClass().getResource("ai/" + name + ".jpg"));
 	}
 
 	@Override
@@ -466,7 +465,7 @@ public class AIPlayer extends Player {
 				}
 			}
 		}
-		if (!game.conqueredTerritory && game.cardType != GameActivity.CardSetting.NONE) {
+		if (!hasConqueredTerritory() && game.cardType != GameActivity.CardSetting.NONE) {
 			double maxScore = 0.0;
 			Territory from = null;
 			Territory to = null;

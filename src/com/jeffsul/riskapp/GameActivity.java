@@ -46,7 +46,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	private HashMap<Player, PlayerPanel> playerPnlHash;
 	private Player activePlayer;
 	private Player eliminatedPlayer;
-	public boolean conqueredTerritory;
 	
 	private HashMap<View, Territory> buttonMap;
 	
@@ -239,7 +238,8 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				}
 			}
 		}
-		
+
+		activePlayer.resetForTurn();
 		playerPnlHash.get(activePlayer).setActive(true);
 		
 		state = State.DEPLOY;
@@ -258,8 +258,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		log(getResources().getString(R.string.log_territory_bonus, activePlayer.name, troopCount, map.getTerritoryCount(activePlayer)));
 		
 		troopCount += extra;
-		
-		conqueredTerritory = false;
+
 		fromTerrit = null;
 		toTerrit = null;
 		
@@ -377,17 +376,18 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	}
 	
 	public void endAdvance() {
-		if (state != State.ADVANCE)
+		if (state != State.ADVANCE) {
 			return;
+		}
 		
 		state = State.ATTACK;
 		((Button) findViewById(R.id.action_button)).setText(R.string.action_end_attacks);
 		if (toTerrit.units != 1) {
 			fromTerrit.unhilite();
 			fromTerrit = toTerrit;
-		}
-		else
+		} else {
 			toTerrit.unhilite();
+		}
 		toTerrit = null;
 		
 		message(getResources().getString(R.string.message_attack));
@@ -407,12 +407,14 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			
 			int count = 0;
 			for (int i = 0; i < numPlayers; i++) {
-				if (players[i].isLiving())
+				if (players[i].isLiving()) {
 					count++;
+				}
 			}
 			
-			if (eliminatedPlayer.isAI())
+			if (eliminatedPlayer.isAI()) {
 				((AIPlayer) eliminatedPlayer).message("Argh!");
+			}
 			
 			if (count <= 1) {
 				activePlayer.setStats(Player.TERRITORIES, map.getTerritoryCount(activePlayer));
@@ -513,7 +515,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				toTerrit.setOwner(activePlayer);
 				toTerrit.addUnits(1);
 				fromTerrit.addUnits(-1);
-				conqueredTerritory = true;
+				activePlayer.setHasConqueredTerritory();
 				
 				if (fromTerrit.units > 1) {
 					state = State.ADVANCE;
@@ -725,7 +727,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	}
 	
 	private void endTurn() {
-		if (cardType != CardSetting.NONE && conqueredTerritory) {
+		if (cardType != CardSetting.NONE && activePlayer.hasConqueredTerritory()) {
 			activePlayer.giveCard(deck.get((int) (Math.random() * deck.size())));
 			log(getResources().getString(R.string.log_gets_card, activePlayer.name));
 		}

@@ -38,6 +38,7 @@ public class Player {
 	public int bonus = 3;
 	
 	private boolean alive = true;
+	private boolean hasConqueredTerritory;
 	
 	private ArrayList<Card> cards = new ArrayList<Card>();
 	
@@ -67,6 +68,18 @@ public class Player {
 	
 	public boolean isAI() {
 		return false;
+	}
+
+	public void resetForTurn() {
+		hasConqueredTerritory = false;
+	}
+
+	public void setHasConqueredTerritory() {
+		hasConqueredTerritory = true;
+	}
+
+	public boolean hasConqueredTerritory() {
+		return hasConqueredTerritory;
 	}
 	
 	public int getCardCount() {
