@@ -2,6 +2,7 @@ package com.jeffsul.riskapp.players;
 
 import java.util.ArrayList;
 
+import com.jeffsul.riskapp.GameActivity;
 import com.jeffsul.riskapp.RiskCalculator;
 import com.jeffsul.riskapp.entities.Card;
 
@@ -37,6 +38,9 @@ public class Player {
 	public int cashes;
 	public int bonus = 3;
 	
+	protected int deployCount;
+	protected GameActivity.State state;
+	
 	private boolean alive = true;
 	private boolean hasConqueredTerritory;
 	
@@ -69,9 +73,26 @@ public class Player {
 	public boolean isAI() {
 		return false;
 	}
+	
+	public int getDeployCount() {
+		return deployCount;
+	}
+	
+	public void setDeployCount(int deployCount) {
+		this.deployCount = deployCount;
+	}
+
+	public void changeDeployCount(int delta) {
+		deployCount += delta;
+	}
+	
+	public void setState(GameActivity.State newState) {
+		state = newState;
+	}
 
 	public void resetForTurn() {
 		hasConqueredTerritory = false;
+		deployCount = 0;
 	}
 
 	public void setHasConqueredTerritory() {
@@ -169,6 +190,10 @@ public class Player {
 	
 	public ArrayList<Card> getCards() {
 		return cards;
+	}
+	
+	public void notifyPlacement() {
+		
 	}
 	
 	public void updateRound() {

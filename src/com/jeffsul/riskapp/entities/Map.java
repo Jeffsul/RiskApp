@@ -13,6 +13,8 @@ public class Map {
 	public HashMap<String,Territory> territs = new HashMap<String,Territory>();
 	public HashMap<String,Continent> conts = new HashMap<String,Continent>();
 	
+	private Player[] players;
+	
 	public Map(Context ctx, boolean useEpicMap) {
 		if (!useEpicMap) {
 			Territory ala = new Territory(ctx, "Alaska", 48, 122);
@@ -546,6 +548,14 @@ public class Map {
 				ttt.add(tt.get(i));
 		Territory[] terrs = new Territory[ttt.size()];
 		return ttt.toArray(terrs);
+	}
+	
+	public void setPlayers(Player[] players) {
+		this.players = players;
+	}
+
+	public Player[] getPlayers() {
+		return players;
 	}
 }
 

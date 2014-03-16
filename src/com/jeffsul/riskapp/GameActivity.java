@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
@@ -25,9 +24,11 @@ import com.jeffsul.riskapp.entities.Territory;
 import com.jeffsul.riskapp.players.AIPlayer;
 import com.jeffsul.riskapp.players.Player;
 import com.jeffsul.riskapp.players.PlayerPanel;
+import com.jeffsul.riskapp.ui.ActionButton;
+import com.jeffsul.riskapp.ui.ActionLabel;
 
 public class GameActivity extends Activity implements AutoGameDialogFragment.Listener,
-		PlaySetDialogFragment.Listener, View.OnClickListener, View.OnLongClickListener {
+		PlaySetDialogFragment.Listener, View.OnClickListener, View.OnLongClickListener, GameListener {
 	public static final String NUM_PLAYERS_EXTRA = "com.jeffsul.risk.NUM_PLAYERS";
 	public static final String CARD_SETTING_EXTRA = "com.jeffsul.risk.CARD_SETTING";
 	public static final String MAP_EXTRA = "com.jeffsul.risk.MAP";
@@ -47,13 +48,10 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	private Player activePlayer;
 	private Player eliminatedPlayer;
 	
-	private HashMap<View, Territory> buttonMap;
-	
 	private int index;
 	private int round;
-	public State state = State.PLACE;
-	private int placeNum = INITIAL_PLACE_COUNT;
-	public int deployNum;
+	private State state;
+	private ArrayList<StateListener> stateListeners;
 	private int firstPlayerIndex;
 	
 	public ArrayList<Card> deck;
@@ -63,11 +61,14 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	private Territory toTerrit;
 	
 	private Map map;
+	private HashMap<View, Territory> buttonMap;
 	public CardSetting cardType;
+	
+	private GameLog gameLog;
 	
 	public boolean autoGame;
 	public boolean simulate;
-	private int simulateCount;
+	//private int simulateCount;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +119,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		for (int i = 0; i < numPlayers; i++) {
 			//if (!playerType[i].isSelected()) {
 				players[i] = new Player(i + 1, "Player " + (i + 1), PLAYER_COLOURS[i]);
+				players[i].setDeployCount(INITIAL_PLACE_COUNT);
 			//} else {
 			//	players[i] = new AIPlayer(i + 1, PLAYER_COLOURS[i], this);
 			//}
@@ -130,10 +132,10 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				sidePanelRight.addView(playerPnl);
 			}
 		}
+		map.setPlayers(players);
 		
 		activePlayer = players[index];
 		playerPnlHash.get(activePlayer).setActive(true);
-		message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, placeNum));
 		
 		RelativeLayout gamePnl = (RelativeLayout) findViewById(R.id.game_panel);
 		ArrayList<Territory> territories = map.getTerritories();
@@ -144,7 +146,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			Territory territ = territories.remove((int) (Math.random() * territories.size()));
 			territ.setOwner(players[i % numPlayers]);
 			buttonMap.put(territ.getButton(), territ);
-			territ.addMouseListener(this, this);
 			deck.add(new Card(territ, i % 3));
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(35, 35);
 			params.leftMargin = territ.x - 10;
@@ -152,13 +153,30 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			gamePnl.addView(territ.getButton(), params);
 		}
 		
+		
 		for (Player player : players) {
 			playerPnlHash.get(player).update();
 		}
-		log(getResources().getString(R.string.log_game_initialized));
+		
+		gameLog = new GameLog();
+		gameLog.log(getResources().getString(R.string.log_game_initialized));
 		
 		//saveGame();
-		beginPlacement();
+
+		stateListeners = new ArrayList<StateListener>();
+		stateListeners.add((ActionButton) findViewById(R.id.action_button));
+		stateListeners.add((ActionLabel) findViewById(R.id.action_label));
+		changeState(State.PLACE);
+
+		activePlayer.notifyPlacement();
+	}
+
+	private void changeState(State newState) {
+		state = newState;
+		activePlayer.setState(newState);
+		for (StateListener listener : stateListeners) {
+			listener.onStateChange(activePlayer, newState);
+		}
 	}
 
 	/**
@@ -214,8 +232,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			
 		if (index == firstPlayerIndex) {
 			updateRound();
-			round++;
-			log(getResources().getString(R.string.log_beginning_round, round));
 		}
 			
 		playerPnlHash.get(activePlayer).setActive(false);
@@ -242,40 +258,33 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		activePlayer.resetForTurn();
 		playerPnlHash.get(activePlayer).setActive(true);
 		
-		state = State.DEPLOY;
-		deployNum = 0;
 		continueTurnAfterSet(0);
 	}
 	
 	private void continueTurnAfterSet(int extra) {
-		deployNum += extra;
 		if (activePlayer.hasSet()) {
 			playSet();
 			return;
 		}
 		
 		int troopCount = Math.max(map.getTerritoryCount(activePlayer) / 3, 3);
-		log(getResources().getString(R.string.log_territory_bonus, activePlayer.name, troopCount, map.getTerritoryCount(activePlayer)));
+		gameLog.log(getResources().getString(R.string.log_territory_bonus, activePlayer.name, troopCount, map.getTerritoryCount(activePlayer)));
 		
 		troopCount += extra;
 
 		fromTerrit = null;
 		toTerrit = null;
 		
-		Button actionBtn = (Button) findViewById(R.id.action_button);
-		actionBtn.setText(R.string.action_end_attacks);
-		actionBtn.setEnabled(false);
-		
 		Continent[] conts = map.getContinents();
 		for (Continent cont : conts) {
 			if (cont.hasContinent(activePlayer)) {
 				troopCount += cont.getBonus();
-				log(getResources().getString(R.string.log_continent_bonus, activePlayer.name, cont.getBonus(), cont.name));
+				gameLog.log(getResources().getString(R.string.log_continent_bonus, activePlayer.name, cont.getBonus(), cont.name));
 			}
 		}
 		activePlayer.updateStats(Player.BONUS, troopCount - extra);
-		message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, troopCount));
-		deployNum = troopCount;
+		activePlayer.setDeployCount(troopCount);
+		changeState(State.DEPLOY);
 	}
 	
 	public void playSet() {
@@ -310,78 +319,64 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			onPlaySet(0, extra);
 		}
 	}
-	
-	private void beginPlacement() {
-		state = State.PLACE;
-		// TODO(jeffsul): Replace with player state listener.
-		while (activePlayer.isAI()) {
-			((AIPlayer) activePlayer).place();
-		}
-	}
-	
-	private void incrementPlacementTurn() {
-		playerPnlHash.get(activePlayer).setActive(false);
-		index++;
-		activePlayer = players[index % numPlayers];
-		playerPnlHash.get(activePlayer).setActive(true);
-		if (index % numPlayers == firstPlayerIndex) {
-			placeNum--;
-		}
-		if (placeNum > 0) {
-			message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, placeNum));
-		} else {
-			updateRound();
-			handleTurn();
-		}
-	}
-	
+
+	@Override
 	public void place(Territory territ) {
 		if (territ.owner != activePlayer) {
 			return;
 		}
 		territ.addUnits(1);
+		activePlayer.changeDeployCount(-1);
 		playerPnlHash.get(activePlayer).update();
-		log(getResources().getString(R.string.log_deployed_troops, activePlayer.name, 1, territ.name));
-		incrementPlacementTurn();
+		gameLog.log(getResources().getString(R.string.log_deployed_troops, activePlayer.name, 1, territ.name));
+		
+		playerPnlHash.get(activePlayer).setActive(false);
+		index++;
+		activePlayer = players[index % numPlayers];
+		playerPnlHash.get(activePlayer).setActive(true);
+		if (activePlayer.getDeployCount() > 0) {
+			message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, activePlayer.getDeployCount()));
+			activePlayer.notifyPlacement();
+		} else {
+			updateRound();
+			handleTurn();
+		}
 	}
-	
+
+	@Override
 	public void deploy(Territory territ, boolean all) {
 		if (territ.owner != activePlayer) {
 			return;
 		}
-		int toPlace = all ? deployNum : 1;
+		int toPlace = all ? activePlayer.getDeployCount() : 1;
 		territ.addUnits(toPlace);
-		deployNum -= toPlace;
+		activePlayer.changeDeployCount(-toPlace);
 		activePlayer.updateStats(Player.TROOPS_DEPLOYED, toPlace);
-		log(getResources().getString(R.string.log_deployed_troops, activePlayer.name, toPlace, territ.name));
+		gameLog.log(getResources().getString(R.string.log_deployed_troops, activePlayer.name, toPlace, territ.name));
 		
-		if (deployNum == 0) {
-			state = State.ATTACK;
-			((Button) findViewById(R.id.action_button)).setEnabled(true);
-			message(getResources().getString(R.string.message_attack));
+		if (activePlayer.getDeployCount() == 0) {
+			changeState(State.ATTACK);
 		} else {
-			message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, deployNum));
+			message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, activePlayer.getDeployCount()));
 		}
 		playerPnlHash.get(activePlayer).update();
 	}
 
-	public void attack(Territory from, Territory to, boolean all) {
+	@Override
+	public boolean attack(Territory from, Territory to, boolean all) {
 		fromTerrit = from;
-		attack(to, all);
+		return attack(to, all);
 	}
-	
+
+	@Override
 	public void fortify(Territory from, Territory to, boolean all) {
 		fromTerrit = from;
 		fortify(to, all);
 	}
-	
+
+	@Override
 	public void endAdvance() {
-		if (state != State.ADVANCE) {
-			return;
-		}
-		
-		state = State.ATTACK;
-		((Button) findViewById(R.id.action_button)).setText(R.string.action_end_attacks);
+		changeState(State.ATTACK);
 		if (toTerrit.units != 1) {
 			fromTerrit.unhilite();
 			fromTerrit = toTerrit;
@@ -390,10 +385,8 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 		toTerrit = null;
 		
-		message(getResources().getString(R.string.message_attack));
-		
 		if (eliminatedPlayer != null) {
-			log(getResources().getString(R.string.log_player_eliminated, activePlayer.name, eliminatedPlayer.name));
+			gameLog.log(getResources().getString(R.string.log_player_eliminated, activePlayer.name, eliminatedPlayer.name));
 			if (eliminatedPlayer.number - 1 == firstPlayerIndex) {
 				int i = firstPlayerIndex;
 				while (true) {
@@ -412,8 +405,8 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				}
 			}
 			
-			if (eliminatedPlayer.isAI()) {
-				((AIPlayer) eliminatedPlayer).message("Argh!");
+			if (eliminatedPlayer.isAI() && !simulate) {
+				((AIPlayer) eliminatedPlayer).message("Argh!", this, autoGame);
 			}
 			
 			if (count <= 1) {
@@ -432,21 +425,21 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			}
 		}
 	}
-	
+
+	@Override
 	public void endAttacks() {
 		if (state != State.ATTACK) {
 			return;
 		}
 		
-		state = State.FORTIFY;
-		((Button) findViewById(R.id.action_button)).setText(R.string.action_end_fortifications);
+		changeState(State.FORTIFY);
 		if (fromTerrit != null) {
 			fromTerrit.unhilite();
 		}
 		fromTerrit = null;
-		message(getResources().getString(R.string.message_fortify));
 	}
-	
+
+	@Override
 	public void endFortifications() {
 		if (fromTerrit != null) {
 			fromTerrit.unhilite();
@@ -457,7 +450,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		endTurn();
 	}
 	
-	public void attack(Territory territ, boolean all) {
+	public boolean attack(Territory territ, boolean all) {
 		if (territ.owner == activePlayer) {
 			if (fromTerrit != null) {
 				fromTerrit.unhilite();
@@ -465,7 +458,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			
 			if (territ.units == 1) {
 				error(getResources().getString(R.string.error_attack_1_troop));
-				return;
+				return false;
 			}
 			
 			fromTerrit = territ;
@@ -474,12 +467,12 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		} else if (fromTerrit != null) {
 			if (fromTerrit.units == 1) {
 				error(getResources().getString(R.string.error_attack_1_troop));
-				return;
+				return false;
 			}
 			
 			if (!fromTerrit.isConnecting(territ)) {
 				error(getResources().getString(R.string.error_does_not_connect, fromTerrit.name, territ.name));
-				return;
+				return false;
 			}
 			
 			toTerrit = territ;
@@ -518,20 +511,21 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				activePlayer.setHasConqueredTerritory();
 				
 				if (fromTerrit.units > 1) {
-					state = State.ADVANCE;
-					message(((Button) findViewById(R.id.action_button)).getText() + " - Click to advance your armies.");
-					((Button) findViewById(R.id.action_button)).setText(R.string.action_advance_troops);
+					changeState(State.ADVANCE);
 					fromTerrit.hilite();
 					toTerrit.hilite();
 				} else {
-					state = State.ADVANCE;
 					endAdvance();
 					fromTerrit.unhilite();
 				}
 				
-				log(getResources().getString(R.string.log_territory_conquered, activePlayer.name, territ.name, territ.owner.name));
+				gameLog.log(getResources().getString(R.string.log_territory_conquered, activePlayer.name, territ.name, territ.owner.name));
 				activePlayer.updateStats(Player.TERRITORIES_CONQUERED, 1);
 				otherPlayer.updateStats(Player.TERRITORIES_LOST, 1);
+				
+				playerPnlHash.get(activePlayer).update();
+				playerPnlHash.get(otherPlayer).update();
+				return true;
 			} else if (all && fromTerrit.units > 3) {
 				attack(toTerrit, true);
 			} else {
@@ -541,6 +535,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			playerPnlHash.get(activePlayer).update();
 			playerPnlHash.get(otherPlayer).update();
 		}
+		return false;
 	}
 
 	private static int[] rollDice(int n) {
@@ -615,16 +610,12 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				activePlayer.updateDiceStats(Player.L1V2);
 		}
 	}
-	
-	private int getTroopTransferCount(boolean all, int max) {
-		String amountString = "1";//troopAmountCombo.getSelectedItem().toString();
-		return (all || amountString.equals("All")) ? max : Math.min(max, Integer.parseInt(amountString));
-	}
-	
+
+	@Override
 	public void advance(Territory territ, boolean all) {
 		if (territ == fromTerrit) {
 			if (toTerrit.units > 1) {
-				int toPlace = getTroopTransferCount(all, toTerrit.units - 1);
+				int toPlace = all ? toTerrit.units - 1 : 1;
 				toTerrit.addUnits(-toPlace);
 				fromTerrit.addUnits(toPlace);
 			}
@@ -633,7 +624,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				endAdvance();
 		} else if (territ == toTerrit) {
 			if (fromTerrit.units > 1) {
-				int toPlace = getTroopTransferCount(all, fromTerrit.units - 1);
+				int toPlace = all ? fromTerrit.units - 1 : 1;
 				fromTerrit.addUnits(-toPlace);
 				toTerrit.addUnits(toPlace);
 			}
@@ -664,11 +655,11 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			
 			toTerrit = territ;
 			toTerrit.hilite();
-			int toPlace = getTroopTransferCount(all, fromTerrit.units - 1);
+			int toPlace = all ? fromTerrit.units - 1 : 1;
 			toTerrit.addUnits(toPlace);
 			fromTerrit.addUnits(-toPlace);
 			
-			log(getResources().getString(R.string.log_fortified, activePlayer.name, toTerrit.name, toPlace, fromTerrit.name));
+			gameLog.log(getResources().getString(R.string.log_fortified, activePlayer.name, toTerrit.name, toPlace, fromTerrit.name));
 			
 			if (all) {
 				endFortifications();
@@ -678,11 +669,11 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				return;
 			}
 			
-			int toPlace = getTroopTransferCount(all, fromTerrit.units - 1);
+			int toPlace = all ? fromTerrit.units - 1 : 1;
 			toTerrit.addUnits(toPlace);
 			fromTerrit.addUnits(-toPlace);
 			
-			log(getResources().getString(R.string.log_fortified, activePlayer.name, territ.name, toPlace, fromTerrit.name));
+			gameLog.log(getResources().getString(R.string.log_fortified, activePlayer.name, territ.name, toPlace, fromTerrit.name));
 			
 			if (all) {
 				endFortifications();
@@ -692,11 +683,11 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				return;
 			}
 			
-			int toPlace = getTroopTransferCount(all, toTerrit.units - 1);
+			int toPlace = all ? toTerrit.units - 1 : 1;
 			toTerrit.addUnits(-toPlace);
 			fromTerrit.addUnits(toPlace);
 			
-			log(getResources().getString(R.string.log_fortified, activePlayer.name, territ.name, toPlace, toTerrit.name));
+			gameLog.log(getResources().getString(R.string.log_fortified, activePlayer.name, territ.name, toPlace, toTerrit.name));
 			
 			if (all) {
 				endFortifications();
@@ -705,7 +696,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	}
 	
 	// TODO(jeffsul): Provide way to see attack odds.
-	private void calculate(Territory t) {
+	/*private void calculate(Territory t) {
 		if (fromTerrit == null && t.owner != activePlayer)
 			return;
 		if (fromTerrit == null || t.owner == activePlayer) {
@@ -724,12 +715,12 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			}
 			message(RiskCalculator.getResults(fromTerrit.units, t.units));
 		}
-	}
+	}*/
 	
 	private void endTurn() {
 		if (cardType != CardSetting.NONE && activePlayer.hasConqueredTerritory()) {
 			activePlayer.giveCard(deck.get((int) (Math.random() * deck.size())));
-			log(getResources().getString(R.string.log_gets_card, activePlayer.name));
+			gameLog.log(getResources().getString(R.string.log_gets_card, activePlayer.name));
 		}
 		playerPnlHash.get(activePlayer).update();
 		incrementTurn();
@@ -746,6 +737,9 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	}
 	
 	private void updateRound() {
+		round++;
+		gameLog.log(getResources().getString(R.string.log_beginning_round, round));
+		
 		updateStats();
 		for (Player player : players) {
 			if (player.isLiving()) {
@@ -767,7 +761,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	
 	public void simulate(int n) {
 		simulate = true;
-		simulateCount = n;
+		//simulateCount = n;
 	}
 	
 	public void message(String msg) {
@@ -776,10 +770,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	
 	public Map getMap() {
 		return map;
-	}
-	
-	public void log(String msg) {
-		//gameLog.append(msg + "\n");
 	}
 	
 	public void error(String msg) {
@@ -818,11 +808,9 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 
 	@Override
 	public void onPlaySet(int which, int extra) {
-		if (state != State.DEPLOY) {
-			state = State.DEPLOY;
-			deployNum = extra;
-			((Button) findViewById(R.id.action_button)).setEnabled(false);
-			message(activePlayer.name + " you have " + deployNum + " troops to place from your cash-in.");
+		if (state == State.ATTACK) {
+			activePlayer.setDeployCount(extra);
+			changeState(State.DEPLOY);
 			return;
 		}
 		
@@ -842,9 +830,10 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			}
 		}
 		
-		if (activePlayer.isAI())
-			((AIPlayer) activePlayer).message(activePlayer.name + " played a set worth " + extra + " troops.");
-		log(activePlayer.name + " played a set worth " + extra + " troops.");
+		if (activePlayer.isAI() && !simulate) {
+			((AIPlayer) activePlayer).message(activePlayer.name + " played a set worth " + extra + " troops.", this, autoGame);
+		}
+		gameLog.log(activePlayer.name + " played a set worth " + extra + " troops.");
 		
 		if (cardType == CardSetting.REGULAR) {
 			int nextCashIn = (cashes >= CASH_IN.length) ? extra + 5 : CASH_IN[cashes];

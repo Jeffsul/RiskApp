@@ -2,9 +2,13 @@ package com.jeffsul.riskapp.players;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 
-import com.jeffsul.riskapp.GameActivity;
+import com.jeffsul.riskapp.GameActivity.CardSetting;
+import com.jeffsul.riskapp.GameActivity.State;
+import com.jeffsul.riskapp.GameListener;
+import com.jeffsul.riskapp.GameSettings;
 import com.jeffsul.riskapp.R;
 import com.jeffsul.riskapp.RiskCalculator;
 import com.jeffsul.riskapp.dialogs.AutoGameDialogFragment;
@@ -25,11 +29,15 @@ public class AIPlayer extends Player {
 	private ArrayList<Territory> borders;
 	private Continent optimalCont;
 	
-	protected GameActivity game;
+	private GameListener listener;
+	private Map map;
+	private GameSettings gameSettings;
 	
-	public AIPlayer(int num, int color, GameActivity rg) {
+	public AIPlayer(int num, int color, GameListener listener, Map map, GameSettings gameSettings) {
 		super(num, "Achilles", color);
-		game = rg;
+		this.listener = listener;
+		this.map = map;
+		this.gameSettings = gameSettings;
 	}
 
 	@Override
@@ -37,35 +45,42 @@ public class AIPlayer extends Player {
 		return true;
 	}
 	
-	public void message(String msg) {
-		if (game.simulate) {
-			return;
-		}
-		if (game.autoGame) {
-			AutoGameDialogFragment dialogFragment = AutoGameDialogFragment.newInstance(game.getResources().getString(R.string.ai_player_message_title, name), msg);
-			dialogFragment.show(game.getFragmentManager(), "autogame");
+	public void message(String msg, Activity activity, boolean autoGame) {
+		if (autoGame) {
+			AutoGameDialogFragment dialogFragment = AutoGameDialogFragment.newInstance(activity.getResources().getString(R.string.ai_player_message_title, name), msg);
+			dialogFragment.show(activity.getFragmentManager(), "autogame");
 		} else {
-			AlertDialog messageDialog = new AlertDialog.Builder(game).create();
-			messageDialog.setTitle(game.getResources().getString(R.string.ai_player_message_title, name));
+			AlertDialog messageDialog = new AlertDialog.Builder(activity).create();
+			messageDialog.setTitle(activity.getResources().getString(R.string.ai_player_message_title, name));
 			messageDialog.setMessage(msg);
 			messageDialog.setIcon(imgResId);
 			messageDialog.show();
 		}
 	}
 	
-	public void attack(Territory from, Territory to, boolean all) {
-		message("Attacking from " + from.name + " to " + to.name + ".");
-		game.attack(from, to, true);
+	public boolean attack(Territory from, Territory to, boolean all) {
+		//message("Attacking from " + from.name + " to " + to.name + ".");
+		if (listener.attack(from, to, true)) {
+			return true;
+		}
 		if (all) {
-			while (game.state != GameActivity.State.ADVANCE && from.units > 1) {
-				game.attack(to, true);
+			while (from.units > 1) {
+				if (listener.attack(from, to, true)) {
+					return true;
+				}
 			}
 		}
+		return false;
+	}
+	
+	@Override
+	public void notifyPlacement() {
+		place();
 	}
 	
 	public void place() {
 		Territory deployTerrit = null;
-		Continent[] conts = game.getMap().getContinents();
+		Continent[] conts = map.getContinents();
 		Continent targetCont = null;
 		int max = Integer.MIN_VALUE;
 		for (Continent cont : conts) {
@@ -89,7 +104,7 @@ public class AIPlayer extends Player {
 				}
 			}
 		} else {
-			Territory[] territs = game.getMap().getTerritories(this);
+			Territory[] territs = map.getTerritories(this);
 			max = Integer.MIN_VALUE;
 			for (Territory t : territs) {
 				int n = t.getFriendlyConnectors(this).length;
@@ -100,12 +115,10 @@ public class AIPlayer extends Player {
 				}
 			}
 		}
-		game.place(deployTerrit);
+		listener.place(deployTerrit);
 	}
 	
-	public void deploy() {
-		Map map = game.getMap();
-		
+	public void deploy() {		
 		conquests = new ArrayList<Territory>();
 		attackers = new ArrayList<Territory>();
 		Continent[] conts = map.getContinents();
@@ -165,7 +178,7 @@ public class AIPlayer extends Player {
 		
 		int maxPlayerScore = Integer.MIN_VALUE;
 		Player threat = null;
-		for (Player player : game.players) {
+		for (Player player : map.getPlayers()) {
 			if (player != this) {
 				int playerScore = map.getTroopCount(player) + player.bonus * 3;
 				if (playerScore > maxPlayerScore) {
@@ -182,9 +195,9 @@ public class AIPlayer extends Player {
 					if (enemyCon.owner == threat) {
 						Continent cont = map.getContinent(enemyCon);
 						if (!conquests.contains(enemyCon) && cont.hasContinent(threat)) {
-							if (RiskCalculator.getWinningOdds(myTerrit.units + game.deployNum, enemyCon.units) > Math.random() / 7 + 0.5) {
-								while (game.deployNum > 0 && RiskCalculator.getWinningOdds(myTerrit.units, enemyCon.units) < 0.75) {
-									game.deploy(myTerrit, false);
+							if (RiskCalculator.getWinningOdds(myTerrit.units + deployCount, enemyCon.units) > Math.random() / 7 + 0.5) {
+								while (deployCount > 0 && RiskCalculator.getWinningOdds(myTerrit.units, enemyCon.units) < 0.75) {
+									listener.deploy(myTerrit, false);
 								}
 								attackers.add(myTerrit);
 								conquests.add(enemyCon);
@@ -237,9 +250,9 @@ public class AIPlayer extends Player {
 						}
 						Continent c = map.getContinent(con);
 						if (c.hasContinent(con.owner) && !conquests.contains(con)) {
-							if (RiskCalculator.getWinningOdds(t.units + game.deployNum, con.units) > Math.random() / 5 + 0.75) {
-								while (game.deployNum > 0 && RiskCalculator.getWinningOdds(t.units, con.units) < 0.8) {
-									game.deploy(t, false);
+							if (RiskCalculator.getWinningOdds(t.units + deployCount, con.units) > Math.random() / 5 + 0.75) {
+								while (deployCount > 0 && RiskCalculator.getWinningOdds(t.units, con.units) < 0.8) {
+									listener.deploy(t, false);
 								}
 								attackers.add(t);
 								conquests.add(con);
@@ -248,10 +261,10 @@ public class AIPlayer extends Player {
 					}
 				}
 				
-				for (int j = 0; j < 2 && game.deployNum > 0; j++) {
+				for (int j = 0; j < 2 && deployCount > 0; j++) {
 					for (Territory att : attackers) {
 						if (att.owner == this) {
-							game.deploy(att, false);
+							listener.deploy(att, false);
 						}
 					}
 				}
@@ -259,10 +272,10 @@ public class AIPlayer extends Player {
 				optimalCont = getOptimalContinent(continents);
 				
 				if (optimalCont == null) {
-					while (game.deployNum > 0) {
+					while (deployCount > 0) {
 						for (Territory att : attackers) {
 							if (att.owner == this) {
-								game.deploy(att, false);
+								listener.deploy(att, false);
 							}
 						}
 					}
@@ -291,15 +304,14 @@ public class AIPlayer extends Player {
 				conquests.add(conn);
 				attackers.add(target);
 			}
-			while (units - target.units < 4 && game.deployNum > 0) {
-				game.deploy(attacker, false);
+			while (units - target.units < 4 && deployCount > 0) {
+				listener.deploy(attacker, false);
 				units++;
 			}
 		}
 	}
 	
 	public void attack() {
-		Map map = game.getMap();
 		ArrayList<Territory> noAttack = new ArrayList<Territory>();
 		Territory att, con;
 		while (conquests.size() > 0) {
@@ -338,12 +350,14 @@ public class AIPlayer extends Player {
 				maxEnemy2 = Math.max(maxEnemy, maxEnemy2);
 				if (maxOtherEnemy > 0) {
 					if (att.units >= maxOtherEnemy + 3) {
-						message("Attacking from " + att.name + " to " + con.name);
+						//message("Attacking from " + att.name + " to " + con.name);
 					} else {
 						noAttack.add(att);
 					}
-					while (att.units >= maxOtherEnemy + 3 && game.state != GameActivity.State.ADVANCE) {
-						game.attack(att, con, false);
+					while (att.units >= maxOtherEnemy + 3) {
+						if (attack(att, con, false)) {
+							break;
+						}
 					}
 				} else {
 					attack(att, con, false);
@@ -369,7 +383,7 @@ public class AIPlayer extends Player {
 					maxEnemy = conns[i].units;
 				}
 			}
-			if (game.state == GameActivity.State.ADVANCE) {
+			if (state == State.ADVANCE) {
 				Territory[] cons = con.getConnectors();
 				double maxOdds = 0.0;
 				Territory next = null;
@@ -396,15 +410,15 @@ public class AIPlayer extends Player {
 							}
 						}
 						while (RiskCalculator.getWinningOdds(att.units, enemies) > 0.85 && RiskCalculator.getWinningOdds(con.units, next.units) < 0.8) {
-							game.advance(con, false);
+							listener.advance(con, false);
 						}
 						if (con.units > 1) {
 							attackers.add(con);
 							conquests.add(next);
 						}
-						game.endAdvance();
+						listener.endAdvance();
 					} else {
-						game.endAdvance();
+						listener.endAdvance();
 					}
 				} else {
 					if ((next != null && maxOdds >= Math.random() / 4 + 0.6) || attackers.contains(con)) {
@@ -414,15 +428,15 @@ public class AIPlayer extends Player {
 						}
 						if (borders.contains(att)) {
 							if (maxEnemy == 0) {
-								game.advance(con, true);
+								listener.advance(con, true);
 							} else {
 								while (att.units >= maxEnemy + 4) {
-									game.advance(con, false);
+									listener.advance(con, false);
 								}
-								game.endAdvance();
+								listener.endAdvance();
 							}
 						} else {
-							game.advance(con, true);
+							listener.advance(con, true);
 						}
 					} else {
 						int moveCount = con.getConnectors().length - con.getFriendlyConnectors(this).length;
@@ -430,21 +444,21 @@ public class AIPlayer extends Player {
 						int num = (int)Math.ceil((double)(att.units - 1)*((double)moveCount / (double)(moveCount+stayCount)));
 						if (borders.contains(att)) {
 							if (maxEnemy == 0) {
-								game.advance(con, true);
+								listener.advance(con, true);
 							} else {
 								while (att.units >= maxEnemy + 4) {
-									game.advance(con, false);
+									listener.advance(con, false);
 								}
-								game.endAdvance();
+								listener.endAdvance();
 							}
 						} else if (moveCount > 0 && continents.indexOf(map.getContinent(con)) > -1
 								&& (continents.indexOf(map.getContinent(con)) < continents.indexOf(map.getContinent(att)) || continents.indexOf(map.getContinent(att)) == -1)) {
-							game.advance(con, true);
+							listener.advance(con, true);
 						} else {
 							for (int j = 0; j < num; j++) {
-								game.advance(con, false);
+								listener.advance(con, false);
 							}
-							game.endAdvance();
+							listener.endAdvance();
 						}
 					}
 				}
@@ -465,7 +479,7 @@ public class AIPlayer extends Player {
 				}
 			}
 		}
-		if (!hasConqueredTerritory() && game.cardType != GameActivity.CardSetting.NONE) {
+		if (!hasConqueredTerritory() && gameSettings.cardSetting != CardSetting.NONE) {
 			double maxScore = 0.0;
 			Territory from = null;
 			Territory to = null;
@@ -485,18 +499,17 @@ public class AIPlayer extends Player {
 				}
 			}
 			attack(from, to, false);
-			if (game.state == GameActivity.State.ADVANCE) {
-				game.advance(from, true);
+			if (state == State.ADVANCE) {
+				listener.advance(from, true);
 			}
 		}
-		game.endAttacks();
+		listener.endAttacks();
 	}
 	
 	public void fortify() {
-		if (game.state != GameActivity.State.FORTIFY) {
+		if (state != State.FORTIFY) {
 			return;
 		}
-		Map map = game.getMap();
 		Continent[] conts = map.getContinents();
 		borders = new ArrayList<Territory>();
 		for (int i = 0; i < conts.length; i++) {
@@ -517,7 +530,7 @@ public class AIPlayer extends Player {
 		if (fortify(borders)) {
 			return;
 		}
-		if (game.state == GameActivity.State.FORTIFY) {
+		if (state == State.FORTIFY) {
 			for (Continent c : continents) {
 				if (!c.hasContinent(this)) {
 					ArrayList<Territory> o = fortifyBorders(c, true);
@@ -530,7 +543,7 @@ public class AIPlayer extends Player {
 				return;
 			}
 		}
-		if (game.state == GameActivity.State.FORTIFY) {
+		if (state == State.FORTIFY) {
 			int minVal = Integer.MAX_VALUE;
 			Territory toFortify = null;
 			for (int j = 0; j < borders.size(); j++) {
@@ -563,19 +576,18 @@ public class AIPlayer extends Player {
 				}
 			}
 			if (from != null && toFortify != null) {
-				message("Fortifying from " + from.name + " to " + toFortify.name);
+				//message("Fortifying from " + from.name + " to " + toFortify.name);
 				while (maxDiff > 1 && minVal < 4) {
 					minVal++;
 					maxDiff--;
-					game.fortify(from, toFortify, false);
+					listener.fortify(from, toFortify, false);
 				}
 			}
 		}
-		game.endFortifications();
+		listener.endFortifications();
 	}
 	
 	private boolean fortify(ArrayList<Territory> borders) {
-		Map map = game.getMap();
 		Territory[] terrs = map.getTerritories(this);
 		Territory t = null;
 		int maxTroops = 0;
@@ -617,9 +629,8 @@ public class AIPlayer extends Player {
 				}
 			}
 			if (t != null && t.units > 1) {
-				message("Fortifying from " + t.name + " to " + toFortify.name);
-				game.fortify(t, toFortify, true);
-				message("Exiting fortify(borders) - true");
+				//message("Fortifying from " + t.name + " to " + toFortify.name);
+				listener.fortify(t, toFortify, true);
 				return true;
 			}
 		}
@@ -677,7 +688,7 @@ public class AIPlayer extends Player {
 		}
 		
 		ArrayList<Territory> after = new ArrayList<Territory>();
-		if (game.deployNum > 0) {
+		if (deployCount > 0) {
 			ArrayList<Territory> others;
 			ArrayList<Territory> avoid = new ArrayList<Territory>();
 			for (int i = 0; i < output.size(); i++) {
@@ -712,7 +723,7 @@ public class AIPlayer extends Player {
 					}
 					if (others.size() > 1) {
 						while (max - enemy < 4) {
-							game.deploy(target, false);
+							listener.deploy(target, false);
 							max++;
 						}
 						if (!conquests.contains(t) && target.units - t.units >= enemy) {
@@ -728,7 +739,7 @@ public class AIPlayer extends Player {
 			output.removeAll(avoid);
 		}
 		
-		while (game.deployNum > 0) {
+		while (deployCount > 0) {
 			int max = -4;
 			Territory t = null;
 			for (int i = 0; i < output.size(); i++) {
@@ -746,7 +757,7 @@ public class AIPlayer extends Player {
 				}
 			}
 			if (t != null) {
-				game.deploy(t, false);
+				listener.deploy(t, false);
 			} else {
 				break;
 			}
@@ -763,7 +774,7 @@ public class AIPlayer extends Player {
 			}
 			int max = territ.units;
 			while (max - enemy < 4) {
-				game.deploy(territ, false);
+				listener.deploy(territ, false);
 				max++;
 			}
 			if (!conquests.contains(territ) && territ.units - territ.units >= enemy) {
@@ -791,7 +802,6 @@ public class AIPlayer extends Player {
 	}
 	
 	private Continent getOptimalContinent(ArrayList<Continent> continents) {
-		Map map = game.getMap();
 		Continent[] conts = map.getContinents();
 		Territory[] terrs = map.getTerritories(this);
 		double max = Integer.MIN_VALUE;
