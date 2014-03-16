@@ -3,10 +3,12 @@ package com.jeffsul.riskapp.players;
 import java.util.ArrayList;
 
 import com.jeffsul.riskapp.GameActivity;
+import com.jeffsul.riskapp.GameActivity.State;
 import com.jeffsul.riskapp.RiskCalculator;
+import com.jeffsul.riskapp.StateListener;
 import com.jeffsul.riskapp.entities.Card;
 
-public class Player {
+public class Player implements StateListener {
 	public static final int TROOPS_DEPLOYED = 0;
 	public static final int TROOPS_KILLED = 1;
 	public static final int TROOPS_LOST = 2;
@@ -192,10 +194,6 @@ public class Player {
 		return cards;
 	}
 	
-	public void notifyPlacement() {
-		
-	}
-	
 	public void updateRound() {
 		stats.add(new int[LUCK_FACTOR + 1]);
 		int[] prevStats = stats.get(stats.size() - 2);
@@ -249,5 +247,10 @@ public class Player {
 		int diff1V1 = (int)(diceStats[W1V1] - RiskCalculator.W1V1*total1V1);
 		int diff1V2 = (int)(diceStats[W1V2] - RiskCalculator.W1V2*total1V2);
 		return diff3V2 + diff2V2 + diff3V1 + diff2V1 + diff1V1 + diff1V2;
+	}
+
+	@Override
+	public void onStateChange(Player activePlayer, State newState) {
+		
 	}
 }

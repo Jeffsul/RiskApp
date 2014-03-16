@@ -166,9 +166,10 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		stateListeners = new ArrayList<StateListener>();
 		stateListeners.add((ActionButton) findViewById(R.id.action_button));
 		stateListeners.add((ActionLabel) findViewById(R.id.action_label));
+		for (Player p : players) {
+			stateListeners.add(p);
+		}
 		changeState(State.PLACE);
-
-		activePlayer.notifyPlacement();
 	}
 
 	private void changeState(State newState) {
@@ -200,27 +201,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			}
 		}
 	}
-	
-	private void handleTurn() {
-		if (activePlayer.isAI()) {
-			handleAITurn();
-		} else {
-			beginTurn();
-		}
-	}
-	
-	private void handleAITurn() {
-		while (activePlayer.isAI()) {
-			AIPlayer aiPlayer = (AIPlayer) activePlayer;
-			beginTurn();
-			aiPlayer.deploy();
-			aiPlayer.attack();
-			aiPlayer.fortify();
-			
-			playerPnlHash.get(activePlayer).update();
-		}
-	}
-	
+
 	private void incrementTurn() {
 		index++;
 		for (int i = index;; i++) {
@@ -240,9 +221,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		//if (saveFile != null)
 		//	saveGame();
 		
-		if (!activePlayer.isAI()) {
-			handleTurn();
-		}
+		beginTurn();
 	}
 	
 	public void beginTurn() {
@@ -335,11 +314,10 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		activePlayer = players[index % numPlayers];
 		playerPnlHash.get(activePlayer).setActive(true);
 		if (activePlayer.getDeployCount() > 0) {
-			message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, activePlayer.getDeployCount()));
-			activePlayer.notifyPlacement();
+			changeState(State.PLACE);
 		} else {
 			updateRound();
-			handleTurn();
+			beginTurn();
 		}
 	}
 
