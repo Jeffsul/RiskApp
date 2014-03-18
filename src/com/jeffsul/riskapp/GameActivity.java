@@ -224,7 +224,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		beginTurn();
 	}
 	
-	public void beginTurn() {
+	private void beginTurn() {
 		if (!autoGame) {
 			autoGame = true;
 			for (int i = 0; i < numPlayers; i++) {
@@ -428,7 +428,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		endTurn();
 	}
 	
-	public boolean attack(Territory territ, boolean all) {
+	private boolean attack(Territory territ, boolean all) {
 		if (territ.owner == activePlayer) {
 			if (fromTerrit != null) {
 				fromTerrit.unhilite();
@@ -613,7 +613,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 	}
 	
-	public void fortify(Territory territ, boolean all) {
+	private void fortify(Territory territ, boolean all) {
 		if (territ.owner != activePlayer) {
 			return;
 		}
@@ -750,24 +750,24 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		return map;
 	}
 	
-	public void error(String msg) {
+	private void error(String msg) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
 				.setTitle(R.string.error_alert_title)
 				.setMessage(msg);
 		builder.create().show();
 	}
 	
-	public static void hiliteTerritories(Territory[] territories) {
+	/*private static void hiliteTerritories(Territory[] territories) {
 		for (Territory territ : territories) {
 			territ.hilite();
 		}
 	}
 	
-	public static void unhiliteTerritories(Territory[] territories) {
+	private static void unhiliteTerritories(Territory[] territories) {
 		for (Territory territ : territories) {
 			territ.unhilite();
 		}
-	}
+	}*/
 
 	@Override
 	public void onGameContinue() {
