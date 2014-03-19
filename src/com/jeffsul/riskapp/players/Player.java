@@ -51,13 +51,25 @@ public class Player implements StateListener {
 	private ArrayList<int[]> stats = new ArrayList<int[]>();
 	private int[] diceStats;
 	
+	private ArrayList<Listener> listeners;
+	
+	public interface Listener {
+		public void onCardCountChange(int cardCount);
+	}
+	
 	public Player(int num, String n, int c) {
 		name = n;
 		number = num;
 		color = c;
 		
+		listeners = new ArrayList<Listener>();
+		
 		stats.add(new int[LUCK_FACTOR + 1]);
 		diceStats = new int[L1V2 + 1];
+	}
+	
+	public void addListener(Listener listener) {
+		listeners.add(listener);
 	}
 	
 	public boolean isLiving() {
@@ -168,25 +180,35 @@ public class Player implements StateListener {
 		sets.toArray(result);
 		return result;
 	}
+
+	private void notifyCardCountChange() {
+		for (Listener listener : listeners) {
+			listener.onCardCountChange(cards.size());
+		}
+	}
 	
 	public void playSet(Card[] set) {	
 		cards.remove(set[0]);
 		cards.remove(set[1]);
 		cards.remove(set[2]);
+		notifyCardCountChange();
 	}
 	
 	public void giveCard(Card givenCard) {
 		cards.add(givenCard);
+		notifyCardCountChange();
 	}
 	
 	public void giveCards(ArrayList<Card> givenCards) {
 		cards.addAll(givenCards);
+		notifyCardCountChange();
 	}
 	
 	public ArrayList<Card> takeAllCards() {
 		ArrayList<Card> temp = new ArrayList<Card>();
 		temp.addAll(cards);
 		cards.removeAll(cards);
+		notifyCardCountChange();
 		return temp;
 	}
 	

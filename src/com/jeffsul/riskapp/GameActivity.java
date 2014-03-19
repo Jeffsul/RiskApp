@@ -123,8 +123,10 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			//} else {
 			//	players[i] = new AIPlayer(i + 1, PLAYER_COLOURS[i], this);
 			//}
-			PlayerPanel playerPnl = new PlayerPanel(this, players[i], cardType);
+			PlayerPanel playerPnl = new PlayerPanel(this, players[i]);
 			playerPnl.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, panelHeight));
+			map.addListener(playerPnl);
+			players[i].addListener(playerPnl);
 			playerPnlHash.put(players[i], playerPnl);
 			if (i < half) {
 				sidePanelLeft.addView(playerPnl);
@@ -151,11 +153,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			params.leftMargin = territ.x - 10;
 			params.topMargin = territ.y - 10;
 			gamePnl.addView(territ.getButton(), params);
-		}
-		
-		
-		for (Player player : players) {
-			playerPnlHash.get(player).update();
 		}
 		
 		gameLog = new GameLog();
@@ -306,7 +303,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 		territ.addUnits(1);
 		activePlayer.changeDeployCount(-1);
-		playerPnlHash.get(activePlayer).update();
 		gameLog.log(getResources().getString(R.string.log_deployed_troops, activePlayer.name, 1, territ.name));
 		
 		playerPnlHash.get(activePlayer).setActive(false);
@@ -337,7 +333,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		} else {
 			message(getResources().getString(R.string.message_deploy_armies, activePlayer.name, activePlayer.getDeployCount()));
 		}
-		playerPnlHash.get(activePlayer).update();
 	}
 
 	@Override
@@ -394,8 +389,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				return;
 			}
 			activePlayer.giveCards(eliminatedPlayer.takeAllCards());
-			playerPnlHash.get(activePlayer).update();
-			playerPnlHash.get(eliminatedPlayer).update();
 			eliminatedPlayer = null;
 			
 			if (activePlayer.getCardCount() >= 5) {
@@ -500,18 +493,13 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				gameLog.log(getResources().getString(R.string.log_territory_conquered, activePlayer.name, territ.name, territ.owner.name));
 				activePlayer.updateStats(Player.TERRITORIES_CONQUERED, 1);
 				otherPlayer.updateStats(Player.TERRITORIES_LOST, 1);
-				
-				playerPnlHash.get(activePlayer).update();
-				playerPnlHash.get(otherPlayer).update();
+
 				return true;
 			} else if (all && fromTerrit.units > 3) {
 				attack(toTerrit, true);
 			} else {
 				toTerrit = null;
 			}
-			
-			playerPnlHash.get(activePlayer).update();
-			playerPnlHash.get(otherPlayer).update();
 		}
 		return false;
 	}
@@ -700,7 +688,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			activePlayer.giveCard(deck.get((int) (Math.random() * deck.size())));
 			gameLog.log(getResources().getString(R.string.log_gets_card, activePlayer.name));
 		}
-		playerPnlHash.get(activePlayer).update();
 		incrementTurn();
 	}
 	
@@ -724,17 +711,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				player.updateRound();
 			}
 		}
-	}
-	
-	public int getBonus(Player player) {
-		Continent[] continents = map.getContinents();
-		int total = 0;
-		for (Continent cont : continents) {
-			if (cont.hasContinent(player)) {
-				total += cont.getBonus();
-			}
-		}
-		return Math.max((int) (map.getTerritoryCount(player) / 3), 3) + total;
 	}
 	
 	public void simulate(int n) {
@@ -817,8 +793,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			int nextCashIn = (cashes >= CASH_IN.length) ? extra + 5 : CASH_IN[cashes];
 			((TextView) findViewById(R.id.cash_in_label)).setText(Integer.toString(nextCashIn));
 		}
-		
-		playerPnlHash.get(activePlayer).update();
 		continueTurnAfterSet(extra);
 	}
 

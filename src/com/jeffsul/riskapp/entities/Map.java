@@ -9,23 +9,37 @@ import android.content.Context;
 
 import com.jeffsul.riskapp.players.Player;
 
-public class Map {
+public class Map implements Territory.Listener {
 	public HashMap<String,Territory> territs = new HashMap<String,Territory>();
 	public HashMap<String,Continent> conts = new HashMap<String,Continent>();
 	
 	private Player[] players;
 	
+	private ArrayList<Listener> listeners;
+	
+	public interface Listener {
+		public void onTroopCountChange(Player player, int count);
+		public void onTerritoryCountChange(Player player, int count);
+		public void onBonusChange(Player player, int bonus);
+	}
+	
+	public void addListener(Listener listener) {
+		listeners.add(listener);
+	}
+	
 	public Map(Context ctx, boolean useEpicMap) {
+		listeners = new ArrayList<Listener>();
+		
 		if (!useEpicMap) {
-			Territory ala = new Territory(ctx, "Alaska", 48, 122);
-			Territory nwt = new Territory(ctx, "Northwest Territories", 118, 130);
-			Territory wca = new Territory(ctx, "Western Canada", 118, 177);
-			Territory cca = new Territory(ctx, "Central Canada", 179, 181);
-			Territory eca = new Territory(ctx, "Eastern Canada", 236, 179);
-			Territory gre = new Territory(ctx, "Greenland", 319, 75);
-			Territory wus = new Territory(ctx, "Western United States", 131, 234);
-			Territory eus = new Territory(ctx, "Eastern United States", 194, 248);
-			Territory cam = new Territory(ctx, "Central America", 156, 304);
+			Territory ala = new Territory(this, ctx, "Alaska", 48, 122);
+			Territory nwt = new Territory(this, ctx, "Northwest Territories", 118, 130);
+			Territory wca = new Territory(this, ctx, "Western Canada", 118, 177);
+			Territory cca = new Territory(this, ctx, "Central Canada", 179, 181);
+			Territory eca = new Territory(this, ctx, "Eastern Canada", 236, 179);
+			Territory gre = new Territory(this, ctx, "Greenland", 319, 75);
+			Territory wus = new Territory(this, ctx, "Western United States", 131, 234);
+			Territory eus = new Territory(this, ctx, "Eastern United States", 194, 248);
+			Territory cam = new Territory(this, ctx, "Central America", 156, 304);
 			Territory[] namTerrits = {ala,nwt,wca,cca,eca,gre,wus,eus,cam};
 			Continent nam = new Continent("North America", 5, namTerrits, new Territory[] {gre,ala,cam});
 			for (Territory t : namTerrits) {
@@ -33,10 +47,10 @@ public class Map {
 			}
 			conts.put(nam.name, nam);
 			
-			Territory ven = new Territory(ctx, "Venezuala", 227, 374);
-			Territory per = new Territory(ctx, "Peru", 228, 440);
-			Territory arg = new Territory(ctx, "Argentina", 242, 507);
-			Territory bra = new Territory(ctx, "Brazil", 280, 421);
+			Territory ven = new Territory(this, ctx, "Venezuala", 227, 374);
+			Territory per = new Territory(this, ctx, "Peru", 228, 440);
+			Territory arg = new Territory(this, ctx, "Argentina", 242, 507);
+			Territory bra = new Territory(this, ctx, "Brazil", 280, 421);
 			Territory[] samTerrits = {ven,per,arg,bra};
 			Continent sam = new Continent("South America", 2, samTerrits, new Territory[] {ven,bra});
 			for (Territory t : samTerrits) {
@@ -44,12 +58,12 @@ public class Map {
 			}
 			conts.put(sam.name, sam);
 			
-			Territory naf = new Territory(ctx, "North Africa", 400, 339);
-			Territory con = new Territory(ctx, "Congo", 462, 408);
-			Territory saf = new Territory(ctx, "South Africa", 472, 485);
-			Territory mad = new Territory(ctx, "Madagascar", 544, 469);
-			Territory eaf = new Territory(ctx, "East Africa", 507, 379);
-			Territory egy = new Territory(ctx, "Egypt", 465, 311);
+			Territory naf = new Territory(this, ctx, "North Africa", 400, 339);
+			Territory con = new Territory(this, ctx, "Congo", 462, 408);
+			Territory saf = new Territory(this, ctx, "South Africa", 472, 485);
+			Territory mad = new Territory(this, ctx, "Madagascar", 544, 469);
+			Territory eaf = new Territory(this, ctx, "East Africa", 507, 379);
+			Territory egy = new Territory(this, ctx, "Egypt", 465, 311);
 			Territory[] afrTerrits = {naf,con,saf,mad,eaf,egy};
 			Continent afr = new Continent("Africa", 3, afrTerrits, new Territory[] {naf,egy,eaf});
 			for (Territory t : afrTerrits) {
@@ -57,13 +71,13 @@ public class Map {
 			}
 			conts.put(afr.name, afr);
 			
-			Territory ice = new Territory(ctx, "Iceland", 377, 129);
-			Territory sca = new Territory(ctx, "Scandinavia", 438, 145);
-			Territory gbr = new Territory(ctx, "Great Britain", 392, 194);
-			Territory weu = new Territory(ctx, "Western Europe", 391, 246);
-			Territory neu = new Territory(ctx, "Northern Europe", 440, 201);
-			Territory seu = new Territory(ctx, "Southern Europe", 461, 235);
-			Territory ukr = new Territory(ctx, "Ukraine", 501, 178);
+			Territory ice = new Territory(this, ctx, "Iceland", 377, 129);
+			Territory sca = new Territory(this, ctx, "Scandinavia", 438, 145);
+			Territory gbr = new Territory(this, ctx, "Great Britain", 392, 194);
+			Territory weu = new Territory(this, ctx, "Western Europe", 391, 246);
+			Territory neu = new Territory(this, ctx, "Northern Europe", 440, 201);
+			Territory seu = new Territory(this, ctx, "Southern Europe", 461, 235);
+			Territory ukr = new Territory(this, ctx, "Ukraine", 501, 178);
 			Territory[] eurTerrits = {ice,sca,gbr,weu,neu,seu,ukr};
 			Continent eur = new Continent("Europe", 5, eurTerrits, new Territory[] {ice,ukr,seu,weu});
 			for (Territory t : eurTerrits) {
@@ -71,10 +85,10 @@ public class Map {
 			}
 			conts.put(eur.name, eur);
 			
-			Territory ino = new Territory(ctx, "Indonesia", 688, 400);
-			Territory ngu = new Territory(ctx, "New Guinea", 770, 416);
-			Territory wau = new Territory(ctx, "Western Australia", 691, 514);
-			Territory eau = new Territory(ctx, "Eastern Australia", 759, 530);
+			Territory ino = new Territory(this, ctx, "Indonesia", 688, 400);
+			Territory ngu = new Territory(this, ctx, "New Guinea", 770, 416);
+			Territory wau = new Territory(this, ctx, "Western Australia", 691, 514);
+			Territory eau = new Territory(this, ctx, "Eastern Australia", 759, 530);
 			Territory[] oceTerrits = {ino,ngu,wau,eau};
 			Continent oce = new Continent("Oceania", 2, oceTerrits, new Territory[] {ino});
 			for (Territory t : oceTerrits) {
@@ -82,18 +96,18 @@ public class Map {
 			}
 			conts.put(oce.name, oce);
 			
-			Territory mea = new Territory(ctx, "Middle East", 524, 293);
-			Territory afg = new Territory(ctx, "Afghanistan", 573, 241);
-			Territory ind = new Territory(ctx, "India", 600, 312);
-			Territory sia = new Territory(ctx, "Siam", 660, 327);
-			Territory chi = new Territory(ctx, "China", 656, 270);
-			Territory ura = new Territory(ctx, "Ural", 577, 170);
-			Territory sib = new Territory(ctx, "Siberia", 631, 141);
-			Territory mon = new Territory(ctx, "Mongolia", 666, 218);
-			Territory jap = new Territory(ctx, "Japan", 755, 258);
-			Territory irk = new Territory(ctx, "Irkutsk", 690, 169);
-			Territory yak = new Territory(ctx, "Yakutsk", 735, 124);
-			Territory kam = new Territory(ctx, "Kamchatka", 809, 123);
+			Territory mea = new Territory(this, ctx, "Middle East", 524, 293);
+			Territory afg = new Territory(this, ctx, "Afghanistan", 573, 241);
+			Territory ind = new Territory(this, ctx, "India", 600, 312);
+			Territory sia = new Territory(this, ctx, "Siam", 660, 327);
+			Territory chi = new Territory(this, ctx, "China", 656, 270);
+			Territory ura = new Territory(this, ctx, "Ural", 577, 170);
+			Territory sib = new Territory(this, ctx, "Siberia", 631, 141);
+			Territory mon = new Territory(this, ctx, "Mongolia", 666, 218);
+			Territory jap = new Territory(this, ctx, "Japan", 755, 258);
+			Territory irk = new Territory(this, ctx, "Irkutsk", 690, 169);
+			Territory yak = new Territory(this, ctx, "Yakutsk", 735, 124);
+			Territory kam = new Territory(this, ctx, "Kamchatka", 809, 123);
 			Territory[] asiTerrits = {mea,afg,ind,sia,chi,ura,sib,mon,jap,irk,yak,kam};
 			Continent asi = new Continent("Asia", 7, asiTerrits, new Territory[] {mea,afg,sia,kam,sib});
 			for (Territory t : asiTerrits) {
@@ -150,131 +164,131 @@ public class Map {
 			wau.connect(new Territory[] {ino,eau,ngu});
 			eau.connect(new Territory[] {wau,ngu});
 		} else {
-			Territory ala = new Territory(ctx, "Alaska", 67, 93);
-			Territory yuk = new Territory(ctx, "Yukon", 133, 103);
-			Territory nun = new Territory(ctx, "Nunavut", 207, 85);
-			Territory bc = new Territory(ctx, "B.C.", 91, 132);
-			Territory pra = new Territory(ctx, "Prairies", 147, 132);
-			Territory upcan = new Territory(ctx, "Upper Canada", 197, 164);
-			Territory locan = new Territory(ctx, "Lower Canada", 248, 129);
-			Territory gre = new Territory(ctx, "Greenland", 354, 65);
+			Territory ala = new Territory(this, ctx, "Alaska", 67, 93);
+			Territory yuk = new Territory(this, ctx, "Yukon", 133, 103);
+			Territory nun = new Territory(this, ctx, "Nunavut", 207, 85);
+			Territory bc = new Territory(this, ctx, "B.C.", 91, 132);
+			Territory pra = new Territory(this, ctx, "Prairies", 147, 132);
+			Territory upcan = new Territory(this, ctx, "Upper Canada", 197, 164);
+			Territory locan = new Territory(this, ctx, "Lower Canada", 248, 129);
+			Territory gre = new Territory(this, ctx, "Greenland", 354, 65);
 			
-			Territory westus = new Territory(ctx, "Western USA", 88, 177);
-			Territory midus = new Territory(ctx, "Midwest USA", 142, 175);
-			Territory southus = new Territory(ctx, "Southern USA", 186, 217);
-			Territory neweng = new Territory(ctx, "New England", 216, 191);
+			Territory westus = new Territory(this, ctx, "Western USA", 88, 177);
+			Territory midus = new Territory(this, ctx, "Midwest USA", 142, 175);
+			Territory southus = new Territory(this, ctx, "Southern USA", 186, 217);
+			Territory neweng = new Territory(this, ctx, "New England", 216, 191);
 			
-			Territory mex = new Territory(ctx, "Mexico", 102, 271);
-			Territory guat = new Territory(ctx, "Guatamala", 142, 290);
-			Territory pan = new Territory(ctx, "Panama", 163, 311);
-			Territory cuba = new Territory(ctx, "Cuba", 180, 267);
-			Territory carib = new Territory(ctx, "Caribbean", 215, 279);
+			Territory mex = new Territory(this, ctx, "Mexico", 102, 271);
+			Territory guat = new Territory(this, ctx, "Guatamala", 142, 290);
+			Territory pan = new Territory(this, ctx, "Panama", 163, 311);
+			Territory cuba = new Territory(this, ctx, "Cuba", 180, 267);
+			Territory carib = new Territory(this, ctx, "Caribbean", 215, 279);
 			
-			Territory col = new Territory(ctx, "Colombia", 190, 338);
-			Territory ven = new Territory(ctx, "Venezuala", 223, 326);
-			Territory guy = new Territory(ctx, "Guyanas", 250, 335);
-			Territory ecua = new Territory(ctx, "Ecuador", 162, 358);
-			Territory peru = new Territory(ctx, "Peru", 186, 391);
-			Territory bol = new Territory(ctx, "Bolivia", 223, 421);
-			Territory amaz = new Territory(ctx, "Amazonas", 243, 365);
-			Territory nebra = new Territory(ctx, "North East Brazil", 300, 386);
-			Territory paran = new Territory(ctx, "Parana", 269, 419);
-			Territory para = new Territory(ctx, "Paraguay", 246, 444);
-			Territory uru = new Territory(ctx, "Uruguay", 266, 481);
-			Territory arg = new Territory(ctx, "Argentina", 236, 484);
-			Territory chile = new Territory(ctx, "Chile", 203, 502);
-			Territory tier = new Territory(ctx, "Tierra del Fuego", 259, 568);
+			Territory col = new Territory(this, ctx, "Colombia", 190, 338);
+			Territory ven = new Territory(this, ctx, "Venezuala", 223, 326);
+			Territory guy = new Territory(this, ctx, "Guyanas", 250, 335);
+			Territory ecua = new Territory(this, ctx, "Ecuador", 162, 358);
+			Territory peru = new Territory(this, ctx, "Peru", 186, 391);
+			Territory bol = new Territory(this, ctx, "Bolivia", 223, 421);
+			Territory amaz = new Territory(this, ctx, "Amazonas", 243, 365);
+			Territory nebra = new Territory(this, ctx, "North East Brazil", 300, 386);
+			Territory paran = new Territory(this, ctx, "Parana", 269, 419);
+			Territory para = new Territory(this, ctx, "Paraguay", 246, 444);
+			Territory uru = new Territory(this, ctx, "Uruguay", 266, 481);
+			Territory arg = new Territory(this, ctx, "Argentina", 236, 484);
+			Territory chile = new Territory(this, ctx, "Chile", 203, 502);
+			Territory tier = new Territory(this, ctx, "Tierra del Fuego", 259, 568);
 			
-			Territory chclaim = new Territory(ctx, "Chilean Claim", 264, 630);
+			Territory chclaim = new Territory(this, ctx, "Chilean Claim", 264, 630);
 			territs.put("Chilean Claim", chclaim);
-			Territory britclaim = new Territory(ctx, "British Claim", 405, 639);
+			Territory britclaim = new Territory(this, ctx, "British Claim", 405, 639);
 			territs.put("British Claim", britclaim);
-			Territory norclaim = new Territory(ctx, "Norwegian Claim", 566, 632);
+			Territory norclaim = new Territory(this, ctx, "Norwegian Claim", 566, 632);
 			territs.put("Norwegian Claim", norclaim);
-			Territory austclaim = new Territory(ctx, "Australian Claim", 708, 630);
+			Territory austclaim = new Territory(this, ctx, "Australian Claim", 708, 630);
 			territs.put("Australian Claim", austclaim);
 			
-			Territory ice = new Territory(ctx, "Iceland", 364, 115);
-			Territory nor = new Territory(ctx, "Norway", 406, 115);
-			Territory swe = new Territory(ctx, "Sweden", 437, 115);
-			Territory fin = new Territory(ctx, "Finland", 460, 95);
-			Territory brit = new Territory(ctx, "British Isles", 373, 147);
-			Territory fra = new Territory(ctx, "France", 388, 175);
-			Territory ibe = new Territory(ctx, "Iberia", 368, 199);
-			Territory ita = new Territory(ctx, "Italy", 428, 196);
-			Territory ger = new Territory(ctx, "Germany", 415, 158);
-			Territory pol = new Territory(ctx, "Poland", 439, 158);
-			Territory balt = new Territory(ctx, "Baltics", 458, 137);
-			Territory ukr = new Territory(ctx, "Ukraine", 469, 168);
-			Territory mosk = new Territory(ctx, "Moskva", 507, 142);
-			Territory grc = new Territory(ctx, "Greece", 455, 202);
+			Territory ice = new Territory(this, ctx, "Iceland", 364, 115);
+			Territory nor = new Territory(this, ctx, "Norway", 406, 115);
+			Territory swe = new Territory(this, ctx, "Sweden", 437, 115);
+			Territory fin = new Territory(this, ctx, "Finland", 460, 95);
+			Territory brit = new Territory(this, ctx, "British Isles", 373, 147);
+			Territory fra = new Territory(this, ctx, "France", 388, 175);
+			Territory ibe = new Territory(this, ctx, "Iberia", 368, 199);
+			Territory ita = new Territory(this, ctx, "Italy", 428, 196);
+			Territory ger = new Territory(this, ctx, "Germany", 415, 158);
+			Territory pol = new Territory(this, ctx, "Poland", 439, 158);
+			Territory balt = new Territory(this, ctx, "Baltics", 458, 137);
+			Territory ukr = new Territory(this, ctx, "Ukraine", 469, 168);
+			Territory mosk = new Territory(this, ctx, "Moskva", 507, 142);
+			Territory grc = new Territory(this, ctx, "Greece", 455, 202);
 			
-			Territory mor = new Territory(ctx, "Morocco", 343, 246);
-			Territory maur = new Territory(ctx, "Mauritania", 348, 280);
-			Territory alg = new Territory(ctx, "Algeria", 397, 235);
-			Territory mali = new Territory(ctx, "Mali", 376, 284);
-			Territory sen = new Territory(ctx, "Senegal", 331, 302);
-			Territory guin = new Territory(ctx, "Guineas", 344, 321);
-			Territory cote = new Territory(ctx, "Cote D'Ivoire", 375, 327);
-			Territory nig = new Territory(ctx, "Nigeria", 411, 315);
-			Territory niger = new Territory(ctx, "Niger", 421, 280);
-			Territory lib = new Territory(ctx, "Libya", 426, 250);
-			Territory egy = new Territory(ctx, "Egypt", 479, 245);
-			Territory chad = new Territory(ctx, "Chad", 445, 288);
-			Territory cam = new Territory(ctx, "Cameroon", 427, 349);
-			Territory sud = new Territory(ctx, "Sudan", 484, 287);
-			Territory eth = new Territory(ctx, "Ethiopia", 512, 315);
-			Territory som = new Territory(ctx, "Somalia", 553, 325);
-			Territory ken = new Territory(ctx, "Kenya", 499, 351);
-			Territory con = new Territory(ctx, "Congo", 461, 357);
-			Territory tan = new Territory(ctx, "Tanzania", 498, 378);
-			Territory mad = new Territory(ctx, "Madagascar", 544, 419);
-			Territory moz = new Territory(ctx, "Mozambique", 502, 417);
-			Territory ang = new Territory(ctx, "Angola", 444, 401);
-			Territory zim = new Territory(ctx, "Zimbabwe", 472, 419);
-			Territory nam = new Territory(ctx, "Namibia", 438, 440);
-			Territory safr = new Territory(ctx, "South Africa", 462, 473);
+			Territory mor = new Territory(this, ctx, "Morocco", 343, 246);
+			Territory maur = new Territory(this, ctx, "Mauritania", 348, 280);
+			Territory alg = new Territory(this, ctx, "Algeria", 397, 235);
+			Territory mali = new Territory(this, ctx, "Mali", 376, 284);
+			Territory sen = new Territory(this, ctx, "Senegal", 331, 302);
+			Territory guin = new Territory(this, ctx, "Guineas", 344, 321);
+			Territory cote = new Territory(this, ctx, "Cote D'Ivoire", 375, 327);
+			Territory nig = new Territory(this, ctx, "Nigeria", 411, 315);
+			Territory niger = new Territory(this, ctx, "Niger", 421, 280);
+			Territory lib = new Territory(this, ctx, "Libya", 426, 250);
+			Territory egy = new Territory(this, ctx, "Egypt", 479, 245);
+			Territory chad = new Territory(this, ctx, "Chad", 445, 288);
+			Territory cam = new Territory(this, ctx, "Cameroon", 427, 349);
+			Territory sud = new Territory(this, ctx, "Sudan", 484, 287);
+			Territory eth = new Territory(this, ctx, "Ethiopia", 512, 315);
+			Territory som = new Territory(this, ctx, "Somalia", 553, 325);
+			Territory ken = new Territory(this, ctx, "Kenya", 499, 351);
+			Territory con = new Territory(this, ctx, "Congo", 461, 357);
+			Territory tan = new Territory(this, ctx, "Tanzania", 498, 378);
+			Territory mad = new Territory(this, ctx, "Madagascar", 544, 419);
+			Territory moz = new Territory(this, ctx, "Mozambique", 502, 417);
+			Territory ang = new Territory(this, ctx, "Angola", 444, 401);
+			Territory zim = new Territory(this, ctx, "Zimbabwe", 472, 419);
+			Territory nam = new Territory(this, ctx, "Namibia", 438, 440);
+			Territory safr = new Territory(this, ctx, "South Africa", 462, 473);
 			
-			Territory yem = new Territory(ctx, "Yemen", 542, 294);
-			Territory oma = new Territory(ctx, "Oman", 571, 268);
-			Territory saud = new Territory(ctx, "Saudi", 531, 259);
-			Territory iraq = new Territory(ctx, "Iraq", 523, 227);
-			Territory lev = new Territory(ctx, "Levant", 496, 224);
-			Territory turk = new Territory(ctx, "Turkey", 483, 203);
-			Territory iran = new Territory(ctx, "Iran", 563, 222);
-			Territory afg = new Territory(ctx, "Afghanistan", 592, 224);
-			Territory turkm = new Territory(ctx, "Turkmenistan", 568, 195);
-			Territory kaz = new Territory(ctx, "Kazakhstan", 584, 159);
-			Territory kom = new Territory(ctx, "Komi", 532, 117);
-			Territory yug = new Territory(ctx, "Yugra", 601, 94);
-			Territory eve = new Territory(ctx, "Evenkia", 669, 103);
-			Territory sak = new Territory(ctx, "Sakha", 752, 101);
-			Territory irk = new Territory(ctx, "Irkutsk", 765, 150);
-			Territory mon = new Territory(ctx, "Mongolia", 712, 176);
-			Territory china = new Territory(ctx, "China", 724, 212);
-			Territory kor = new Territory(ctx, "Korea", 784, 212);
-			Territory jap = new Territory(ctx, "Japan", 823, 215);
-			Territory tai = new Territory(ctx, "Taiwan", 796, 265);
-			Territory pak = new Territory(ctx, "Pakistan", 612, 235);
-			Territory ind = new Territory(ctx, "India", 640, 267);
-			Territory sri = new Territory(ctx, "Sri Lanka", 664, 330);
-			Territory nep = new Territory(ctx, "Nepal", 652, 243);
-			Territory thai = new Territory(ctx, "Thailand", 701, 276);
-			Territory indo = new Territory(ctx, "Indochina", 742, 307);
+			Territory yem = new Territory(this, ctx, "Yemen", 542, 294);
+			Territory oma = new Territory(this, ctx, "Oman", 571, 268);
+			Territory saud = new Territory(this, ctx, "Saudi", 531, 259);
+			Territory iraq = new Territory(this, ctx, "Iraq", 523, 227);
+			Territory lev = new Territory(this, ctx, "Levant", 496, 224);
+			Territory turk = new Territory(this, ctx, "Turkey", 483, 203);
+			Territory iran = new Territory(this, ctx, "Iran", 563, 222);
+			Territory afg = new Territory(this, ctx, "Afghanistan", 592, 224);
+			Territory turkm = new Territory(this, ctx, "Turkmenistan", 568, 195);
+			Territory kaz = new Territory(this, ctx, "Kazakhstan", 584, 159);
+			Territory kom = new Territory(this, ctx, "Komi", 532, 117);
+			Territory yug = new Territory(this, ctx, "Yugra", 601, 94);
+			Territory eve = new Territory(this, ctx, "Evenkia", 669, 103);
+			Territory sak = new Territory(this, ctx, "Sakha", 752, 101);
+			Territory irk = new Territory(this, ctx, "Irkutsk", 765, 150);
+			Territory mon = new Territory(this, ctx, "Mongolia", 712, 176);
+			Territory china = new Territory(this, ctx, "China", 724, 212);
+			Territory kor = new Territory(this, ctx, "Korea", 784, 212);
+			Territory jap = new Territory(this, ctx, "Japan", 823, 215);
+			Territory tai = new Territory(this, ctx, "Taiwan", 796, 265);
+			Territory pak = new Territory(this, ctx, "Pakistan", 612, 235);
+			Territory ind = new Territory(this, ctx, "India", 640, 267);
+			Territory sri = new Territory(this, ctx, "Sri Lanka", 664, 330);
+			Territory nep = new Territory(this, ctx, "Nepal", 652, 243);
+			Territory thai = new Territory(this, ctx, "Thailand", 701, 276);
+			Territory indo = new Territory(this, ctx, "Indochina", 742, 307);
 			
-			Territory haw = new Territory(ctx, "Hawaii", 889, 269);
-			Territory phil = new Territory(ctx, "Philippines", 795, 312);
-			Territory bor = new Territory(ctx, "Borneo", 763, 347);
-			Territory sum = new Territory(ctx, "Sumatra", 725, 367);
-			Territory java = new Territory(ctx, "Java", 753, 386);
-			Territory sula = new Territory(ctx, "Sulawesi", 795, 368);
-			Territory irian = new Territory(ctx, "Irian Jaya", 841, 372);
-			Territory papua = new Territory(ctx, "Papua New Guinea", 872, 381);
-			Territory newcal = new Territory(ctx, "New Caledonia", 916, 436);
-			Territory newzeal = new Territory(ctx, "New Zealand", 909, 501);
-			Territory eaust = new Territory(ctx, "Eastern Australia", 865, 469);
-			Territory caust = new Territory(ctx, "Central Australia", 821, 429);
-			Territory waust = new Territory(ctx, "Western Australia", 784, 445);
+			Territory haw = new Territory(this, ctx, "Hawaii", 889, 269);
+			Territory phil = new Territory(this, ctx, "Philippines", 795, 312);
+			Territory bor = new Territory(this, ctx, "Borneo", 763, 347);
+			Territory sum = new Territory(this, ctx, "Sumatra", 725, 367);
+			Territory java = new Territory(this, ctx, "Java", 753, 386);
+			Territory sula = new Territory(this, ctx, "Sulawesi", 795, 368);
+			Territory irian = new Territory(this, ctx, "Irian Jaya", 841, 372);
+			Territory papua = new Territory(this, ctx, "Papua New Guinea", 872, 381);
+			Territory newcal = new Territory(this, ctx, "New Caledonia", 916, 436);
+			Territory newzeal = new Territory(this, ctx, "New Zealand", 909, 501);
+			Territory eaust = new Territory(this, ctx, "Eastern Australia", 865, 469);
+			Territory caust = new Territory(this, ctx, "Central Australia", 821, 429);
+			Territory waust = new Territory(this, ctx, "Western Australia", 784, 445);
 			
 			Territory[] cont1 = {yuk,nun,bc,pra,upcan,locan};
 			conts.put("Canada", new Continent("Canada", 4, cont1, cont1));
@@ -556,6 +570,33 @@ public class Map {
 
 	public Player[] getPlayers() {
 		return players;
+	}
+
+	@Override
+	public void onUnitsChanged(Player player, int units) {
+		for (Listener listener : listeners) {
+			listener.onTroopCountChange(player, getTroopCount(player));
+		}
+	}
+	
+	private int getBonus(Player player) {
+		int total = 0;
+		for (Continent cont : conts.values()) {
+			if (cont.hasContinent(player)) {
+				total += cont.getBonus();
+			}
+		}
+		return Math.max((int) (getTerritoryCount(player) / 3), 3) + total;
+	}
+
+	@Override
+	public void onOwnerChanged(Player oldOwner, Player newOwner) {
+		for (Listener listener : listeners) {
+			listener.onTroopCountChange(oldOwner, getTerritoryCount(oldOwner));
+			listener.onBonusChange(oldOwner, getBonus(oldOwner));
+			listener.onTroopCountChange(newOwner, getTerritoryCount(newOwner));
+			listener.onBonusChange(newOwner, getBonus(newOwner));
+		}
 	}
 }
 

@@ -29,10 +29,18 @@ public class Territory {
 	private Territory[] connectors;
 	private final Button btn;
 	
-	public Territory(Context ctx, String name, int x, int y) {
+	private Listener listener;
+	
+	public interface Listener {
+		public void onUnitsChanged(Player player, int units);
+		public void onOwnerChanged(Player oldOwner, Player newOwner);
+	}
+	
+	public Territory(Listener listener, Context ctx, String name, int x, int y) {
 		this.name = name;
 		this.x = x;
 		this.y = y;
+		this.listener = listener;
 		
 		btn = new Button(ctx);
 		btn.setBackgroundResource(R.drawable.territory_button);
@@ -58,11 +66,13 @@ public class Territory {
 	public void setUnits(int num) {
 		if (num != units) {
 			units = num;
+			listener.onUnitsChanged(owner, units);
 			btn.setText(Integer.toString(units));
 		}
 	}
 	
 	public void setOwner(Player newOwner) {
+		listener.onOwnerChanged(owner, newOwner);
 		owner = newOwner;
 		btn.setTextColor(newOwner.color);
 	}
