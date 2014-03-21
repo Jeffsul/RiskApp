@@ -6,12 +6,13 @@ import com.jeffsul.riskapp.StateListener;
 import com.jeffsul.riskapp.players.Player;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.widget.TextView;
 
 public class ActionLabel extends TextView implements StateListener {
 
-	public ActionLabel(Context context) {
-		super(context);
+	public ActionLabel(Context context, AttributeSet attrs) {
+		super(context, attrs);
 	}
 
 	@Override

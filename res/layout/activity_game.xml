@@ -37,7 +37,7 @@
 		        android:orientation="horizontal"
 		        android:gravity="center" >
 		        
-		        <ActionButton
+		        <com.jeffsul.riskapp.ui.ActionButton
 		            android:id="@+id/action_button"
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
 		            android:text="@string/next_cash_in" />
 		    </LinearLayout>
 		    
-        <TextView 
+        <com.jeffsul.riskapp.ui.ActionLabel 
 		        android:id="@+id/action_label"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"

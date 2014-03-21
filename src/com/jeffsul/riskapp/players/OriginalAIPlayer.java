@@ -121,9 +121,7 @@ public class OriginalAIPlayer extends AIPlayer {
 			}
 		}
 		
-		if (optimalCont == null) {
-			optimalCont = map.getContinent("Antarctica");
-		}
+		// TODO(jeffsul): What if optimalCont is null?
 		
 		int maxPlayerScore = Integer.MIN_VALUE;
 		Player threat = null;

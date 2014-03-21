@@ -485,20 +485,6 @@ public class Map implements Territory.Listener {
 	}
 
 	/**
-	 * Return the Territory with the given name.
-	 */
-	public Territory getTerritory(String name) {
-		return territs.get(name);
-	}
-
-	/**
-	 * Return the Continent with the given name.
-	 */
-	public Continent getContinent(String name) {
-		return conts.get(name);
-	}
-
-	/**
 	 * Get the smallest Continent containing the given Territory.
 	 */
 	public Continent getContinent(Territory t) {
@@ -557,9 +543,11 @@ public class Map implements Territory.Listener {
 		ArrayList<Territory> tt = new ArrayList<Territory>();
 		ArrayList<Territory> ttt = new ArrayList<Territory>();
 		tt.addAll(t);
-		for (int i = 0; i < tt.size(); i++)
-			if (tt.get(i).owner == p)
+		for (int i = 0; i < tt.size(); i++) {
+			if (tt.get(i).owner == p) {
 				ttt.add(tt.get(i));
+			}
+		}
 		Territory[] terrs = new Territory[ttt.size()];
 		return ttt.toArray(terrs);
 	}

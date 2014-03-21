@@ -6,12 +6,13 @@ import com.jeffsul.riskapp.StateListener;
 import com.jeffsul.riskapp.players.Player;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.widget.Button;
 
 public class ActionButton extends Button implements StateListener {
 
-	public ActionButton(Context context) {
-		super(context);
+	public ActionButton(Context context, AttributeSet attrs) {
+		super(context, attrs);
 	}
 
 	@Override

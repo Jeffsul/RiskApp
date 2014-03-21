@@ -1,7 +1,7 @@
 package com.jeffsul.riskapp.players;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -13,70 +13,30 @@ public class PlayerPanel extends LinearLayout implements Map.Listener, Player.Li
 	private static final int PADDING = 10;
 
 	private Player player;
-			
-	private TextView nameLbl;
-	private TextView troopCount;
-	private TextView terrCount;
-	private TextView cardCount;
-	private TextView bonusCount;
 	
-	public PlayerPanel(Context ctx, Player p) {
-		super(ctx);
-		this.setOrientation(VERTICAL);
-		this.setPadding(PADDING, PADDING, PADDING, PADDING);
-		player = p;
+	public PlayerPanel(Context ctx, AttributeSet attrs) {
+		super(ctx, attrs);
+		setOrientation(VERTICAL);
+		setPadding(PADDING, PADDING, PADDING, PADDING);
 		
-		troopCount = new TextView(ctx);
-		troopCount.setText("0 troops");
-		terrCount = new TextView(ctx);
-		terrCount.setText("0 territories");
-		bonusCount = new TextView(ctx);
-		bonusCount.setText("0 bonus");
-		
-		/*addMouseListener(new MouseAdapter() {
-			public void mouseEntered(MouseEvent event) {
-				hiliteTerritories(map.getTerritories(player));
-			}
-			
-			public void mouseExited(MouseEvent event) {
-				unhiliteTerritories(map.getTerritories(player));
-			}
-		});*/
-		
-		setBackgroundColor(player.color);
-		
-		nameLbl = new TextView(ctx);
-		nameLbl.setText(player.name);
-		
-		//if (cardType != CardSetting.NONE) {
-			cardCount = new TextView(ctx);
-			cardCount.setText("0 cards");
-		//}
-				
-		addView(nameLbl);
-		addView(troopCount);
-		addView(terrCount);
-		addView(bonusCount);
-		//if (cardType != CardSetting.NONE) {
-			addView(cardCount);
-		//}
+		//setBackgroundColor(player.color);
 	}
 
 	@Override
 	public void onTroopCountChange(Player player, int count) {
 		if (this.player == player) {
-			troopCount.setText(getResources().getString(R.string.pp_troops, count));
+			((TextView) findViewById(R.id.troop_count_textview)).setText(getResources().getString(R.string.pp_troops, count));
 		}
 	}
 
 	@Override
 	public void onTerritoryCountChange(Player player, int count) {
 		if (this.player == player) {
-			terrCount.setText(getResources().getString(R.string.pp_territories, count));
+			((TextView) findViewById(R.id.territory_count_textview)).setText(getResources().getString(R.string.pp_territories, count));
 			if (count == 0) {
-				bonusCount.setText(getResources().getString(R.string.pp_bonus, 0));
+				((TextView) findViewById(R.id.bonus_count_textview)).setText(getResources().getString(R.string.pp_bonus, 0));
 				setBackgroundColor(getResources().getColor(R.color.pp_dead));
-				nameLbl.setTextColor(Color.LTGRAY);
+				//nameLbl.setTextColor(Color.LTGRAY);
 			}
 		}
 	}
@@ -84,7 +44,7 @@ public class PlayerPanel extends LinearLayout implements Map.Listener, Player.Li
 	@Override
 	public void onBonusChange(Player player, int bonus) {
 		if (this.player == player) {
-			bonusCount.setText(getResources().getString(R.string.pp_bonus, bonus));
+			((TextView) findViewById(R.id.bonus_count_textview)).setText(getResources().getString(R.string.pp_bonus, bonus));
 		}
 	}
 	
@@ -97,6 +57,6 @@ public class PlayerPanel extends LinearLayout implements Map.Listener, Player.Li
 
 	@Override
 	public void onCardCountChange(int count) {
-		cardCount.setText(getResources().getString(R.string.pp_cards, count));
+		((TextView) findViewById(R.id.card_count_textview)).setText(getResources().getString(R.string.pp_cards, count));
 	}
 }

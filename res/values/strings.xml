@@ -64,5 +64,10 @@
     <string name="message_dice">%1$s vs. %2$s</string>
     <string name="message_fortify">Fortify - click from one territory to another to fortify troops.</string>
     <string name="message_fortify_from">Click to fortify from %1$s.</string>
+    
+    <string name="default_troop_count">0 troops</string>
+    <string name="default_territory_count">0 territories</string>
+    <string name="default_bonus_count">0 bonus</string>
+    <string name="default_card_count">0 cards</string>
 
 </resources>

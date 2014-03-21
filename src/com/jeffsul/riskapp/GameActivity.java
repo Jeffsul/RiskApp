@@ -7,10 +7,10 @@ import java.util.HashMap;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
@@ -33,8 +33,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	public static final String CARD_SETTING_EXTRA = "com.jeffsul.risk.CARD_SETTING";
 	public static final String MAP_EXTRA = "com.jeffsul.risk.MAP";
 	
-	private static final int[] PLAYER_COLOURS = {Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA, Color.YELLOW,
-		Color.CYAN};
 	private static final int[] CASH_IN = {4, 6, 8, 10, 12, 15};
 	private static final int CASH_IN_INCREMENT = 5;
 	private static final int INITIAL_PLACE_COUNT = 1;
@@ -44,7 +42,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	
 	private int numPlayers;
 	public Player[] players;
-	private HashMap<Player, PlayerPanel> playerPnlHash;
 	private Player activePlayer;
 	private Player eliminatedPlayer;
 	
@@ -103,7 +100,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		players = new Player[numPlayers];
 		firstPlayerIndex = (int) (numPlayers * Math.random());
 		index = firstPlayerIndex;
-		playerPnlHash = new HashMap<Player, PlayerPanel>();
 		
 		TextView cashInLabel = (TextView) findViewById(R.id.cash_in_label);
 		if (cardType != CardSetting.REGULAR) {
@@ -112,32 +108,28 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			cashInLabel.setText(getResources().getString(R.string.next_cash_in, CASH_IN[0]));
 		}
 		
-		int half = (int) Math.ceil(numPlayers / 2.0);
+		int half = (numPlayers - (numPlayers % 2)) / 2;
 		int panelHeight = getResources().getDisplayMetrics().heightPixels / half;
-		ViewGroup sidePanelLeft = (ViewGroup) findViewById(R.id.side_panel_left);
-		ViewGroup sidePanelRight = (ViewGroup) findViewById(R.id.side_panel_right);
+		ViewGroup sidePanel = (ViewGroup) findViewById(R.id.side_panel_left);
 		for (int i = 0; i < numPlayers; i++) {
 			//if (!playerType[i].isSelected()) {
-				players[i] = new Player(i + 1, "Player " + (i + 1), PLAYER_COLOURS[i]);
+				players[i] = new Player(i + 1, "Player " + (i + 1), getResources().getIntArray(R.array.player_colours)[i]);
 				players[i].setDeployCount(INITIAL_PLACE_COUNT);
 			//} else {
 			//	players[i] = new AIPlayer(i + 1, PLAYER_COLOURS[i], this);
 			//}
-			PlayerPanel playerPnl = new PlayerPanel(this, players[i]);
+			ViewGroup playerPnl = (ViewGroup) getLayoutInflater().inflate(R.layout.player_panel, null);//new PlayerPanel(this, players[i]);
 			playerPnl.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, panelHeight));
-			map.addListener(playerPnl);
-			players[i].addListener(playerPnl);
-			playerPnlHash.put(players[i], playerPnl);
-			if (i < half) {
-				sidePanelLeft.addView(playerPnl);
-			} else {
-				sidePanelRight.addView(playerPnl);
+			map.addListener((PlayerPanel) (playerPnl.findViewById(R.id.player_panel)));
+			players[i].addListener((PlayerPanel) (playerPnl.findViewById(R.id.player_panel)));
+			if (i == half) {
+				sidePanel = (ViewGroup) findViewById(R.id.side_panel_right);
 			}
+			sidePanel.addView(playerPnl);
 		}
 		map.setPlayers(players);
 		
 		activePlayer = players[index];
-		playerPnlHash.get(activePlayer).setActive(true);
 		
 		RelativeLayout gamePnl = (RelativeLayout) findViewById(R.id.game_panel);
 		ArrayList<Territory> territories = map.getTerritories();
@@ -212,7 +204,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			updateRound();
 		}
 			
-		playerPnlHash.get(activePlayer).setActive(false);
 		activePlayer = players[index];
 		
 		//if (saveFile != null)
@@ -232,7 +223,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 
 		activePlayer.resetForTurn();
-		playerPnlHash.get(activePlayer).setActive(true);
 		
 		continueTurnAfterSet(0);
 	}
@@ -305,10 +295,8 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		activePlayer.changeDeployCount(-1);
 		gameLog.log(getResources().getString(R.string.log_deployed_troops, activePlayer.name, 1, territ.name));
 		
-		playerPnlHash.get(activePlayer).setActive(false);
 		index++;
 		activePlayer = players[index % numPlayers];
-		playerPnlHash.get(activePlayer).setActive(true);
 		if (activePlayer.getDeployCount() > 0) {
 			changeState(State.PLACE);
 		} else {

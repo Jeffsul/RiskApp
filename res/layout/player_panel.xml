@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.jeffsul.riskapp.players.PlayerPanel
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/player_panel" >
+    
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/troop_count_textview"
+        android:text="@string/default_troop_count"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/territory_count_textview"
+        android:text="@string/default_territory_count"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/bonus_count_textview"
+        android:text="@string/default_bonus_count"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/card_count_textview"
+        android:text="@string/default_card_count"
+        />
+
+</com.jeffsul.riskapp.players.PlayerPanel>

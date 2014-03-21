@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="pp_dead">#000</color>
+    
+    <color name="player_red">#ff0000</color>
+    <color name="player_blue">#0000ff</color>
+    <color name="player_green">#00ff00</color>
+    <color name="player_magenta">#ff00ff</color>
+    <color name="player_yellow">#ffff00</color>
+    <color name="player_teal">#00ffff</color>
+    
+    <array name="player_colours">
+        <item>@color/player_red</item>
+        <item>@color/player_blue</item>
+        <item>@color/player_green</item>
+        <item>@color/player_magenta</item>
+        <item>@color/player_yellow</item>
+        <item>@color/player_teal</item>
+    </array>
 </resources>
