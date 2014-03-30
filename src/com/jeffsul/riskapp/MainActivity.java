@@ -44,6 +44,9 @@ public class MainActivity extends Activity {
 		if (view.getId() == R.id.button_load_game) {
 			Intent intent = new Intent(this, LoadActivity.class);
 			startActivity(intent);
+		} else if (view.getId() == R.id.button_create_challenge){
+			Intent intent = new Intent(this, ChallengeActivity.class);
+			startActivity(intent);
 		} else {
 			Intent intent = new Intent(this, GameActivity.class);
 			intent.putExtra(GameActivity.NUM_PLAYERS_EXTRA,
