@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.EditText;
 
 public class LoginActivity extends Activity {	
 	private static final int MAX_NUM_PLAYERS = 6;
@@ -22,7 +23,53 @@ public class LoginActivity extends Activity {
 	
 	public void sendMessage(View view) {
 		Intent intent = new Intent(this, MainActivity.class);
-		startActivity(intent);
+		
+		if (view.getId() == R.id.login_button)
+		{
+			System.out.println("login button clicked");
+			
+			EditText username_editText = (EditText) findViewById(R.id.username_textbox);
+			String username_input = username_editText.getText().toString();
+			EditText password_editText = (EditText) findViewById(R.id.password_textbox);
+			String password_input = password_editText.getText().toString();
+			
+			System.out.println("Username: " + username_input);
+			System.out.println("Password: " + password_input);
+			
+			///
+			
+			/// verify login
+			//if verified
+			startActivity(intent);
+			
+		}
+		else if (view.getId() == R.id.create_account_button)
+		{
+			System.out.println("create account button clicked");
+			
+			EditText new_username_editText = (EditText) findViewById(R.id.new_username_textbox);
+			String new_username_input = new_username_editText.getText().toString();
+			EditText new_password_editText = (EditText) findViewById(R.id.new_password_textbox);
+			String new_password_input = new_password_editText.getText().toString();
+			EditText new_confirm_password_editText = (EditText) findViewById(R.id.new_confirm_password_textbox);
+			String new_confirm_password_input = new_confirm_password_editText.getText().toString();
+			
+			if (new_password_input.equals(new_confirm_password_input))
+			{
+				System.out.println("New Password confirmed");
+			}
+			else
+			{
+				System.out.println("Passwords do not match: " + new_password_input + " " + new_confirm_password_input);
+			}
+			
+			// verify new login data
+			
+			//--> startActivity(intent);
+			
+		}
+			
+		//startActivity(intent);
 	}
 
 	@Override
