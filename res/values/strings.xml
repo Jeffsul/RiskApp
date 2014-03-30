@@ -70,4 +70,5 @@
     <string name="default_bonus_count">0 bonus</string>
     <string name="default_card_count">0 cards</string>
 
+    <string name="create_challenge_button">Challenge A Friend</string>
 </resources>

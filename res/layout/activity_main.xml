@@ -74,5 +74,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/load_game_button" />
+    
+    <Button
+        android:id="@+id/button_create_challenge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_challenge_button"
+    	android:onClick="sendMessage" />
 
 </LinearLayout>
