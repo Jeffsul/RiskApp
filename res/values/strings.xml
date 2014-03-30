@@ -70,5 +70,12 @@
     <string name="default_bonus_count">0 bonus</string>
     <string name="default_card_count">0 cards</string>
 
-    <string name="create_challenge_button">Challenge A Friend</string>
+    <string name="challenge_title">Challenge a friend to a game of Risk!</string>
+    <string name="challenge_user_hint">Enter user name:</string>
+    <string name="challenge_user_button">Send Challenge</string>
+    <string name="your_name">Your name</string>
+    <string name="add_ai_button">Add AI Player</string>
+    <string name="add_local_button">Add Local Player</string>
+    <string name="add_challenge_button">Add Friend Player</string>
+       
 </resources>
