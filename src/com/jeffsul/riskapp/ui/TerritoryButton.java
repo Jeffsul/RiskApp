@@ -24,6 +24,6 @@ public class TerritoryButton extends Button implements Territory.Listener {
 
 	@Override
 	public void onOwnerChanged(Player oldOwner, Player newOwner) {
-		setBackgroundColor(newOwner.color);
+		setTextColor(newOwner.color);
 	}
 }

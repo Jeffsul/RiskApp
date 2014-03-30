@@ -49,7 +49,6 @@ public class Map implements Territory.Listener {
 	
 	private void parse(XmlResourceParser parser) throws XmlPullParserException, IOException {
 		try {
-			//parser.setFeature(XmlResourceParser.FEATURE_PROCESS_NAMESPACES, false);
 			parser.next();
 			parser.nextTag();
 			
