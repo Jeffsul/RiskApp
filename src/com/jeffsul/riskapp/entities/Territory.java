@@ -3,13 +3,6 @@ package com.jeffsul.riskapp.entities;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.content.Context;
-import android.graphics.Typeface;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
-import android.widget.Button;
-
-import com.jeffsul.riskapp.R;
 import com.jeffsul.riskapp.players.Player;
 
 /**
@@ -18,7 +11,6 @@ import com.jeffsul.riskapp.players.Player;
  */
 public class Territory {
 	private static final int DEFAULT_UNITS = 3;	
-	private static final float LARGE_FONT = 14;
 		
 	public String name;
 	public int x;
@@ -27,33 +19,32 @@ public class Territory {
 	public Player owner;
 	
 	private Territory[] connectors;
-	private final Button btn;
+	//private final Button btn;
 	
-	private Listener listener;
+	private ArrayList<Listener> listeners;
 	
 	public interface Listener {
 		public void onUnitsChanged(Player player, int units);
 		public void onOwnerChanged(Player oldOwner, Player newOwner);
 	}
 	
-	public Territory(Listener listener, Context ctx, String name, int x, int y) {
+	public Territory(String name, int x, int y) {
 		this.name = name;
 		this.x = x;
 		this.y = y;
-		this.listener = listener;
 		
-		btn = new Button(ctx);
-		btn.setBackgroundResource(R.drawable.territory_button);
-		btn.setText(Integer.toString(units));
-		btn.setTypeface(null, Typeface.BOLD);
-		btn.setTextSize(LARGE_FONT);
+		listeners = new ArrayList<Listener>();
+	}
+	
+	public void addListener(Listener listener) {
+		listeners.add(listener);
 	}
 
 	// TODO(jeffsul): Implement custom listener.
-	public void addMouseListener(OnClickListener listener, OnLongClickListener listener2) {
+	/*public void addMouseListener(OnClickListener listener, OnLongClickListener listener2) {
 		btn.setOnClickListener(listener);
 		btn.setOnLongClickListener(listener2);
-	}
+	}*/
 	
 	public void connect(Territory[] conns) {
 		connectors = conns;
@@ -66,27 +57,25 @@ public class Territory {
 	public void setUnits(int num) {
 		if (num != units) {
 			units = num;
-			listener.onUnitsChanged(owner, units);
-			btn.setText(Integer.toString(units));
+			for (Listener listener : listeners) {
+				listener.onUnitsChanged(owner, units);
+			}
 		}
 	}
 	
 	public void setOwner(Player newOwner) {
-		listener.onOwnerChanged(owner, newOwner);
+		for (Listener listener : listeners) {
+			listener.onOwnerChanged(owner, newOwner);
+		}
 		owner = newOwner;
-		btn.setTextColor(newOwner.color);
-	}
-	
-	public Button getButton() {
-		return btn;
 	}
 	
 	public void hilite() {
-		btn.setBackgroundResource(R.drawable.territory_button_highlighted);
+		//btn.setBackgroundResource(R.drawable.territory_button_highlighted);
 	}
 	
 	public void unhilite() {
-		btn.setBackgroundResource(R.drawable.territory_button);
+		//btn.setBackgroundResource(R.drawable.territory_button);
 	}
 	
 	public Territory[] getConnectors() {

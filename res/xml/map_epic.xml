@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<map name="Epic Map" src="">
+    <continent name="North America" bonus="2">
+        <continent name="Canada" bonus="4">
+            <territory id="yuk" borders="ala,bc,pra,nun">Yukon</territory>
+						<territory id="nun" borders="yuk,pra,locan,gre">Nunavut</territory>
+						<territory id="bc" borders="ala,yuk,pra,westus">B.C.</territory>
+						<territory id="pra" borders="yuk,bc,nun,upcan,midus,westus">Prairies</territory>
+						<territory id="upcan" borders="pra,locan,neweng,midus">Upper Canada</territory>
+						<territory id="locan" borders="gre,nun,upcan,neweng">Lower Canada</territory>
+        </continent>
+        <continent name="United States" bonus="3">
+            <territory id="westus" borders="bc,pra,midus,southus,mex">Western USA</territory>
+						<territory id="midus" borders="westus,pra,upcan,neweng,southus">Midwest USA</territory>
+						<territory id="southus" borders="cuba,mex,neweng,midus,westus">Southern USA</territory>
+						<territory id="neweng" borders="locan,upcan,southus,midus">New England</territory>
+        </continent>
+        <continent name="Central America" bonus="2">
+            <territory id="mex" borders="westus,southus,cuba,guat,haw">Mexico</territory>
+						<territory id="guat" borders="mex,pan">Guatamala</territory>
+						<territory id="pan" borders="guat,col">Panama</territory>
+        </continent>
+        
+        <territory id="ala" borders="yuk,bc,sak">Alaska</territory>
+				<territory id="gre" borders="nun,locan,ice">Greenland</territory>
+    </continent>
+    
+    <continent name="South America" bonus="2">
+        <continent name="Amazon" bonus="4">
+            <territory id="col" borders="pan,ecua,ven,amaz,peru">Colombia</territory>
+						<territory id="ven" borders="col,guy,amaz">Venezuala</territory>
+						<territory id="ecua" borders="peru,col">Ecuador</territory>
+						<territory id="peru" borders="ecua,col,amaz,bol,chile">Peru</territory>
+						<territory id="bol" borders="peru,amaz,paran,para,chile,arg">Bolivia</territory>
+						<territory id="amaz" borders="guy,ven,col,peru,bol,paran,nebra">Amazonas</territory>
+        </continent>
+        <continent name="La Plata" bonus="3">
+            <territory id="paran" borders="nebra,amaz,bol,para,uru,arg">Parana</territory>
+						<territory id="para" borders="bol,paran,arg">Paraguay</territory>
+						<territory id="uru" borders="arg,paran">Uruguay</territory>
+						<territory id="arg" borders="chile,uru,paran,para,bol,tier">Argentina</territory>
+        </continent>
+
+				<territory id="guy" borders="ven,amaz">Guyanas</territory>
+				<territory id="nebra" borders="guin,amaz,paran">North East Brazil</territory>
+				<territory id="chile" borders="peru,bol,arg,tier">Chile</territory>
+				<territory id="tier" borders="chile,arg,chclaim,britclaim">Tierra del Fuego</territory>
+    </continent>
+    
+    <territory id="cuba" borders="carib,mex,southus">Cuba</territory>
+		<territory id="carib" borders="cuba">Caribbean</territory>
+		
+		<continent name="Europe" bonus="6">
+		    <continent name="Scandinavia" bonus="2">
+		        <territory id="nor" borders="ice,swe,fin">Norway</territory>
+						<territory id="swe" borders="nor,fin">Sweden</territory>
+						<territory id="fin" borders="nor,swe,mosk">Finland</territory>
+		    </continent>
+		    <continent name="Western Europe" bonus="3">
+		        <territory id="fra" borders="ibe,brit,ger,ita">France</territory>
+						<territory id="ibe" borders="mor,fra">Iberia</territory>
+						<territory id="ita" borders="fra,ger,pol">Italy</territory>
+						<territory id="brit" borders="ice,fra">British Isles</territory>
+						<territory id="ger" borders="fra,ita,pol">Germany</territory>
+						<territory id="pol" borders="ita,ger,balt,ukr,grc">Poland</territory>
+		    </continent>
+		    
+		    <territory id="grc" borders="pol,ukr,turk">Greece</territory>
+		    <territory id="ice" borders="gre,brit,nor">Iceland</territory>
+		    <territory id="ukr" borders="pol,balt,mosk,grc">Ukraine</territory>
+		    <territory id="balt" borders="pol,ukr,mosk">Baltics</territory>
+		    <territory id="mosk" borders="fin,balt,ukr,turk,iran,kom,kaz">Moskva</territory>
+		</continent>
+		
+		<continent name="Africa" bonus="3">
+		    <continent name="Mahgreb" bonus="5">
+		        <territory id="mor" borders="ibe,alg,maur">Morocco</territory>
+						<territory id="maur" borders="sen,mor,alg,mali">Mauritania</territory>
+						<territory id="alg" borders="mor,niger,mali,lib,maur">Algeria</territory>
+						<territory id="mali" borders="alg,niger,cote,guin,sen,maur">Mali</territory>
+						<territory id="nig" borders="cote,niger,chad,cam">Nigeria</territory>
+						<territory id="niger" borders="alg,mali,cote,nig,chad,lib">Niger</territory>
+						<territory id="sen" borders="maur,mali,guin">Senegal</territory>
+						<territory id="guin" borders="nebra,cote,sen,mali">Guineas</territory>
+						<territory id="cote" borders="guin,mali,nig,niger">Cote D'Ivoire</territory>
+		    </continent>
+		    <continent name="Southern Africa" bonus="4">
+		        <territory id="con" borders="cam,sud,ken,tan,ang,zim">Congo</territory>
+						<territory id="tan" borders="ken,con,zim,moz">Tanzania</territory>
+						<territory id="moz" borders="tan,mad,safr,zim">Mozambique</territory>
+						<territory id="zim" borders="con,tan,moz,ang,nam,safr">Zimbabwe</territory>
+						<territory id="ang" borders="con,zim,nam">Angola</territory>
+						<territory id="nam" borders="ang,zim,safr">Namibia</territory>
+						<territory id="safr" borders="nam,zim,moz,norclaim">South Africa</territory>
+		    </continent>
+		    <continent name="The Horn" bonus="3">
+		        <territory id="sud" borders="egy,lib,chad,cam,eth,ken,con">Sudan</territory>
+						<territory id="eth" borders="sud,ken,som">Ethiopia</territory>
+						<territory id="som" borders="ken,eth,yem">Somalia</territory>
+						<territory id="ken" borders="sud,eth,som,con,tan">Kenya</territory>
+		    </continent>
+		    
+		    <territory id="mad" borders="moz">Madagascar</territory>
+		    <territory id="lib" borders="alg,niger,chad,egy,sud">Libya</territory>
+				<territory id="egy" borders="lib,sud,lev">Egypt</territory>
+				<territory id="chad" borders="lib,niger,nig,cam,sud">Chad</territory>
+				<territory id="cam" borders="nig,chad,sud,con">Cameroon</territory>
+		</continent>
+		
+		<continent name="Asia" bonus="3">
+		    <continent name="Middle East" bonus="4">
+		        <territory id="yem" borders="som,oma,saud">Yemen</territory>
+						<territory id="oma" borders="saud,yem">Oman</territory>
+						<territory id="saud" borders="oma,yem,iraq,lev">Saudi</territory>
+						<territory id="iraq" borders="saud,iran,turk,lev">Iraq</territory>
+						<territory id="lev" borders="egy,turk,iraq,saud">Levant</territory>
+						<territory id="turk" borders="grc,mosk,lev,iraq,iran">Turkey</territory>
+						<territory id="iran" borders="iraq,turk,mosk,turkm,afg,pak">Iran</territory>
+		    </continent>
+		    <continent name="Russia" bonus="4">
+		        <territory id="kom" borders="mosk,kaz,yug">Komi</territory>
+						<territory id="yug" borders="kom,kaz,eve">Yugra</territory>
+						<territory id="eve" borders="yug,kaz,mon,sak,irk,china">Evenkia</territory>
+						<territory id="sak" borders="ala,irk,eve">Sakha</territory>
+						<territory id="irk" borders="sak,eve,mon,china">Irkutsk</territory>
+		    </continent>
+		    <continent name="Indian Subcontinent" bonus="3">
+		        <territory id="pak" borders="iran,afg,china,ind,turkm">Pakistan</territory>
+		        <territory id="ind" borders="sri,nep,pak,thai,china">India</territory>
+						<territory id="sri" borders="ind">Sri Lanka</territory>
+						<territory id="nep" borders="china,ind">Nepal</territory>
+		    </continent>
+		    <continent name="Far East" bonus="4">
+		        <territory id="mon" borders="eve,irk,china">Mongolia</territory>
+		        <territory id="kor" borders="china,jap">Korea</territory>
+						<territory id="jap" borders="kor,tai">Japan</territory>
+						<territory id="china" borders="eve,mon,irk,kor,indo,thai,ind,nep,pak,turkm,kaz,tai">China</territory>
+						<territory id="tai" borders="jap,china,phil,haw">Taiwan</territory>
+		    </continent>
+		    
+		    <territory id="afg" borders="pak,iran,turkm">Afghanistan</territory>
+				<territory id="turkm" borders="kaz,iran,afg,pak,china">Turkmenistan</territory>
+				<territory id="kaz" borders="kom,yug,eve,china,turkm,mosk">Kazakhstan</territory>
+				<territory id="thai" borders="ind,china,indo,sum">Thailand</territory>
+				<territory id="indo" borders="thai,china">Indochina</territory>
+		</continent>
+		
+		<continent name="Oceania" bonus="3">
+		    <continent name="Australia" bonus="2">
+		        <territory id="eaust" borders="papua,newcal,newzeal,caust">Eastern Australia</territory>
+						<territory id="caust" borders="waust,eaust">Central Australia</territory>
+						<territory id="waust" borders="java,caust,austclaim">Western Australia</territory>
+		    </continent>
+		    <continent name="East Indies" bonus="4">
+		        <territory id="phil" borders="haw,tai,bor">Philippines</territory>
+						<territory id="bor" borders="sum,sula,phil">Borneo</territory>
+						<territory id="sum" borders="thai,bor,java">Sumatra</territory>
+						<territory id="java" borders="sum,waust">Java</territory>
+						<territory id="sula" borders="bor,irian">Sulawesi</territory>
+						<territory id="irian" borders="sula,papua">Irian Jaya</territory>
+		    </continent>
+		    
+		    <territory id="haw" borders="mex,tai,phil">Hawaii</territory>
+				<territory id="papua" borders="irian,newcal,eaust">Papua New Guinea</territory>
+				<territory id="newcal" borders="newzeal,eaust,papua">New Caledonia</territory>
+				<territory id="newzeal" borders="newcal,eaust">New Zealand</territory>
+		</continent>
+		
+		<continent name="Antarctica" bonus="0">
+		    <territory id="chclaim" borders="austclaim,britclaim,tier">Chilean Claim</territory>
+		    <territory id="britclaim" borders="chclaim,norclaim,tier">British Claim</territory>
+		    <territory id="norclaim" borders="britclaim,austclaim,safr">Norwegian Claim</territory>
+		    <territory id="austclaim" borders="norclaim,chclaim,waust">Australian Claim</territory>
+		</continent>
+</map>

@@ -14,11 +14,11 @@ public class Continent {
 	private Territory[] territs;
 	private Territory[] borders;
 	
-	public Continent(String name, int bonus, Territory[] territs, Territory[] borders) {
+	public Continent(String name, int bonus, Territory[] territs) {
 		this.name = name;
 		this.bonus = bonus;
 		this.territs = territs;
-		this.borders = borders;
+		this.borders = null;
 	}
 	
 	public int getBonus() {
