@@ -69,5 +69,7 @@
     <string name="default_territory_count">0 territories</string>
     <string name="default_bonus_count">0 bonus</string>
     <string name="default_card_count">0 cards</string>
+    
+    <string name="load_game_title">Previous Games</string>
 
 </resources>

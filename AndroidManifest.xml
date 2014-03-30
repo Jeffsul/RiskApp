@@ -26,6 +26,10 @@
             android:name="com.jeffsul.riskapp.GameActivity"
             android:label="@string/app_name" >
         </activity>
+        <activity
+            android:name="com.jeffsul.riskapp.LoadActivity"
+            android:label="@string/app_name" >
+        </activity>
     </application>
 
 </manifest>
