@@ -69,6 +69,17 @@
     <string name="default_territory_count">0 territories</string>
     <string name="default_bonus_count">0 bonus</string>
     <string name="default_card_count">0 cards</string>
+    
+    <string name="login_button">Login</string>
+    <string name="create_account_button">Create an Account</string>
+    <string name="username_input">Username:</string>
+    <string name="password_input">Password:</string>
+    <string name="new_username_input">Creat Username:</string>
+    <string name="new_password_input">Password:</string>
+    <string name="new_confirm_password_input">Conform Password:</string>
+    <string name="create_account_title">New Player? Create an Account now!</string>
+    
+    <string name="load_game_title">Previous Games</string>
 
     <string name="challenge_title">Challenge a friend to a game of Risk!</string>
     <string name="challenge_user_hint">Enter user name:</string>
