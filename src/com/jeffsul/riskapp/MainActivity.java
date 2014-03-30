@@ -41,13 +41,21 @@ public class MainActivity extends Activity {
 	}
 	
 	public void sendMessage(View view) {
-		Intent intent = new Intent(this, GameActivity.class);
-		intent.putExtra(GameActivity.NUM_PLAYERS_EXTRA,
-				((Spinner) findViewById(R.id.number_players_spinner)).getSelectedItemPosition() + MIN_NUM_PLAYERS);
-		intent.putExtra(GameActivity.MAP_EXTRA, ((Spinner) findViewById(R.id.spinner_cards_setting)).getSelectedItemPosition());
-		intent.putExtra(GameActivity.CARD_SETTING_EXTRA, 
-				((Spinner) findViewById(R.id.spinner_cards_setting)).getSelectedItemPosition());
-		startActivity(intent);
+		if (view.getId() == R.id.button_load_game) {
+			Intent intent = new Intent(this, LoadActivity.class);
+			startActivity(intent);
+		} else if (view.getId() == R.id.button_create_challenge){
+			Intent intent = new Intent(this, ChallengeActivity.class);
+			startActivity(intent);
+		} else {
+			Intent intent = new Intent(this, GameActivity.class);
+			intent.putExtra(GameActivity.NUM_PLAYERS_EXTRA,
+					((Spinner) findViewById(R.id.number_players_spinner)).getSelectedItemPosition() + MIN_NUM_PLAYERS);
+			intent.putExtra(GameActivity.MAP_EXTRA, ((Spinner) findViewById(R.id.spinner_cards_setting)).getSelectedItemPosition());
+			intent.putExtra(GameActivity.CARD_SETTING_EXTRA, 
+					((Spinner) findViewById(R.id.spinner_cards_setting)).getSelectedItemPosition());
+			startActivity(intent);
+		}
 	}
 
 	@Override
