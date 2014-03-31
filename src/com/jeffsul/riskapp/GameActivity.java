@@ -263,7 +263,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		changeState(State.DEPLOY);
 	}
 	
-	public void playSet() {
+	private void playSet() {
 		Card[][] sets = activePlayer.getSets();
 		String[] setTexts = new String[sets.length];
 		Arrays.fill(setTexts, "");
@@ -711,17 +711,8 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 	}
 	
-	public void simulate(int n) {
-		simulate = true;
-		//simulateCount = n;
-	}
-	
-	public void message(String msg) {
+	private void message(String msg) {
 		((TextView) findViewById(R.id.action_label)).setText(msg);
-	}
-	
-	public Map getMap() {
-		return map;
 	}
 	
 	private void error(String msg) {
@@ -755,7 +746,8 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 
 	@Override
 	public void onGameSimulate(int rounds) {
-		simulate(rounds);
+		simulate = true;
+		//simulateCount = n;
 	}
 
 	@Override

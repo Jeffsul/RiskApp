@@ -245,7 +245,7 @@ public class Map implements Territory.Listener {
 		}
 	}
 	
-	private int getBonus(Player player) {
+	private int calculateBonus(Player player) {
 		int total = 0;
 		for (Continent cont : continents) {
 			if (cont.hasContinent(player)) {
@@ -258,10 +258,10 @@ public class Map implements Territory.Listener {
 	@Override
 	public void onOwnerChanged(Player oldOwner, Player newOwner) {
 		for (Listener listener : listeners) {
-			listener.onTroopCountChange(oldOwner, getTerritoryCount(oldOwner));
-			listener.onBonusChange(oldOwner, getBonus(oldOwner));
-			listener.onTroopCountChange(newOwner, getTerritoryCount(newOwner));
-			listener.onBonusChange(newOwner, getBonus(newOwner));
+			listener.onTerritoryCountChange(oldOwner, getTerritoryCount(oldOwner));
+			listener.onBonusChange(oldOwner, calculateBonus(oldOwner));
+			listener.onTerritoryCountChange(newOwner, getTerritoryCount(newOwner));
+			listener.onBonusChange(newOwner, calculateBonus(newOwner));
 		}
 	}
 }
