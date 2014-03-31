@@ -70,7 +70,23 @@
     <string name="default_bonus_count">0 bonus</string>
     <string name="default_card_count">0 cards</string>
     
+    <string name="login_button">Login (No authentication for now, click for game menu)</string>
+    <string name="create_account_button">Create an Account</string>
+    <string name="username_input">Username:</string>
+    <string name="password_input">Password:</string>
+    <string name="new_username_input">Create Username:</string>
+    <string name="new_password_input">Password:</string>
+    <string name="new_confirm_password_input">Confirm Password:</string>
+    <string name="create_account_title">New Player? Create an Account now!</string>
+    
     <string name="load_game_title">Previous Games</string>
 
-    <string name="create_challenge_button">Challenge A Friend</string>
+    <string name="challenge_title">Challenge a friend to a game of Risk!</string>
+    <string name="challenge_user_hint">Enter user name:</string>
+    <string name="challenge_user_button">Send Challenge</string>
+    <string name="your_name">Your name</string>
+    <string name="add_ai_button">Add AI Player</string>
+    <string name="add_local_button">Add Local Player</string>
+    <string name="add_challenge_button">Add Friend Player</string>
+       
 </resources>
