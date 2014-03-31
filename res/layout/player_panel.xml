@@ -3,6 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/player_panel" >
     
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/player_panel_name"
+        android:text=""
+        android:textStyle="bold"
+        />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

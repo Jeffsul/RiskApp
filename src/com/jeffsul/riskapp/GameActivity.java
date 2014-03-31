@@ -59,6 +59,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	
 	private Map map;
 	private HashMap<View, Territory> buttonMap;
+	private HashMap<Territory, TerritoryButton> territoryMap;
 	public CardSetting cardType;
 	
 	private GameLog gameLog;
@@ -71,6 +72,10 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
+		
+		// Hide navigation bar
+		View decorView = getWindow().getDecorView();
+		decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 		
 		Intent intent = getIntent();
 		numPlayers = intent.getIntExtra(NUM_PLAYERS_EXTRA, 2);
@@ -109,19 +114,20 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 		
 		int half = (numPlayers - (numPlayers % 2)) / 2;
-		int panelHeight = getResources().getDisplayMetrics().heightPixels / half;
+		int panelHeight = getResources().getDisplayMetrics().heightPixels / (half + (numPlayers % 2));
 		ViewGroup sidePanel = (ViewGroup) findViewById(R.id.side_panel_left);
+		int[] playerColours = getResources().getIntArray(R.array.player_colours);
 		for (int i = 0; i < numPlayers; i++) {
 			//if (!playerType[i].isSelected()) {
-				players[i] = new Player(i + 1, "Player " + (i + 1), getResources().getIntArray(R.array.player_colours)[i]);
+				players[i] = new Player(i + 1, "Player " + (i + 1), playerColours[i]);
 				players[i].setDeployCount(INITIAL_PLACE_COUNT);
 			//} else {
 			//	players[i] = new AIPlayer(i + 1, PLAYER_COLOURS[i], this);
 			//}
-			ViewGroup playerPnl = (ViewGroup) getLayoutInflater().inflate(R.layout.player_panel, null);//new PlayerPanel(this, players[i]);
+			PlayerPanel playerPnl = (PlayerPanel) getLayoutInflater().inflate(R.layout.player_panel, null);
 			playerPnl.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, panelHeight));
-			map.addListener((PlayerPanel) (playerPnl.findViewById(R.id.player_panel)));
-			players[i].addListener((PlayerPanel) (playerPnl.findViewById(R.id.player_panel)));
+			map.addListener(playerPnl);
+			playerPnl.setPlayer(players[i]);
 			if (i == half) {
 				sidePanel = (ViewGroup) findViewById(R.id.side_panel_right);
 			}
@@ -134,6 +140,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		RelativeLayout gamePnl = (RelativeLayout) findViewById(R.id.game_panel);
 		ArrayList<Territory> territories = new ArrayList<Territory>(Arrays.asList(map.getTerritories()));
 		buttonMap = new HashMap<View, Territory>();
+		territoryMap = new HashMap<Territory, TerritoryButton>();
 		int terrCount = territories.size();
 		deck = new ArrayList<Card>();
 		for (int i = 0; i < terrCount; i++) {
@@ -144,6 +151,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			territ.addListener(btn);
 			territ.setOwner(players[i % numPlayers]);
 			buttonMap.put(btn, territ);
+			territoryMap.put(territ, btn);
 			deck.add(new Card(territ, i % 3));
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(35, 35);
 			params.leftMargin = (int)(territ.x * (600.0/1062.0)) - 20;
@@ -153,8 +161,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		
 		gameLog = new GameLog();
 		gameLog.log(getResources().getString(R.string.log_game_initialized));
-		
-		//saveGame();
 
 		stateListeners = new ArrayList<StateListener>();
 		stateListeners.add((ActionButton) findViewById(R.id.action_button));
@@ -343,10 +349,10 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	public void endAdvance() {
 		changeState(State.ATTACK);
 		if (toTerrit.units != 1) {
-			fromTerrit.unhilite();
+			territoryMap.get(fromTerrit).setDeselected();
 			fromTerrit = toTerrit;
 		} else {
-			toTerrit.unhilite();
+			territoryMap.get(toTerrit).setDeselected();
 		}
 		toTerrit = null;
 		
@@ -397,7 +403,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		
 		changeState(State.FORTIFY);
 		if (fromTerrit != null) {
-			fromTerrit.unhilite();
+			territoryMap.get(fromTerrit).setDeselected();
 		}
 		fromTerrit = null;
 	}
@@ -405,10 +411,10 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	@Override
 	public void endFortifications() {
 		if (fromTerrit != null) {
-			fromTerrit.unhilite();
+			territoryMap.get(fromTerrit).setDeselected();
 		}
 		if (toTerrit != null) {
-			toTerrit.unhilite();
+			territoryMap.get(toTerrit).setDeselected();
 		}
 		endTurn();
 	}
@@ -416,7 +422,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	private boolean attack(Territory territ, boolean all) {
 		if (territ.owner == activePlayer) {
 			if (fromTerrit != null) {
-				fromTerrit.unhilite();
+				territoryMap.get(fromTerrit).setDeselected();
 			}
 			
 			if (territ.units == 1) {
@@ -425,7 +431,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			}
 			
 			fromTerrit = territ;
-			fromTerrit.hilite();
+			territoryMap.get(fromTerrit).setSelected();
 			message(getResources().getString(R.string.message_attack_from, fromTerrit.name));
 		} else if (fromTerrit != null) {
 			if (fromTerrit.units == 1) {
@@ -475,11 +481,11 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				
 				if (fromTerrit.units > 1) {
 					changeState(State.ADVANCE);
-					fromTerrit.hilite();
-					toTerrit.hilite();
+					territoryMap.get(fromTerrit).setSelected();
+					territoryMap.get(toTerrit).setSelected();
 				} else {
 					endAdvance();
-					fromTerrit.unhilite();
+					territoryMap.get(fromTerrit).setDeselected();
 				}
 				
 				gameLog.log(getResources().getString(R.string.log_territory_conquered, activePlayer.name, territ.name, territ.owner.name));
@@ -603,7 +609,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				return;
 			}
 			fromTerrit = territ;
-			fromTerrit.hilite();
+			territoryMap.get(fromTerrit).setSelected();
 			message(getResources().getString(R.string.message_fortify_from, fromTerrit.name));
 		} else if (toTerrit == null) {
 			if (!fromTerrit.isFortifyConnecting(territ)) {
@@ -612,7 +618,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			}
 			
 			toTerrit = territ;
-			toTerrit.hilite();
+			territoryMap.get(toTerrit).setSelected();
 			int toPlace = all ? fromTerrit.units - 1 : 1;
 			toTerrit.addUnits(toPlace);
 			fromTerrit.addUnits(-toPlace);
@@ -793,33 +799,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		continueTurnAfterSet(0);
 	}
 
-	@Override
-	public void onClick(View v) {
-		Territory territ = buttonMap.get(v);
-		if (territ == null) {
-			return;
-		}
-		switch (state) {
-		case PLACE:
-			place(territ);
-			break;
-		case DEPLOY:
-			deploy(territ, false);
-			break;
-		case ATTACK:
-			attack(territ, false);
-			break;
-		case ADVANCE:
-			advance(territ, false);
-			break;
-		case FORTIFY:
-			fortify(territ, false);
-			break;
-		}
-	}
-
-	@Override
-	public boolean onLongClick(View v) {
+	private boolean handleClick(View v, boolean longClick) {
 		Territory territ = buttonMap.get(v);
 		if (territ == null) {
 			return false;
@@ -829,18 +809,28 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			place(territ);
 			break;
 		case DEPLOY:
-			deploy(territ, true);
+			deploy(territ, longClick);
 			break;
 		case ATTACK:
-			attack(territ, true);
+			attack(territ, longClick);
 			break;
 		case ADVANCE:
-			advance(territ, true);
+			advance(territ, longClick);
 			break;
 		case FORTIFY:
-			fortify(territ, true);
+			fortify(territ, longClick);
 			break;
 		}
 		return true;
+	}
+
+	@Override
+	public void onClick(View v) {
+		handleClick(v, false);
+	}
+
+	@Override
+	public boolean onLongClick(View v) {
+		return handleClick(v, true);
 	}
 }

@@ -3,6 +3,7 @@ package com.jeffsul.riskapp.entities;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -16,7 +17,7 @@ import android.content.res.XmlResourceParser;
 import com.jeffsul.riskapp.players.Player;
 
 public class Map implements Territory.Listener {
-	public Set<Territory> territories;
+	public HashMap<String, Territory> territories;
 	public Set<Continent> continents;
 	
 	private Player[] players;
@@ -53,24 +54,62 @@ public class Map implements Territory.Listener {
 			parser.nextTag();
 			
 			parser.require(XmlResourceParser.START_TAG, null, "map");
-			territories = new HashSet<Territory>();
-			continents = new HashSet<Continent>();
-			while (parser.next() != XmlResourceParser.END_TAG) {
-				if (parser.getEventType() != XmlResourceParser.START_TAG) {
-					continue;
-				}
-				String name = parser.getName();
-				if (name.equals("continent")) {
-					continents.add(readContinent(parser));
-				} else if (name.equals("territory")) {
-					territories.add(readTerritory(parser));
-				} else {
-					skip(parser);
-				}
-			}
+			parser.nextTag();
+			readTerritories(parser);
+			parser.nextTag();
+			readConnections(parser);
 		} finally {
 			parser.close();
 		}
+	}
+	
+	private void readTerritories(XmlResourceParser parser) throws XmlPullParserException, IOException {
+		parser.require(XmlResourceParser.START_TAG, null, "territories");
+		territories = new HashMap<String, Territory>();
+		continents = new HashSet<Continent>();
+		while (parser.next() != XmlResourceParser.END_TAG) {
+			if (parser.getEventType() != XmlResourceParser.START_TAG) {
+				continue;
+			}
+			String name = parser.getName();
+			if (name.equals("continent")) {
+				continents.add(readContinent(parser));
+			} else if (name.equals("territory")) {
+				Territory t = readTerritory(parser);
+				territories.put(t.name, t);
+			} else {
+				skip(parser);
+			}
+		}
+	}
+	
+	private void readConnections(XmlResourceParser parser) throws XmlPullParserException, IOException {
+		parser.require(XmlResourceParser.START_TAG, null, "connections");
+		while (parser.next() != XmlResourceParser.END_TAG) {
+			if (parser.getEventType() != XmlResourceParser.START_TAG) {
+				continue;
+			}
+			if (parser.getName().equals("connection")) {
+				readConnection(parser);
+			} else {
+				skip(parser);
+			}
+		}
+	}
+	
+	private void readConnection(XmlResourceParser parser) throws XmlPullParserException, IOException {
+		parser.require(XmlResourceParser.START_TAG, null, "connection");
+		String t1 = parser.getAttributeValue(null, "t1");
+		String t2 = parser.getAttributeValue(null, "t2");
+		Territory territory1 = territories.get(t1);
+		Territory territory2 = territories.get(t2);
+		if (territory1 == null || territory2 == null) {
+			throw new XmlPullParserException("Could not find territory with name: " + (territory1 == null ? t1 : t2));
+		}
+		territory1.addConnector(territory2);
+		territory2.addConnector(territory1);
+		parser.nextTag();
+		parser.require(XmlResourceParser.END_TAG, null, "connection");
 	}
 	
 	private Continent readContinent(XmlResourceParser parser) throws XmlPullParserException, IOException {
@@ -89,7 +128,7 @@ public class Map implements Territory.Listener {
 				territoryList.addAll(Arrays.asList(subContinent.getTerritories()));
 			} else if (name.equals("territory")) {
 				Territory territory = readTerritory(parser);
-				territories.add(territory);
+				territories.put(territory.name, territory);
 				territoryList.add(territory);
 			} else {
 				skip(parser);
@@ -115,8 +154,21 @@ public class Map implements Territory.Listener {
 		return territory;
 	}
 
-	private void skip(XmlResourceParser parser) {
-		
+	private void skip(XmlResourceParser parser) throws XmlPullParserException, IOException {
+		if (parser.getEventType() != XmlResourceParser.START_TAG) {
+			throw new IllegalStateException("Attempt to skip tag failed: not at start of tag.");
+		}
+		int depth = 1;
+		while (depth != 0) {
+			switch (parser.next()) {
+			case XmlResourceParser.END_TAG:
+				depth--;
+				break;
+			case XmlResourceParser.START_TAG:
+				depth++;
+				break;
+			}
+		}
 	}
 
 	/**
@@ -146,7 +198,7 @@ public class Map implements Territory.Listener {
 	
 	public int getTerritoryCount(Player p) {
 		int count = 0;
-		for (Territory t : territories) {
+		for (Territory t : territories.values()) {
 			if (t.owner == p) {
 				count++;
 			}
@@ -156,7 +208,7 @@ public class Map implements Territory.Listener {
 	
 	public int getTroopCount(Player p) {
 		int count = 0;
-		for (Territory t : territories) {
+		for (Territory t : territories.values()) {
 			if (t.owner == p) {
 				count += t.units;
 			}
@@ -165,12 +217,12 @@ public class Map implements Territory.Listener {
 	}
 	
 	public Territory[] getTerritories() {
-		return territories.toArray(new Territory[territories.size()]);
+		return territories.values().toArray(new Territory[territories.size()]);
 	}
 	
 	public Territory[] getTerritories(Player p) {
 		Set<Territory> playerTerritories = new HashSet<Territory>();
-		for (Territory t : territories) {
+		for (Territory t : territories.values()) {
 			if (t.owner == p) {
 				playerTerritories.add(t);
 			}

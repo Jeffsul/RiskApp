@@ -1,59 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <map name="Classic Map" src="classic_map.jpg">
-    <continent name="North America" bonus="5">
-        <territory x="109" y="197">Alaska</territory>
-        <territory x="261" y="206">Northwest Territories</territory>
-        <territory x="262" y="289">Western Canada</territory>
-        <territory x="374" y="303">Central Canada</territory>
-        <territory x="486" y="302">Eastern Canada</territory>
-        <territory x="622" y="129">Greenland</territory>
-        <territory x="274" y="385">Western United States</territory>
-        <territory x="383" y="417">Eastern United States</territory>
-        <territory x="288" y="491">Central America</territory>
-    </continent>
-    <continent name="South America" bonus="2">
-        <territory x="350" y="618">Venezuela</territory>
-        <territory id="per" borders="bra,arg" x="372" y="752">Peru</territory>
-        <territory id="arg" borders="per,bra" x="391" y="877">Argentina</territory>
-        <territory id="bra" borders="per,arg,naf" x="483" y="724">Brazil</territory>
-    </continent>
-    <continent name="Africa" bonus="3">
-        <territory id="naf" borders="bra,con,eaf,egy,weu,seu" x="698" y="643">North Africa</territory>
-        <territory id="con" borders="naf,eaf,saf" x="790" y="768">Congo</territory>
-        <territory id="saf" borders="con,eaf,mad" x="787" y="914">South Africa</territory>
-        <territory id="mad" borders="saf,eaf" x="917" y="900">Madagascar</territory>
-        <territory id="eaf" borders="mad,saf,con,naf,egy,mea" x="864" y="692">East Africa</territory>
-        <territory id="egy" borders="naf,eaf,mea,seu" x="805" y="570">Egypt</territory>
-    </continent>
-    <continent name="Europe" bonus="5">
-        <territory id="ice" borders="gbr,sca" x="675" y="238">Iceland</territory>
-        <territory id="sca" borders="ice,ukr,gbr,neu" x="777" y="206">Scandinavia</territory>
-        <territory id="gbr" borders="ice,weu,neu,sca" x="680" y="344">Great Britain</territory>
-        <territory id="weu" borders="naf,gbr,seu,neu" x="671" y="457">Western Europe</territory>
-        <territory id="neu" borders="seu,weu,gbr,ukr,sca" x="764" y="354">Northern Europe</territory>
-        <territory id="seu" borders="weu,neu,egy,naf,mea,ukr" x="806" y="425">Southern Europe</territory>
-        <territory id="ukr" borders="sca,neu,seu,mea,afg,ura" x="914" y="291">Ukraine</territory>
-    </continent>
-    <continent name="Oceania" bonus="2">
-        <territory id="ino" borders="sia,wau,ngu" x="1257" y="716">Indonesia</territory>
-        <territory id="ngu" borders="ino,wau,eau" x="1423" y="744">New Guinea</territory>
-        <territory id="wau" borders="ino,eau,ngu" x="1257" y="879">Western Australia</territory>
-        <territory id="eau" borders="wau,ngu" x="1397" y="886">Eastern Australia</territory>
-    </continent>
-    <continent name="Asia" bonus="7">
-        <territory id="mea" borders="eaf,egy,ukr,seu,ind,afg" x="915" y="523">Middle East</territory>
-        <territory id="afg" borders="mea,ukr,ind,chi,ura" x="1035" y="398">Afghanistan</territory>
-        <territory id="ind" borders="mea,afg,chi,sia" x="1101" y="579">India</territory>
-        <territory id="sia" borders="ind,chi,ino" x="1218" y="590">Siam</territory>
-        <territory id="chi" borders="sia,ind,afg,ura,sib,mon" x="1206" y="471">China</territory>
-        <territory id="ura" borders="ukr,afg,chi,sib" x="1086" y="299">Ural</territory>
-        <territory id="sib" borders="chi,ura,mon,irk,yak" x="1171" y="250">Siberia</territory>
-        <territory id="mon" borders="chi,sib,jap,kam,irk" x="1302" y="383">Mongolia</territory>
-        <territory id="jap" borders="mon,kam" x="1411" y="428">Japan</territory>
-        <territory id="irk" borders="mon,sib,yak,kam" x="1273" y="298">Irkutsk</territory>
-        <territory id="yak" borders="kam,sib,irk" x="1324" y="203">Yakutsk</territory>
-        <territory id="kam" borders="jap,mon,irk,yak" x="1480" y="205">Kamchatka</territory>
-    </continent>
+    <territories>
+	    <continent name="North America" bonus="5">
+	        <territory x="109" y="197">Alaska</territory>
+	        <territory x="261" y="206">Northwest Territories</territory>
+	        <territory x="262" y="289">Western Canada</territory>
+	        <territory x="374" y="303">Central Canada</territory>
+	        <territory x="486" y="302">Eastern Canada</territory>
+	        <territory x="622" y="129">Greenland</territory>
+	        <territory x="274" y="385">Western United States</territory>
+	        <territory x="383" y="417">Eastern United States</territory>
+	        <territory x="288" y="491">Central America</territory>
+	    </continent>
+	    <continent name="South America" bonus="2">
+	        <territory x="350" y="618">Venezuela</territory>
+	        <territory x="372" y="752">Peru</territory>
+	        <territory x="391" y="877">Argentina</territory>
+	        <territory x="483" y="724">Brazil</territory>
+	    </continent>
+	    <continent name="Africa" bonus="3">
+	        <territory x="698" y="643">North Africa</territory>
+	        <territory x="790" y="768">Congo</territory>
+	        <territory x="787" y="914">South Africa</territory>
+	        <territory x="917" y="900">Madagascar</territory>
+	        <territory x="864" y="692">East Africa</territory>
+	        <territory x="805" y="570">Egypt</territory>
+	    </continent>
+	    <continent name="Europe" bonus="5">
+	        <territory x="675" y="238">Iceland</territory>
+	        <territory x="777" y="206">Scandinavia</territory>
+	        <territory x="680" y="344">Great Britain</territory>
+	        <territory x="671" y="457">Western Europe</territory>
+	        <territory x="764" y="354">Northern Europe</territory>
+	        <territory x="806" y="425">Southern Europe</territory>
+	        <territory x="914" y="291">Ukraine</territory>
+	    </continent>
+	    <continent name="Oceania" bonus="2">
+	        <territory x="1257" y="716">Indonesia</territory>
+	        <territory x="1423" y="744">New Guinea</territory>
+	        <territory x="1257" y="879">Western Australia</territory>
+	        <territory x="1397" y="886">Eastern Australia</territory>
+	    </continent>
+	    <continent name="Asia" bonus="7">
+	        <territory x="915" y="523">Middle East</territory>
+	        <territory x="1035" y="398">Afghanistan</territory>
+	        <territory x="1101" y="579">India</territory>
+	        <territory x="1218" y="590">Siam</territory>
+	        <territory x="1206" y="471">China</territory>
+	        <territory x="1086" y="299">Ural</territory>
+	        <territory x="1171" y="250">Siberia</territory>
+	        <territory x="1302" y="383">Mongolia</territory>
+	        <territory x="1411" y="428">Japan</territory>
+	        <territory x="1273" y="298">Irkutsk</territory>
+	        <territory x="1324" y="203">Yakutsk</territory>
+	        <territory x="1480" y="205">Kamchatka</territory>
+	    </continent>
+    </territories>
     
     <connections>
         <connection t1="Alaska" t2="Kamchatka" />
@@ -77,5 +79,67 @@
         <connection t1="Central America" t2="Venezuela" />
         <connection t1="Venezuela" t2="Peru" />
         <connection t1="Venezuela" t2="Brazil" />
+        <connection t1="Peru" t2="Brazil" />
+        <connection t1="Peru" t2="Argentina" />
+        <connection t1="Argentina" t2="Brazil" />
+        <connection t1="Brazil" t2="North Africa" />
+        <connection t1="North Africa" t2="Congo" />
+        <connection t1="North Africa" t2="East Africa" />
+        <connection t1="North Africa" t2="Egypt" />
+        <connection t1="North Africa" t2="Western Europe" />
+        <connection t1="North Africa" t2="Southern Europe" />
+        <connection t1="Congo" t2="East Africa" />
+        <connection t1="Congo" t2="South Africa" />
+        <connection t1="East Africa" t2="Madagascar" />
+        <connection t1="East Africa" t2="South Africa" />
+        <connection t1="East Africa" t2="Egypt" />
+        <connection t1="East Africa" t2="Middle East" />
+        <connection t1="South Africa" t2="Madagascar" />
+        <connection t1="Egypt" t2="Middle East" />
+        <connection t1="Egypt" t2="Southern Europe" />
+        <connection t1="Ukraine" t2="Scandinavia" />
+        <connection t1="Ukraine" t2="Northern Europe" />
+        <connection t1="Ukraine" t2="Southern Europe" />
+        <connection t1="Ukraine" t2="Middle East" />
+        <connection t1="Ukraine" t2="Afghanistan" />
+        <connection t1="Ukraine" t2="Ural" />
+        <connection t1="Northern Europe" t2="Southern Europe" />
+        <connection t1="Northern Europe" t2="Western Europe" />
+        <connection t1="Northern Europe" t2="Great Britain" />
+        <connection t1="Northern Europe" t2="Scandinavia" />
+        <connection t1="Great Britain" t2="Iceland" />
+        <connection t1="Great Britain" t2="Western Europe" />
+        <connection t1="Great Britain" t2="Scandinavia" />
+        <connection t1="Iceland" t2="Scandinavia" />
+        <connection t1="Western Europe" t2="Southern Europe" />
+        <connection t1="Southern Europe" t2="Middle East" />
+        <connection t1="China" t2="Siam" />
+        <connection t1="China" t2="India" />
+        <connection t1="China" t2="Afghanistan" />
+        <connection t1="China" t2="Ural" />
+        <connection t1="China" t2="Siberia" />
+        <connection t1="China" t2="Mongolia" />
+        <connection t1="Siberia" t2="Ural" />
+        <connection t1="Siberia" t2="Mongolia" />
+        <connection t1="Siberia" t2="Irkutsk" />
+        <connection t1="Siberia" t2="Yakutsk" />
+        <connection t1="Kamchatka" t2="Japan" />
+        <connection t1="Kamchatka" t2="Mongolia" />
+        <connection t1="Kamchatka" t2="Irkutsk" />
+        <connection t1="Kamchatka" t2="Yakutsk" />
+        <connection t1="India" t2="Middle East" />
+        <connection t1="India" t2="Afghanistan" />
+        <connection t1="India" t2="Siam" />
+        <connection t1="Indonesia" t2="Siam" />
+        <connection t1="Indonesia" t2="Western Australia" />
+        <connection t1="Indonesia" t2="New Guinea" />
+        <connection t1="Middle East" t2="Afghanistan" />
+        <connection t1="Afghanistan" t2="Ural" />
+        <connection t1="Mongolia" t2="Japan" />
+        <connection t1="Mongolia" t2="Irkutsk" />
+        <connection t1="Irkutsk" t2="Yakutsk" />
+        <connection t1="New Guinea" t2="Western Australia" />
+        <connection t1="New Guinea" t2="Eastern Australia" />
+        <connection t1="Western Australia" t2="Eastern Australia" />
     </connections>
 </map>

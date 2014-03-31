@@ -2,6 +2,8 @@ package com.jeffsul.riskapp.entities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.jeffsul.riskapp.players.Player;
 
@@ -18,7 +20,7 @@ public class Territory {
 	public int units = DEFAULT_UNITS;
 	public Player owner;
 	
-	private Territory[] connectors;
+	private Set<Territory> connectors;
 	//private final Button btn;
 	
 	private ArrayList<Listener> listeners;
@@ -34,6 +36,7 @@ public class Territory {
 		this.y = y;
 		
 		listeners = new ArrayList<Listener>();
+		connectors = new HashSet<Territory>();
 	}
 	
 	public void addListener(Listener listener) {
@@ -46,8 +49,8 @@ public class Territory {
 		btn.setOnLongClickListener(listener2);
 	}*/
 	
-	public void connect(Territory[] conns) {
-		connectors = conns;
+	public void addConnector(Territory connector) {
+		connectors.add(connector);
 	}
 	
 	public void addUnits(int num) {
@@ -70,23 +73,15 @@ public class Territory {
 		owner = newOwner;
 	}
 	
-	public void hilite() {
-		//btn.setBackgroundResource(R.drawable.territory_button_highlighted);
-	}
-	
-	public void unhilite() {
-		//btn.setBackgroundResource(R.drawable.territory_button);
-	}
-	
 	public Territory[] getConnectors() {
-		return connectors;
+		return connectors.toArray(new Territory[connectors.size()]);
 	}
 	
 	public Territory[] getFriendlyConnectors(Player player) {
 		ArrayList<Territory> friends = new ArrayList<Territory>();
-		for (int i = 0; i < connectors.length; i++) {
-			if (connectors[i].owner == player) {
-				friends.add(connectors[i]);
+		for (Territory conn : connectors) {
+			if (conn.owner == player) {
+				friends.add(conn);
 			}
 		}
 		Territory[] friendTerrits = new Territory[friends.size()];
@@ -96,9 +91,9 @@ public class Territory {
 	
 	public Territory[] getEnemyConnectors(Player player) {
 		ArrayList<Territory> enemies = new ArrayList<Territory>();
-		for (int i = 0; i < connectors.length; i++) {
-			if (connectors[i].owner != player) {
-				enemies.add(connectors[i]);
+		for (Territory conn : connectors) {
+			if (conn.owner != player) {
+				enemies.add(conn);
 			}
 		}
 		Territory[] enemyTerrits = new Territory[enemies.size()];

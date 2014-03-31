@@ -18,8 +18,12 @@ public class PlayerPanel extends LinearLayout implements Map.Listener, Player.Li
 		super(ctx, attrs);
 		setOrientation(VERTICAL);
 		setPadding(PADDING, PADDING, PADDING, PADDING);
-		
-		//setBackgroundColor(player.color);
+	}
+
+	public void setPlayer(Player player) {
+		this.player = player;
+		setBackgroundColor(player.color);
+		((TextView) findViewById(R.id.player_panel_name)).setText(player.name);
 	}
 
 	@Override
@@ -36,7 +40,6 @@ public class PlayerPanel extends LinearLayout implements Map.Listener, Player.Li
 			if (count == 0) {
 				((TextView) findViewById(R.id.bonus_count_textview)).setText(getResources().getString(R.string.pp_bonus, 0));
 				setBackgroundColor(getResources().getColor(R.color.pp_dead));
-				//nameLbl.setTextColor(Color.LTGRAY);
 			}
 		}
 	}

@@ -14,7 +14,16 @@ public class TerritoryButton extends Button implements Territory.Listener {
 		setBackgroundResource(R.drawable.territory_button);
 		setText("3");
 		setTextSize(14);
+		setPadding(0, 0, 0, 0);
 		setTypeface(null, Typeface.BOLD);
+	}
+	
+	public void setSelected() {
+		setBackgroundResource(R.drawable.territory_button_highlighted);
+	}
+
+	public void setDeselected() {
+		setBackgroundResource(R.drawable.territory_button);
 	}
 
 	@Override
