@@ -1,4 +1,4 @@
-package com.jeffsul.riskapp;
+package com.jeffsul.riskapp.login;
 
 import android.os.Bundle;
 import android.app.Activity;

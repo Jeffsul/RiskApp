@@ -1,4 +1,9 @@
-package com.jeffsul.riskapp;
+package com.jeffsul.riskapp.login;
+
+import com.jeffsul.riskapp.MainActivity;
+import com.jeffsul.riskapp.R;
+import com.jeffsul.riskapp.R.id;
+import com.jeffsul.riskapp.R.layout;
 
 import android.os.Bundle;
 import android.app.Activity;
