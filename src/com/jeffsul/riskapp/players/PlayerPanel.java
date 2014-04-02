@@ -37,10 +37,6 @@ public class PlayerPanel extends LinearLayout implements Map.Listener, Player.Li
 	public void onTerritoryCountChange(Player player, int count) {
 		if (this.player == player) {
 			((TextView) findViewById(R.id.territory_count_textview)).setText(getResources().getString(R.string.pp_territories, count));
-			if (count == 0) {
-				((TextView) findViewById(R.id.bonus_count_textview)).setText(getResources().getString(R.string.pp_bonus, 0));
-				setBackgroundColor(getResources().getColor(R.color.pp_dead));
-			}
 		}
 	}
 
