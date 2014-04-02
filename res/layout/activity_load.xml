@@ -1,50 +1,18 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:custom="http://schemas.android.com/apk/res/com.jeffsul.riskapp"
+    android:id="@+id/grid_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical"
-    android:showDividers="middle"
-    android:divider="?android:attr/listDivider"
+    android:columnWidth="90dp"
+    android:numColumns="auto_fit"
+    android:verticalSpacing="10dp"
+    android:horizontalSpacing="10dp"
+    android:stretchMode="columnWidth"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
-    
-    <com.jeffsul.riskapp.LoadGameView
-            android:id="@+id/view1"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/listPreferredItemHeight"
-            android:background="?android:selectableItemBackground"
-            android:onClick="onClicked" />
-<!--             custom:titleText="Background color"
-            custom:valueColor="@android:color/holo_green_light" -->
-
-    <com.jeffsul.riskapp.LoadGameView
-            android:id="@+id/view2"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/listPreferredItemHeight"
-            android:background="?android:selectableItemBackground"
-            android:onClick="onClicked"
-            custom:titleText="Foreground color"
-            custom:valueColor="@android:color/holo_orange_dark"
-             />
-
-<!--     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:text="@string/load_game_title" />
-        
-	    <TableLayout
-	        android:id="@+id/savedGamesTable"
-	        android:layout_width="match_parent"
-	        android:layout_height="0dip"
-	        android:layout_weight="0.44" >
-    
-	    </TableLayout> -->
 	    
-</LinearLayout>
+</GridView>
