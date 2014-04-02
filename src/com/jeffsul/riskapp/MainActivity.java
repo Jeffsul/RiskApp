@@ -1,8 +1,13 @@
 package com.jeffsul.riskapp;
 
+import com.jeffsul.riskapp.db.RiskGameContract.RiskGame;
+import com.jeffsul.riskapp.db.RiskGameDbHelper;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -47,6 +52,19 @@ public class MainActivity extends Activity {
 				R.array.option_cards_settings, android.R.layout.simple_spinner_item);
 		cardsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		cardsSpinner.setAdapter(cardsAdapter);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		RiskGameDbHelper helper = new RiskGameDbHelper(this);
+		SQLiteDatabase db = helper.getReadableDatabase();
+		String[] projection = {RiskGame._ID, RiskGame.COLUMN_NAME_CREATED, RiskGame.COLUMN_NAME_MAP_ID};
+		Cursor c = db.query(RiskGame.TABLE_NAME, projection, null, null, null, null, RiskGame._ID + " DESC");
+		System.out.println("GAMES: " + c.getCount());
+		while (c.moveToNext()) {
+			System.out.println(c.getInt(c.getColumnIndex(RiskGame._ID)) + " :: " + c.getString(c.getColumnIndex(RiskGame.COLUMN_NAME_CREATED)));
+		}
 	}
 	
 	public void sendMessage(View view) {

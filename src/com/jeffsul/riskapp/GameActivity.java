@@ -6,7 +6,9 @@ import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
+import com.jeffsul.riskapp.db.RiskGameContract.RiskGame;
+import com.jeffsul.riskapp.db.RiskGameContract.RiskGamePlayers;
+import com.jeffsul.riskapp.db.RiskGameContract.RiskGameTerritories;
+import com.jeffsul.riskapp.db.RiskGameDbHelper;
 import com.jeffsul.riskapp.dialogs.AutoGameDialogFragment;
 import com.jeffsul.riskapp.dialogs.PlaySetDialogFragment;
 import com.jeffsul.riskapp.entities.Card;
@@ -67,6 +73,8 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	public boolean autoGame;
 	public boolean simulate;
 	//private int simulateCount;
+	
+	private long savedGameId = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +107,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			break;
 		}
 		initializeGame();
+		saveGame();
 	}
 
 	private void initializeGame() {
@@ -176,6 +185,47 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		activePlayer.setState(newState);
 		for (StateListener listener : stateListeners) {
 			listener.onStateChange(activePlayer, newState);
+		}
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		saveGame();
+	}
+
+	private void saveGame() {
+		RiskGameDbHelper helper = new RiskGameDbHelper(this);
+		SQLiteDatabase db = helper.getWritableDatabase();
+		if (savedGameId == -1) {
+			ContentValues values = new ContentValues();
+			values.put(RiskGame.COLUMN_NAME_CREATED, Long.toString(System.currentTimeMillis()));
+			values.put(RiskGame.COLUMN_NAME_LAST_PLAYED, Long.toString(System.currentTimeMillis()));
+			values.put(RiskGame.COLUMN_NAME_MAP_ID, "map_classic");
+			values.put(RiskGame.COLUMN_NAME_TURN_COUNTER, index);
+			values.put(RiskGame.COLUMN_NAME_NUM_PLAYERS, numPlayers);
+			savedGameId = db.insert(RiskGame.TABLE_NAME, "null", values);
+
+			for (int i = 0; i < numPlayers; i++) {
+				ContentValues values2 = new ContentValues();
+				values2.put(RiskGamePlayers.COLUMN_NAME_GAME_ID, savedGameId);
+				values2.put(RiskGamePlayers.COLUMN_NAME_PLAYER_NAME, players[i].name);
+				values2.put(RiskGamePlayers.COLUMN_NAME_PLAYER_POSITION, i);
+				db.insert(RiskGamePlayers.TABLE_NAME, "null", values2);
+			}
+		}
+
+		// Delete existing territory data.
+		db.delete(RiskGameTerritories.TABLE_NAME, RiskGameTerritories.COLUMN_NAME_GAME_ID + "=?", new String[] {Long.toString(savedGameId)});
+		
+		Territory[] territories = map.getTerritories();
+		for (Territory t : territories) {
+			ContentValues values3 = new ContentValues();
+			values3.put(RiskGameTerritories.COLUMN_NAME_GAME_ID, savedGameId);
+			values3.put(RiskGameTerritories.COLUMN_NAME_OWNER, t.owner.name);
+			values3.put(RiskGameTerritories.COLUMN_NAME_TERRITORY_ID, t.name);
+			values3.put(RiskGameTerritories.COLUMN_NAME_UNITS, t.units);
+			db.insert(RiskGameTerritories.TABLE_NAME, "null", values3);
 		}
 	}
 
