@@ -53,19 +53,6 @@ public class MainActivity extends Activity {
 		cardsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		cardsSpinner.setAdapter(cardsAdapter);
 	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		RiskGameDbHelper helper = new RiskGameDbHelper(this);
-		SQLiteDatabase db = helper.getReadableDatabase();
-		String[] projection = {RiskGame._ID, RiskGame.COLUMN_NAME_CREATED, RiskGame.COLUMN_NAME_MAP_ID};
-		Cursor c = db.query(RiskGame.TABLE_NAME, projection, null, null, null, null, RiskGame._ID + " DESC");
-		System.out.println("GAMES: " + c.getCount());
-		while (c.moveToNext()) {
-			System.out.println(c.getInt(c.getColumnIndex(RiskGame._ID)) + " :: " + c.getString(c.getColumnIndex(RiskGame.COLUMN_NAME_CREATED)));
-		}
-	}
 	
 	public void sendMessage(View view) {
 		if (view.getId() == R.id.button_add_challenge) {
