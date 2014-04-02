@@ -19,6 +19,7 @@ public class ChallengeActivity extends Activity {
 	public void startActivity(View view) {
 		ChallengeFacade.Listener cListener = new ChallengeFacade.Listener() {
 			public void onChallengeResponse() {
+				System.out.println("Challenge responded to");
 			}
 		};
 		finishActivity();
@@ -26,6 +27,7 @@ public class ChallengeActivity extends Activity {
 	}
 	
 	public void finishActivity() {
+		System.out.println("Finished");
 		Intent result = new Intent();
 		String userName = ((EditText)findViewById(R.id.challenge_user_name)).getText().toString();
 		result.putExtra(RESPONSE_USER_NAME, userName);
