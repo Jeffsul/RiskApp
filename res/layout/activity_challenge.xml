@@ -29,6 +29,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/challenge_user_button"
-    	android:onClick="sendMessage" />
+    	android:onClick="startActivity" />
     
 </LinearLayout>
