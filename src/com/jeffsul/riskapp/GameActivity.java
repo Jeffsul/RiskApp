@@ -377,6 +377,12 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		
 		index++;
 		activePlayer = players[index % numPlayers];
+		
+		//Making sure it doesn't array out of bounds
+		if(index >= numPlayers){
+			index = index % numPlayers;
+		}
+		
 		if (activePlayer.getDeployCount() > 0) {
 			changeState(State.PLACE);
 		} else {
