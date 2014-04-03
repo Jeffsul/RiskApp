@@ -1,56 +1,44 @@
 package com.jeffsul.riskapp.login;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.view.Menu;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.EditText;
 
 public class LoginMediator {	
 	
+	// allows access to the sharedPreferences of this application
 	SharedPreferences sharedPreferences;
 	
 	public LoginMediator(Context context)
 	{
+		// gets the shared preference from the input context (context of an Activity)
 		sharedPreferences = context.getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
 	}
 	
-	private ArrayList<Listener> listeners;
-	
 	public interface Listener {
-		public void onLoginResponse(); //login response?
+		public void onResponse(); //login response or create account response
 	}
 	
-	public void attemptLogin(Listener listener, String username, String password) { //static
+	// login elements ====================================================================================
+	
+	// executes the LoginAsyncTask
+	private void attemptLogin(Listener listener, String username, String password) {
 		new LoginAsyncTask(username, password).execute(listener);
 	}
 
-	private class LoginAsyncTask extends AsyncTask<Listener, Void, Listener> { //static
-		
+	private class LoginAsyncTask extends AsyncTask<Listener, Void, Listener>
+	{
+		// the username and password attempting to be logged in with
 		String username;
 		String password;
 		
@@ -62,53 +50,50 @@ public class LoginMediator {
 	    }
 		
 		@Override
-		protected Listener doInBackground(Listener... listeners) {
-			// will be the server address to login with
-			String url = "http://wifinder-syde362.herokuapp.com/home?RSSI=" + username + "&ID=" + password + "&token=wfs"; 
+		protected Listener doInBackground(Listener... listeners)
+		{
+			// creates a GET request, sent to the web hosted server
+			String stringResponse = makeGETLoginRequest(username, password);
+			System.out.println("Response: " + stringResponse);
 			
-			HttpResponse response = null;
-			String stringRespons = "null";
+			//Response form, will not be used when server is real
+			stringResponse = "{'riskAppLoginResponse':{ 'verified':true, 'username':'" + username + "'} }";
+			
+			// collects the desired data from the GET response of the server
+			boolean verified = false;
+			String usernameResponded = "null";
 			try {
-			    HttpClient httpclient = new DefaultHttpClient();
-			    HttpGet request = new HttpGet(url);
-			    response = httpclient.execute(request);
-			    stringRespons = EntityUtils.toString(response.getEntity());
-			} catch (Exception e) {
-				System.out.println("Exception during GET: " + e.toString());
-			}
-			System.out.println("Response: " + stringRespons);
+				JSONObject jObject = new JSONObject(stringResponse);
+				jObject = jObject.getJSONObject("riskAppLoginResponse");
+				
+				verified = jObject.getBoolean("verified");
+				usernameResponded = jObject.getString("username");
+			} catch (JSONException e) {
+				System.out.println("Exception during JSON Parse: " + e.toString());
+		    }
+			System.out.println("verified: " + verified + " username: " + usernameResponded);
 			
-			/* Response form
-			 * { riskAppLoginResponse: [
-			 * 			{ "verified":true, "username":"nolan" }
-			 * 		]
-			 * }
-			 * 
-			 */
-			
-			// check get response for verified
+			// check get response to make sure it verified
 			boolean loginVerified = true;
-			
-			/*
-			 * if(stringRespons -- transformed into JSON -- .getVal("verified") != true OR !username.equals(.getVal("username")) )
-			 * {
-			 * 		not logged in
-			 * 		loginVerified = false;
-			 * }
-			 * else
-			 * {
-			 * 		loginVerified = true;
-			 * }
-			 */
+			if(!verified || !username.equals(usernameResponded))
+			{
+				//not logged in
+				loginVerified = false;
+			}
+			else if (verified && username.equals(usernameResponded))
+			{
+				loginVerified = true;
+			}
 			
 			if (loginVerified)
 			{	
+				// if the login was verified, set the Globally logged in user
 				storeGlobalUser(username);
-				//System.out.println("Shared Perference: " + userKey + " as: " + username);
 			}
 			else
 			{
-				storeGlobalUser("NotLoggedIn");
+				// if the login failed, mark the global user as not logged in
+				storeGlobalUser("**NotLoggedIn**");
 			}
 			
 			return listeners[0];
@@ -117,12 +102,129 @@ public class LoginMediator {
 		// runs after doinbackground
 		@Override
 		protected void onPostExecute(Listener listener) {
-			listener.onLoginResponse();
+			// invokes the method waiting for a response
+			listener.onResponse();
 		}
 	}
 	
+	// create account elements ====================================================================================
+
+	// executes the CAccountAsyncTask
+	public void attemptCAccount(Listener listener, String username, String password) {
+		new CAccountAsyncTask(username, password).execute(listener);
+	}
+	
+	private class CAccountAsyncTask extends AsyncTask<Listener, Void, Listener>
+	{
+		// the username and password attempting to create an account with
+		String username;
+		String password;
+		
+		public CAccountAsyncTask(String usn, String pw) {
+	        super();
+	        
+	        username = usn;
+	        password = pw;
+	    }
+		
+		@Override
+		protected Listener doInBackground(Listener... listeners) 
+		{
+			// creates a GET request, sent to the web hosted server
+			String stringResponse = makeGETCAccountRequest(username,  password);
+			System.out.println("Response: " + stringResponse);
+			
+			//Response form, will not be used when server is real
+			stringResponse = "{'riskAppCAccountResponse':{ 'created':true, 'username':'" + username + "', 'usernameWasTaken': false} }";
+			  
+			// collects the desired data from the GET response of the server
+			boolean created = false;
+			String usernameResponded = "null";
+			boolean usernameWasTaken = false;
+			try {
+				JSONObject jObject = new JSONObject(stringResponse);
+				jObject = jObject.getJSONObject("riskAppCAccountResponse");
+				
+				created = jObject.getBoolean("created");
+				usernameResponded = jObject.getString("username");
+				usernameWasTaken = jObject.getBoolean("usernameWasTaken");
+			} catch (JSONException e) {
+				System.out.println("Exception during JSON Parse: " + e.toString());
+		    }
+			System.out.println("created: " + created + " username: " + usernameResponded + " usernameWasTaken: " + usernameWasTaken);
+			
+			// checks the GET response to see if it was verified
+			boolean createVerified = true;
+			if(!created || !username.equals(usernameResponded)) {
+				createVerified = false;
+			}
+			
+			// checks if the username was already taken
+			boolean duplicate = false;
+			if (usernameWasTaken) {
+			  	duplicate = true;
+			}
+			
+			if (createVerified && !duplicate)
+			{	
+				// if the user creation was verified and the user was not a duplicate, log them in
+				storeGlobalUser(username);
+			}
+			else if (duplicate && !createVerified)
+			{
+				// if the username was already taken
+				storeGlobalUser("**UsernameWasTaken**");
+			}
+			else
+			{
+				// some other case not created but not because of a duplicate
+				storeGlobalUser("**NotLoggedIn**");
+			}
+			
+			return listeners[0];
+		}
+		
+		// runs after doinbackground
+		@Override
+		protected void onPostExecute(Listener listener) {
+			listener.onResponse();
+		}
+	}
+	
+	// sends a GET request to the server with the username and password to login with and returns the GET response
+	private String makeGETLoginRequest(String username, String password)
+	{
+		String loginURL = "http://wifinder-syde362.herokuapp.com/home?RSSI=" + username + "&ID=" + password + "&token=wfs"; 
+		return makeGETRequest(loginURL);
+	}
+	
+	// sends a GET request to the server with the username and password to create an account with and returns the GET response
+	private String makeGETCAccountRequest(String username, String password)
+	{
+		String cAccountURL = "http://wifinder-syde362.herokuapp.com/home?RSSI=" + username + "&ID=" + password + "&token=wfs"; 
+		return makeGETRequest(cAccountURL);
+	}
+	
+	// creates and sends the GET request object to the provided URL
+	private String makeGETRequest(String url)
+	{
+		HttpResponse response = null;
+		String stringResponse = "null";
+		try {
+		    HttpClient httpclient = new DefaultHttpClient();
+		    HttpGet request = new HttpGet(url);
+		    response = httpclient.execute(request);
+		    stringResponse = EntityUtils.toString(response.getEntity());
+		} catch (Exception e) {
+			System.out.println("Exception during GET: " + e.toString());
+		}
+		return stringResponse;
+	}
+	
+	// stores a username as the globally logged in user of the App
 	private boolean storeGlobalUser(String username)
 	{
+		// this key is needed to retrieve the logged in user
 		String userKey = "com.example.app.user";
 		try {
 			SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -134,24 +236,17 @@ public class LoginMediator {
 		return true;
 	}
 	
-	public boolean login(String username, String password, Listener loginListener)
+	// public method that tries to login with the given parameters
+	public void login(String username, String password, Listener loginListener)
 	{
-		
-//		Listener loginListener = new Listener() {
-//			public void onLoginResponse() {
-//				System.out.println("login responded to");
-//			}
-//		};
 		this.attemptLogin(loginListener, username, password);
-		
-		//System.out.println("Login Verified for user: " + username);
-		return true;
 	}
 	
-	public boolean createAccount(String username, String password)
+	// public method that tries to create an account with the given parameters
+	public void createAccount(String username, String password, Listener caccountListener)
 	{
+		this.attemptCAccount(caccountListener, username, password);
 		
 		System.out.println("New Account Created for user: " + username);
-		return true;
 	}
 }
