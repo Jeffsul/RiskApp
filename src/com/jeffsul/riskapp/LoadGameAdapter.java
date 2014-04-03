@@ -9,6 +9,7 @@ import com.jeffsul.riskapp.entities.Game;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -66,7 +67,7 @@ public class LoadGameAdapter extends BaseAdapter {
 			v.setPadding(8, 8, 8, 8);
 			
 			TextView tv = new TextView(context);
-			tv.setText(Integer.toString(g.id) + " (" + g.getFormattedDateCreated() + ")");
+			tv.setText(Html.fromHtml("<b>Game: </b>" + Integer.toString(g.id) + "<br><i>Date last played: </i>" + g.getFormattedDateCreated()));
 			v.addView(tv);
 		} else {
 			v = (LinearLayout) convertView;
