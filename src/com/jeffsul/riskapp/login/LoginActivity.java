@@ -51,13 +51,14 @@ public class LoginActivity extends Activity {
 		System.out.println("Password: " + password_input);
 
 		LoginMediator.Listener loginListener = new LoginMediator.Listener() {
-			public void onLoginResponse() {
+			public void onResponse() {
 				System.out.println("login responded to");
 				loginResponded();
 			}
 		};
 		loginMediator.login(username_input, password_input, loginListener);
 	}
+	
 	public void loginResponded()
 	{
 		String username = "null";
@@ -92,8 +93,15 @@ public class LoginActivity extends Activity {
 		String new_confirm_password_input = getTextboxText(R.id.new_confirm_password_textbox);
 		
 		if (new_password_input.equals(new_confirm_password_input))
-		{
-			System.out.println("New Password confirmed matching");
+		{	
+			// verify new login data
+			LoginMediator.Listener caccountListener = new LoginMediator.Listener() {
+				public void onResponse() {
+					System.out.println("create account responded to");
+					cAccountResponded();
+				}
+			};
+			loginMediator.createAccount(new_username_input, new_password_input, caccountListener);
 		}
 		else
 		{
@@ -102,11 +110,46 @@ public class LoginActivity extends Activity {
 			// doesnt actually go here
 			createDialogBox("The Passwords did not match!");
 		}
+	}
+	
+	public void cAccountResponded()
+	{
+		String username = "null";
+		//get the global user
+		SharedPreferences prefs = this.getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
+		String userKey = "com.example.app.user";
+		username = prefs.getString(userKey, "no user found"); 
 		
-		// verify new login data
-		if (loginMediator.createAccount(new_username_input, new_password_input))
+		if (username.equals("UsernameWasTaken"))
 		{
-			advanceScreen();
+			createDialogBox("This username has already been taken!");
+		}
+		else if (username.equals("NotLoggedIn"))
+		{
+			createDialogBox("Something went wrong creating the account...");
+		}
+		else
+		{
+			System.out.println("Sucessfull login for user: " + username);
+			
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+			// set dialog message
+			alertDialogBuilder
+				.setMessage("Your account was created successfully! \n Welcome " + username + "!!")
+				.setCancelable(false)
+				.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						// advnace when button is clicked
+						advanceScreen();
+					}
+				  });
+
+				// create alert dialog
+				AlertDialog alertDialog = alertDialogBuilder.create();
+
+				// show it
+				alertDialog.show();
 		}
 	}
 	
