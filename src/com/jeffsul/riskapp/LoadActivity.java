@@ -1,11 +1,11 @@
 package com.jeffsul.riskapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
 import android.widget.ListView;
 
 public class LoadActivity extends Activity {
@@ -19,8 +19,17 @@ public class LoadActivity extends Activity {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int pos, long id) {
-				// Launch saved game.
+				// Launch saved game
+				startGame();
+				//System.out.println(listView.getItemAtPosition(pos));
 			}
 		});
 	}
+	
+	//Just starts a new game right now ... lol
+	public void startGame(){
+		Intent intent = new Intent(this, GameActivity.class);
+		startActivity(intent);
+	}
+	
 }
