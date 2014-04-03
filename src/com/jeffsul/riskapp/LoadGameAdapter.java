@@ -30,7 +30,6 @@ public class LoadGameAdapter extends BaseAdapter {
 		System.out.println("GAMES: " + c.getCount());
 		savedGames = new ArrayList<Game>();
 		
-		int i = 0;
 		while (c.moveToNext()) {
 			System.out.println(c.getInt(c.getColumnIndex(RiskGame._ID)) + " :: " + c.getString(c.getColumnIndex(RiskGame.COLUMN_NAME_CREATED)));
 			savedGames.add(Game.fromCursor(c));

@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.ListView;
 
 public class LoadActivity extends Activity {
 	@Override
@@ -13,9 +14,9 @@ public class LoadActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_load);
 
-		GridView gridView = (GridView) findViewById(R.id.grid_view);
-		gridView.setAdapter(new LoadGameAdapter(this));
-		gridView.setOnItemClickListener(new OnItemClickListener() {
+		ListView listView = (ListView) findViewById(R.id.list_view);
+		listView.setAdapter(new LoadGameAdapter(this));
+		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int pos, long id) {
 				// Launch saved game.
