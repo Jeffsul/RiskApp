@@ -59,8 +59,7 @@ public class ChallengeActivity extends Activity {
 					}
 					else {
 						sendNotification(obj);
-						int id = obj.getInt("id");
-						updateTableRow(id);
+						updateTableRow(obj);
 					}
 				}
 				catch (Exception e) {
@@ -77,7 +76,8 @@ public class ChallengeActivity extends Activity {
 		try {
 			String status = response.getString("status");
 			String username = response.getString("username");
-			
+			int id = response.getInt("id");
+
 			System.out.println(status);
 			
 			if (status.equals("accepted")) {
@@ -111,7 +111,7 @@ public class ChallengeActivity extends Activity {
 			mBuilder.setContentIntent(resultPendingIntent);
 			NotificationManager mNotificationManager =
 			    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			mNotificationManager.notify(1, mBuilder.build());
+			mNotificationManager.notify(id, mBuilder.build());
 			System.out.println("Notification delivered");
 		}
 		catch (Exception e) {
@@ -138,27 +138,8 @@ public class ChallengeActivity extends Activity {
 		        row.setLayoutParams(lp);
 		        row.setGravity(Gravity.CENTER);
 		        row.setId(id);
-		        TextView userText = new TextView(this);
-		        userText.setText(username);
-		        row.addView(userText);
-	        	TextView statusText = new TextView(this);
-
-		        if (status.equals("accepted")) { // if you've sent a challenge that was accepted
-		        	statusText.setText(R.string.accept_challenge_button);
-		        	statusText.setTextColor(Color.parseColor("#0000FF"));
-		        	statusText.setOnClickListener(new TextView.OnClickListener() {
-		        		@Override
-		        		public void onClick(View v) {
-		        			// TODO: enter game
-		        		}
-		        	});
-		        }
-		        else {
-			        statusText.setText(status);
-		        }
-		        
-		        row.addView(statusText);
-		        tl.addView(row);
+		  
+		        drawTableRow(tl, row, username, status);      
 			}
 			catch(Exception e) {
 				e.printStackTrace();
@@ -166,8 +147,46 @@ public class ChallengeActivity extends Activity {
 		}
 	}
 	
-	public void updateTableRow(int challengeId) {
-		
+	public void updateTableRow(JSONObject rowObj) {
+		try {
+			TableLayout tl = (TableLayout) findViewById(R.id.challenge_table);
+			String username = rowObj.getString("username");
+			String status = rowObj.getString("status");
+			int id = rowObj.getInt("id");
+			TableRow row = (TableRow) findViewById(rowObj.getInt("id"));
+
+			row.removeAllViews();
+			drawTableRow(tl, row, username, status);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	public void drawTableRow(TableLayout tl, TableRow row, String username, String status){
+		TextView userText = new TextView(this);
+        userText.setText(username);
+        row.addView(userText);
+        
+    	TextView statusText = new TextView(this);
+    	statusText.setTag("status");
+    	
+        if (status.equals("accepted")) { // if you've sent a challenge that was accepted
+        	statusText.setText(R.string.accept_challenge_button);
+        	statusText.setTextColor(Color.parseColor("#0000FF"));
+        	statusText.setOnClickListener(new TextView.OnClickListener() {
+        		@Override
+        		public void onClick(View v) {
+        			// TODO: enter game
+        		}
+        	});
+        }
+        else {
+	        statusText.setText(status);
+        }
+        
+        row.addView(statusText);
+        tl.addView(row);
 	}
 	
 	public void menuButtonClicked(View view) {
