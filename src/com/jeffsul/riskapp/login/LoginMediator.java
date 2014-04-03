@@ -1,58 +1,44 @@
 package com.jeffsul.riskapp.login;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.view.Menu;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.EditText;
 
 public class LoginMediator {	
 	
+	// allows access to the sharedPreferences of this application
 	SharedPreferences sharedPreferences;
 	
 	public LoginMediator(Context context)
 	{
+		// gets the shared preference from the input context (context of an Activity)
 		sharedPreferences = context.getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
 	}
 	
-	private ArrayList<Listener> listeners;
-	
 	public interface Listener {
-		public void onResponse(); //login response or create account response?
+		public void onResponse(); //login response or create account response
 	}
 	
-	public void attemptLogin(Listener listener, String username, String password) {
+	// login elements ====================================================================================
+	
+	// executes the LoginAsyncTask
+	private void attemptLogin(Listener listener, String username, String password) {
 		new LoginAsyncTask(username, password).execute(listener);
 	}
 
-	private class LoginAsyncTask extends AsyncTask<Listener, Void, Listener> {
-		
+	private class LoginAsyncTask extends AsyncTask<Listener, Void, Listener>
+	{
+		// the username and password attempting to be logged in with
 		String username;
 		String password;
 		
@@ -64,19 +50,18 @@ public class LoginMediator {
 	    }
 		
 		@Override
-		protected Listener doInBackground(Listener... listeners) {
-			// will be the server address to login with
-			
+		protected Listener doInBackground(Listener... listeners)
+		{
+			// creates a GET request, sent to the web hosted server
 			String stringResponse = makeGETLoginRequest(username, password);
-			
 			System.out.println("Response: " + stringResponse);
 			
 			//Response form, will not be used when server is real
 			stringResponse = "{'riskAppLoginResponse':{ 'verified':true, 'username':'" + username + "'} }";
-			  
+			
+			// collects the desired data from the GET response of the server
 			boolean verified = false;
 			String usernameResponded = "null";
-			
 			try {
 				JSONObject jObject = new JSONObject(stringResponse);
 				jObject = jObject.getJSONObject("riskAppLoginResponse");
@@ -88,9 +73,8 @@ public class LoginMediator {
 		    }
 			System.out.println("verified: " + verified + " username: " + usernameResponded);
 			
-			// check get response for verified
+			// check get response to make sure it verified
 			boolean loginVerified = true;
-			
 			if(!verified || !username.equals(usernameResponded))
 			{
 				//not logged in
@@ -103,12 +87,13 @@ public class LoginMediator {
 			
 			if (loginVerified)
 			{	
+				// if the login was verified, set the Globally logged in user
 				storeGlobalUser(username);
-				//System.out.println("Shared Perference: " + userKey + " as: " + username);
 			}
 			else
 			{
-				storeGlobalUser("NotLoggedIn");
+				// if the login failed, mark the global user as not logged in
+				storeGlobalUser("**NotLoggedIn**");
 			}
 			
 			return listeners[0];
@@ -117,16 +102,21 @@ public class LoginMediator {
 		// runs after doinbackground
 		@Override
 		protected void onPostExecute(Listener listener) {
+			// invokes the method waiting for a response
 			listener.onResponse();
 		}
 	}
 	
+	// create account elements ====================================================================================
+
+	// executes the CAccountAsyncTask
 	public void attemptCAccount(Listener listener, String username, String password) {
 		new CAccountAsyncTask(username, password).execute(listener);
 	}
 	
-	private class CAccountAsyncTask extends AsyncTask<Listener, Void, Listener> {
-		
+	private class CAccountAsyncTask extends AsyncTask<Listener, Void, Listener>
+	{
+		// the username and password attempting to create an account with
 		String username;
 		String password;
 		
@@ -138,20 +128,19 @@ public class LoginMediator {
 	    }
 		
 		@Override
-		protected Listener doInBackground(Listener... listeners) {
-			// will be the server address to login with
-			
+		protected Listener doInBackground(Listener... listeners) 
+		{
+			// creates a GET request, sent to the web hosted server
 			String stringResponse = makeGETCAccountRequest(username,  password);
-					
 			System.out.println("Response: " + stringResponse);
 			
 			//Response form, will not be used when server is real
 			stringResponse = "{'riskAppCAccountResponse':{ 'created':true, 'username':'" + username + "', 'usernameWasTaken': false} }";
 			  
+			// collects the desired data from the GET response of the server
 			boolean created = false;
 			String usernameResponded = "null";
 			boolean usernameWasTaken = false;
-			
 			try {
 				JSONObject jObject = new JSONObject(stringResponse);
 				jObject = jObject.getJSONObject("riskAppCAccountResponse");
@@ -164,41 +153,32 @@ public class LoginMediator {
 		    }
 			System.out.println("created: " + created + " username: " + usernameResponded + " usernameWasTaken: " + usernameWasTaken);
 			
-			// check get response for verified
+			// checks the GET response to see if it was verified
 			boolean createVerified = true;
-			
 			if(!created || !username.equals(usernameResponded)) {
-			 	//not logged in
 				createVerified = false;
 			}
-			else {
-				createVerified = true;
-			}
 			
+			// checks if the username was already taken
 			boolean duplicate = false;
-			
-			
 			if (usernameWasTaken) {
-			 	//was a duplicate
 			  	duplicate = true;
-			}
-			else {
-				duplicate = false;
 			}
 			
 			if (createVerified && !duplicate)
 			{	
+				// if the user creation was verified and the user was not a duplicate, log them in
 				storeGlobalUser(username);
-				//System.out.println("Shared Perference: " + userKey + " as: " + username);
 			}
 			else if (duplicate && !createVerified)
 			{
-				storeGlobalUser("UsernameWasTaken");
+				// if the username was already taken
+				storeGlobalUser("**UsernameWasTaken**");
 			}
 			else
 			{
-				// some other case not created but not duplicate
-				storeGlobalUser("NotLoggedIn");
+				// some other case not created but not because of a duplicate
+				storeGlobalUser("**NotLoggedIn**");
 			}
 			
 			return listeners[0];
@@ -211,18 +191,21 @@ public class LoginMediator {
 		}
 	}
 	
+	// sends a GET request to the server with the username and password to login with and returns the GET response
 	private String makeGETLoginRequest(String username, String password)
 	{
 		String loginURL = "http://wifinder-syde362.herokuapp.com/home?RSSI=" + username + "&ID=" + password + "&token=wfs"; 
 		return makeGETRequest(loginURL);
 	}
 	
+	// sends a GET request to the server with the username and password to create an account with and returns the GET response
 	private String makeGETCAccountRequest(String username, String password)
 	{
 		String cAccountURL = "http://wifinder-syde362.herokuapp.com/home?RSSI=" + username + "&ID=" + password + "&token=wfs"; 
 		return makeGETRequest(cAccountURL);
 	}
 	
+	// creates and sends the GET request object to the provided URL
 	private String makeGETRequest(String url)
 	{
 		HttpResponse response = null;
@@ -238,8 +221,10 @@ public class LoginMediator {
 		return stringResponse;
 	}
 	
+	// stores a username as the globally logged in user of the App
 	private boolean storeGlobalUser(String username)
 	{
+		// this key is needed to retrieve the logged in user
 		String userKey = "com.example.app.user";
 		try {
 			SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -251,19 +236,17 @@ public class LoginMediator {
 		return true;
 	}
 	
-	public boolean login(String username, String password, Listener loginListener)
+	// public method that tries to login with the given parameters
+	public void login(String username, String password, Listener loginListener)
 	{
 		this.attemptLogin(loginListener, username, password);
-		
-		//System.out.println("Login Verified for user: " + username);
-		return true;
 	}
 	
-	public boolean createAccount(String username, String password, Listener caccountListener)
+	// public method that tries to create an account with the given parameters
+	public void createAccount(String username, String password, Listener caccountListener)
 	{
 		this.attemptCAccount(caccountListener, username, password);
 		
 		System.out.println("New Account Created for user: " + username);
-		return true;
 	}
 }
