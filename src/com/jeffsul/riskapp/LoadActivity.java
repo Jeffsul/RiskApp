@@ -1,12 +1,12 @@
 package com.jeffsul.riskapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
+import android.widget.ListView;
 
 public class LoadActivity extends Activity {
 	@Override
@@ -14,20 +14,22 @@ public class LoadActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_load);
 
-		GridView gridView = (GridView) findViewById(R.id.grid_view);
-		gridView.setAdapter(new LoadGameAdapter(this));
-		gridView.setOnItemClickListener(new OnItemClickListener() {
+		ListView listView = (ListView) findViewById(R.id.list_view);
+		listView.setAdapter(new LoadGameAdapter(this));
+		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int pos, long id) {
-				// Launch saved game.
+				// Launch saved game
+				startGame();
+				//System.out.println(listView.getItemAtPosition(pos));
 			}
 		});
 	}
 	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+	//Just starts a new game right now ... lol
+	public void startGame(){
+		Intent intent = new Intent(this, GameActivity.class);
+		startActivity(intent);
 	}
+	
 }
