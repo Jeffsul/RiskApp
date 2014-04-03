@@ -17,10 +17,13 @@ import org.apache.http.util.EntityUtils;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -29,36 +32,37 @@ import android.widget.EditText;
 
 public class LoginMediator {	
 	
+	SharedPreferences sharedPreferences;
+	
+	public LoginMediator(Context context)
+	{
+		sharedPreferences = context.getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
+	}
+	
 	private ArrayList<Listener> listeners;
 	
 	public interface Listener {
 		public void onLoginResponse(); //login response?
 	}
 	
-	public static void attemptLogin(Listener listener, String username, String password) {
+	public void attemptLogin(Listener listener, String username, String password) { //static
 		new LoginAsyncTask(username, password).execute(listener);
 	}
 
-	private static class LoginAsyncTask extends AsyncTask<Listener, Void, Listener> {
+	private class LoginAsyncTask extends AsyncTask<Listener, Void, Listener> { //static
 		
-		String username = "user";
-		String password = "pw";
+		String username;
+		String password;
 		
 		public LoginAsyncTask(String usn, String pw) {
 	        super();
 	        
 	        username = usn;
 	        password = pw;
-	        // do stuff
 	    }
 		
 		@Override
 		protected Listener doInBackground(Listener... listeners) {
-			// Do Server Call - TO-DO: Figure out how to send push notifications and how to send different types of server calls all in this method
-			
-			//String username = "user";
-			//String password = "pw";
-			
 			// will be the server address to login with
 			String url = "http://wifinder-syde362.herokuapp.com/home?RSSI=" + username + "&ID=" + password + "&token=wfs"; 
 			
@@ -69,9 +73,42 @@ public class LoginMediator {
 			    HttpGet request = new HttpGet(url);
 			    response = httpclient.execute(request);
 			    stringRespons = EntityUtils.toString(response.getEntity());
-			    System.out.println("Response: " + stringRespons);
 			} catch (Exception e) {
-				System.out.println("Exception: " + e.toString());
+				System.out.println("Exception during GET: " + e.toString());
+			}
+			System.out.println("Response: " + stringRespons);
+			
+			/* Response form
+			 * { riskAppLoginResponse: [
+			 * 			{ "verified":true, "username":"nolan" }
+			 * 		]
+			 * }
+			 * 
+			 */
+			
+			// check get response for verified
+			boolean loginVerified = true;
+			
+			/*
+			 * if(stringRespons -- transformed into JSON -- .getVal("verified") != true OR !username.equals(.getVal("username")) )
+			 * {
+			 * 		not logged in
+			 * 		loginVerified = false;
+			 * }
+			 * else
+			 * {
+			 * 		loginVerified = true;
+			 * }
+			 */
+			
+			if (loginVerified)
+			{	
+				storeGlobalUser(username);
+				//System.out.println("Shared Perference: " + userKey + " as: " + username);
+			}
+			else
+			{
+				storeGlobalUser("NotLoggedIn");
 			}
 			
 			return listeners[0];
@@ -84,17 +121,30 @@ public class LoginMediator {
 		}
 	}
 	
-	public boolean login(String username, String password)
+	private boolean storeGlobalUser(String username)
+	{
+		String userKey = "com.example.app.user";
+		try {
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			editor.putString(userKey, username);
+			editor.commit();
+		} catch (Exception e) {
+			System.out.println("Exception during share: " + e.toString());
+		}
+		return true;
+	}
+	
+	public boolean login(String username, String password, Listener loginListener)
 	{
 		
-		Listener loginListener = new Listener() {
-			public void onLoginResponse() {
-				System.out.println("login responded to");
-			}
-		};
-		LoginMediator.attemptLogin(loginListener, username, password);
+//		Listener loginListener = new Listener() {
+//			public void onLoginResponse() {
+//				System.out.println("login responded to");
+//			}
+//		};
+		this.attemptLogin(loginListener, username, password);
 		
-		System.out.println("Login Verified for user: " + username);
+		//System.out.println("Login Verified for user: " + username);
 		return true;
 	}
 	
