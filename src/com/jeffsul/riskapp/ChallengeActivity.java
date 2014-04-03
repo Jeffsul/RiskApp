@@ -29,12 +29,15 @@ import android.widget.Toast;
 
 public class ChallengeActivity extends Activity {
 	
-	public static final String RESPONSE_USER_NAME = "user_name";
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_challenge);
+		
+		getChallenges(null);
+	}	
+	
+	public void getChallenges(View view) {
 		
 		ChallengeFacade.Listener cListener = new ChallengeFacade.Listener() {
 			public void onChallengeResponse(JSONArray response) {
@@ -42,43 +45,51 @@ public class ChallengeActivity extends Activity {
 			}
 		};
 		ChallengeFacade.getChallenges(cListener);
-	}	
+	}
 
 	public void createChallengeClicked(View view) {
-		String userName = ((EditText)findViewById(R.id.challenge_username)).getText().toString();
+		final TableLayout tl = (TableLayout) findViewById(R.id.challenge_table);
+		final String userName = ((EditText)findViewById(R.id.challenge_username)).getText().toString();
 		
 		ChallengeFacade.Listener cListener = new ChallengeFacade.Listener() {
 			public void onChallengeResponse(JSONArray response) {
-				try {
-					JSONObject obj = response.getJSONObject(0);
-					String status = obj.getString("status");
-					if (status.equals("failure")) {
-						Toast toast = Toast.makeText(getApplicationContext(), R.string.invalid_user, 5);
-						toast.setGravity(Gravity.CENTER, 0, 0);
-						toast.show();
-					}
-					else {
-						sendNotification(obj);
-						updateTableRow(obj);
-					}
+				if (response == null) { // pre-response
+					int id = (int) Math.random();
+					TableRow row = createTableRow(id);
+			        drawTableRow(tl, row, userName, "pending");
 				}
-				catch (Exception e) {
-					e.printStackTrace();
+				else {
+					try {
+						JSONObject obj = response.getJSONObject(0);
+						String status = obj.getString("status");
+						if (status.equals("failure")) {
+							Toast toast = Toast.makeText(getApplicationContext(), R.string.invalid_user, 5);
+							toast.setGravity(Gravity.CENTER, 0, 0);
+							toast.show();
+							View row = tl.findViewWithTag(userName);
+							((TableLayout)row.getParent()).removeView(row);
+						}
+						else {
+							sendNotification(obj);
+							updateTableRowPending(obj);
+						}
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		};
 		ChallengeFacade.createChallenge(cListener, userName);
 	}
 	
-	public void sendNotification(JSONObject response) {
+	private void sendNotification(JSONObject response) {
 		String contentTitle = null;
 		String contentText = null;
 		try {
 			String status = response.getString("status");
 			String username = response.getString("username");
 			int id = response.getInt("id");
-
-			System.out.println(status);
 			
 			if (status.equals("accepted")) {
 				contentTitle = "Risk Challenge Accepted";
@@ -97,7 +108,7 @@ public class ChallengeActivity extends Activity {
 			        .setContentText(contentText);
 
 			Intent resultIntent = new Intent(this, ChallengeActivity.class);
-			// TODO: launch game here for success case
+			// TODO: launch game here for success case and send challenge notification if it was a challenge sent from someone else
 
 			TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 
@@ -119,11 +130,12 @@ public class ChallengeActivity extends Activity {
 		}
 	}
 	
-	public void populateTable(JSONArray challenges) {
+	private void populateTable(JSONArray challenges) {
 		TableLayout tl = (TableLayout) findViewById(R.id.challenge_table);
-
+		tl.removeAllViews();
+		
 		if (challenges == null) {
-			System.out.println("Null");
+			return;
 		}
 		
 		for (int i = 0; i < challenges.length(); i++) {
@@ -133,12 +145,7 @@ public class ChallengeActivity extends Activity {
 				String status = challenge.getString("status");
 				int id = challenge.getInt("id");
 				
-				TableRow row = new TableRow(this);
-				TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-		        row.setLayoutParams(lp);
-		        row.setGravity(Gravity.CENTER);
-		        row.setId(id);
-		  
+				TableRow row = createTableRow(id);
 		        drawTableRow(tl, row, username, status);      
 			}
 			catch(Exception e) {
@@ -147,7 +154,32 @@ public class ChallengeActivity extends Activity {
 		}
 	}
 	
-	public void updateTableRow(JSONObject rowObj) {
+	private TableRow createTableRow(int id) {
+		TableRow row = new TableRow(this);
+		TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+        row.setLayoutParams(lp);
+        row.setGravity(Gravity.CENTER);
+        row.setId(id);
+        return row;
+	}
+	
+	private void updateTableRowPending(JSONObject rowObj) {
+		try {
+			TableLayout tl = (TableLayout) findViewById(R.id.challenge_table);
+			String username = rowObj.getString("username");
+			String status = rowObj.getString("status");
+			TableRow row = (TableRow) tl.findViewWithTag(username);
+			row.setId(rowObj.getInt("id"));
+
+			row.removeAllViews();
+			drawTableRow(tl, row, username, status);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	private void updateTableRow(JSONObject rowObj) {
 		try {
 			TableLayout tl = (TableLayout) findViewById(R.id.challenge_table);
 			String username = rowObj.getString("username");
@@ -163,16 +195,34 @@ public class ChallengeActivity extends Activity {
 		}
 	}
 	
-	public void drawTableRow(TableLayout tl, TableRow row, String username, String status){
+	private void drawTableRow(TableLayout tl, TableRow row, String username, String status){
+		if (status.equals("pending") && tl.findViewWithTag(username) != null){
+			Toast toast = Toast.makeText(getApplicationContext(), "You've already challenged " + username + "!", 5);
+			toast.setGravity(Gravity.CENTER, 0, 0);
+			toast.show();
+			return;
+		}
+		
 		TextView userText = new TextView(this);
         userText.setText(username);
         row.addView(userText);
         
+        if (status.equals("pending")) {
+        	row.setTag(username);
+        }
+        
     	TextView statusText = new TextView(this);
-    	statusText.setTag("status");
     	
-        if (status.equals("accepted")) { // if you've sent a challenge that was accepted
-        	statusText.setText(R.string.accept_challenge_button);
+        if (status.equals("accepted") || status.equals("received")) { // if you've sent a challenge that was accepted or if you've received a challenge
+        	
+        	if (status.equals("accepted")) {
+            	statusText.setText(R.string.accepted_challenge_button);
+        	}
+        	
+        	else {
+                statusText.setText(R.string.received_challenge_button);
+        	}
+        	
         	statusText.setTextColor(Color.parseColor("#0000FF"));
         	statusText.setOnClickListener(new TextView.OnClickListener() {
         		@Override
