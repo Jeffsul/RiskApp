@@ -17,13 +17,14 @@ import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
 import com.jeffsul.riskapp.db.RiskGameContract.RiskGame;
-import com.jeffsul.riskapp.db.RiskGameContract.RiskGamePlayers;
 import com.jeffsul.riskapp.db.RiskGameContract.RiskGameTerritories;
+import com.jeffsul.riskapp.db.RiskGameDbFacade;
 import com.jeffsul.riskapp.db.RiskGameDbHelper;
 import com.jeffsul.riskapp.dialogs.AutoGameDialogFragment;
 import com.jeffsul.riskapp.dialogs.PlaySetDialogFragment;
 import com.jeffsul.riskapp.entities.Card;
 import com.jeffsul.riskapp.entities.Continent;
+import com.jeffsul.riskapp.entities.Game;
 import com.jeffsul.riskapp.entities.Map;
 import com.jeffsul.riskapp.entities.Territory;
 import com.jeffsul.riskapp.players.AIPlayer;
@@ -35,9 +36,7 @@ import com.jeffsul.riskapp.ui.TerritoryButton;
 
 public class GameActivity extends Activity implements AutoGameDialogFragment.Listener,
 		PlaySetDialogFragment.Listener, View.OnClickListener, View.OnLongClickListener, GameListener {
-	public static final String NUM_PLAYERS_EXTRA = "com.jeffsul.risk.NUM_PLAYERS";
-	public static final String CARD_SETTING_EXTRA = "com.jeffsul.risk.CARD_SETTING";
-	public static final String MAP_EXTRA = "com.jeffsul.risk.MAP";
+	public static final String GAME_ID_EXTRA = "com.jeffsul.risk.GAME_ID";
 	
 	private static final int[] CASH_IN = {4, 6, 8, 10, 12, 15};
 	private static final int CASH_IN_INCREMENT = 5;
@@ -86,66 +85,54 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 		
 		Intent intent = getIntent();
-		numPlayers = intent.getIntExtra(NUM_PLAYERS_EXTRA, 2);
-		switch (intent.getIntExtra(MAP_EXTRA, 0)) {
-		case 0:
+		savedGameId = intent.getLongExtra(GAME_ID_EXTRA, -1);
+		if (savedGameId == -1) {
+			System.out.println("Illegal game ID -1");
+			finish();
+			return;
+		}
+		Game game = RiskGameDbFacade.loadGameWithId(this, savedGameId);
+		numPlayers = game.numPlayers;
+		if ("map_classic".equals(game.mapId)) {
 			map = new Map(this, R.xml.map_classic);
-			break;
-		case 1:
+		} else if ("map_epic".equals(game.mapId)) {
 			map = new Map(this, R.xml.map_epic);
-			break;
+		} else {
+			System.out.println("Illegal map ID: " + game.mapId);
+			finish();
+			return;
 		}
-		switch (intent.getIntExtra(CARD_SETTING_EXTRA, 0)) {
-		case 0:
+
+		if ("regular".equals(game.cardSetting)) {
 			cardType = CardSetting.REGULAR;
-			break;
-		case 1:
+		} else if ("none".equals(game.cardSetting)) {
 			cardType = CardSetting.NONE;
-			break;
-		case 2:
+		} else if ("modified".equals(game.cardSetting)) {
 			cardType = CardSetting.MODIFIED;
-			break;
+		} else {
+			System.out.println("Illegal card setting: " + game.cardSetting);
+			finish();
+			return;
 		}
-		initializeGame();
-		saveGame();
+
+		players = new Player[numPlayers];
+		if (!game.initialized) {
+			initializeGame();
+		} else {
+			loadGame();
+		}
+		setupGame();
 	}
 
 	private void initializeGame() {
-		players = new Player[numPlayers];
 		firstPlayerIndex = (int) (numPlayers * Math.random());
 		index = firstPlayerIndex;
-		
-		TextView cashInLabel = (TextView) findViewById(R.id.cash_in_label);
-		if (cardType != CardSetting.REGULAR) {
-			((ViewGroup) cashInLabel.getParent()).removeView(cashInLabel);
-		} else {
-			cashInLabel.setText(getResources().getString(R.string.next_cash_in, CASH_IN[0]));
-		}
-		
-		int half = (numPlayers - (numPlayers % 2)) / 2;
-		int panelHeight = getResources().getDisplayMetrics().heightPixels / (half + (numPlayers % 2));
-		ViewGroup sidePanel = (ViewGroup) findViewById(R.id.side_panel_left);
+
 		int[] playerColours = getResources().getIntArray(R.array.player_colours);
 		for (int i = 0; i < numPlayers; i++) {
-			//if (!playerType[i].isSelected()) {
-				players[i] = new Player(i + 1, "Player " + (i + 1), playerColours[i]);
-				players[i].setDeployCount(INITIAL_PLACE_COUNT);
-			//} else {
-			//	players[i] = new AIPlayer(i + 1, PLAYER_COLOURS[i], this);
-			//}
-			PlayerPanel playerPnl = (PlayerPanel) getLayoutInflater().inflate(R.layout.player_panel, null);
-			playerPnl.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, panelHeight));
-			map.addListener(playerPnl);
-			playerPnl.setPlayer(players[i]);
-			if (i == half) {
-				sidePanel = (ViewGroup) findViewById(R.id.side_panel_right);
-			}
-			sidePanel.addView(playerPnl);
+			players[i] = new Player(i + 1, "Player " + (i + 1), playerColours[i]);
 		}
-		map.setPlayers(players);
-		
-		activePlayer = players[index];
-		
+
 		RelativeLayout gamePnl = (RelativeLayout) findViewById(R.id.game_panel);
 		ArrayList<Territory> territories = new ArrayList<Territory>(Arrays.asList(map.getTerritories()));
 		buttonMap = new HashMap<View, Territory>();
@@ -167,10 +154,44 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			params.topMargin = (int)(territ.y * (600.0/1062.0)) - 20;
 			gamePnl.addView(btn, params);
 		}
+
+		saveGame();
+	}
+
+	private void loadGame() {
+		firstPlayerIndex = (int) (numPlayers * Math.random());
+		index = firstPlayerIndex;
+	}
+	
+	private void setupGame() {
+		TextView cashInLabel = (TextView) findViewById(R.id.cash_in_label);
+		if (cardType != CardSetting.REGULAR) {
+			((ViewGroup) cashInLabel.getParent()).removeView(cashInLabel);
+		} else {
+			cashInLabel.setText(getResources().getString(R.string.next_cash_in, CASH_IN[0]));
+		}
+		
+		int half = (numPlayers - (numPlayers % 2)) / 2;
+		int panelHeight = getResources().getDisplayMetrics().heightPixels / (half + (numPlayers % 2));
+		ViewGroup sidePanel = (ViewGroup) findViewById(R.id.side_panel_left);
+		for (int i = 0; i < numPlayers; i++) {
+			players[i].setDeployCount(INITIAL_PLACE_COUNT);
+			PlayerPanel playerPnl = (PlayerPanel) getLayoutInflater().inflate(R.layout.player_panel, null);
+			playerPnl.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, panelHeight));
+			map.addListener(playerPnl);
+			playerPnl.setPlayer(players[i]);
+			if (i == half) {
+				sidePanel = (ViewGroup) findViewById(R.id.side_panel_right);
+			}
+			sidePanel.addView(playerPnl);
+		}
+		map.setPlayers(players);
+		
+		activePlayer = players[index];
 		
 		gameLog = new GameLog();
 		gameLog.log(getResources().getString(R.string.log_game_initialized));
-
+		
 		stateListeners = new ArrayList<StateListener>();
 		stateListeners.add((ActionButton) findViewById(R.id.action_button));
 		stateListeners.add((ActionLabel) findViewById(R.id.action_label));
@@ -197,23 +218,12 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	private void saveGame() {
 		RiskGameDbHelper helper = new RiskGameDbHelper(this);
 		SQLiteDatabase db = helper.getWritableDatabase();
-		if (savedGameId == -1) {
-			ContentValues values = new ContentValues();
-			values.put(RiskGame.COLUMN_NAME_CREATED, Long.toString(System.currentTimeMillis()));
-			values.put(RiskGame.COLUMN_NAME_LAST_PLAYED, Long.toString(System.currentTimeMillis()));
-			values.put(RiskGame.COLUMN_NAME_MAP_ID, "map_classic");
-			values.put(RiskGame.COLUMN_NAME_TURN_COUNTER, index);
-			values.put(RiskGame.COLUMN_NAME_NUM_PLAYERS, numPlayers);
-			savedGameId = db.insert(RiskGame.TABLE_NAME, "null", values);
 
-			for (int i = 0; i < numPlayers; i++) {
-				ContentValues values2 = new ContentValues();
-				values2.put(RiskGamePlayers.COLUMN_NAME_GAME_ID, savedGameId);
-				values2.put(RiskGamePlayers.COLUMN_NAME_PLAYER_NAME, players[i].name);
-				values2.put(RiskGamePlayers.COLUMN_NAME_PLAYER_POSITION, i);
-				db.insert(RiskGamePlayers.TABLE_NAME, "null", values2);
-			}
-		}
+		ContentValues values = new ContentValues();
+		values.put(RiskGame.COLUMN_NAME_LAST_PLAYED, Long.toString(System.currentTimeMillis()));
+		values.put(RiskGame.COLUMN_NAME_TURN_COUNTER, index);
+		values.put(RiskGame.COLUMN_NAME_INITIALIZED, 1);
+		db.update(RiskGame.TABLE_NAME, values, RiskGame._ID + "=?", new String[] {Long.toString(savedGameId)});
 
 		// Delete existing territory data.
 		db.delete(RiskGameTerritories.TABLE_NAME, RiskGameTerritories.COLUMN_NAME_GAME_ID + "=?", new String[] {Long.toString(savedGameId)});
@@ -771,18 +781,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 				.setMessage(msg);
 		builder.create().show();
 	}
-	
-	/*private static void hiliteTerritories(Territory[] territories) {
-		for (Territory territ : territories) {
-			territ.hilite();
-		}
-	}
-	
-	private static void unhiliteTerritories(Territory[] territories) {
-		for (Territory territ : territories) {
-			territ.unhilite();
-		}
-	}*/
 
 	@Override
 	public void onGameContinue() {

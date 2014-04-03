@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class RiskGameDbHelper extends SQLiteOpenHelper {
-	public static final int DB_VERSION = 2;
+	public static final int DB_VERSION = 3;
 	public static final String DB_NAME = "RiskGame.db";
 	
 	private static final String SQL_CREATE_GAMES = "CREATE TABLE " + RiskGame.TABLE_NAME + " ("
@@ -18,6 +18,7 @@ public class RiskGameDbHelper extends SQLiteOpenHelper {
 			+ RiskGame.COLUMN_NAME_LAST_PLAYED + " STRING,"
 			+ RiskGame.COLUMN_NAME_NUM_PLAYERS + " INTEGER,"
 			+ RiskGame.COLUMN_NAME_MAP_ID + " STRING,"
+			+ RiskGame.COLUMN_NAME_INITIALIZED + " BOOLEAN,"
 			+ RiskGame.COLUMN_NAME_TURN_COUNTER + " INTEGER)";
 	private static final String SQL_DELETE_GAMES = "DROP TABLE IF EXISTS " + RiskGame.TABLE_NAME;
 

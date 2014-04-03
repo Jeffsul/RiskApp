@@ -14,6 +14,7 @@ public final class RiskGameContract {
 		public static final String COLUMN_NAME_MAP_ID = "map_id";
 		public static final String COLUMN_NAME_NUM_PLAYERS = "num_players";
 		public static final String COLUMN_NAME_TURN_COUNTER = "turn_counter";
+		public static final String COLUMN_NAME_INITIALIZED = "initialized";
 	}
 	
 	public static abstract class RiskGamePlayers implements BaseColumns {
