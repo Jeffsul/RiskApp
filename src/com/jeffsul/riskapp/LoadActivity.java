@@ -19,17 +19,10 @@ public class LoadActivity extends Activity {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int pos, long id) {
-				// Launch saved game
-				startGame();
-				//System.out.println(listView.getItemAtPosition(pos));
+				Intent intent = new Intent(LoadActivity.this, GameActivity.class);
+				intent.putExtra(GameActivity.GAME_ID_EXTRA, id);
+				startActivity(intent);
 			}
 		});
 	}
-	
-	//Just starts a new game right now ... lol
-	public void startGame(){
-		Intent intent = new Intent(this, GameActivity.class);
-		startActivity(intent);
-	}
-	
 }

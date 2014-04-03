@@ -20,13 +20,13 @@
         android:layout_weight="0" >
         <RelativeLayout
 			      android:id="@+id/game_panel"
-			      android:layout_width="900dp"
+			      android:layout_width="980dp"
 			      android:layout_height="wrap_content"
 			      android:gravity="left" >
 		        	
 		        <ImageView
 		       			 android:layout_width="wrap_content"
-		          	 android:layout_height="600dp"
+		          	 android:layout_height="650dp"
 		          	 android:src="@drawable/classic_map" />
     		</RelativeLayout>
     		
