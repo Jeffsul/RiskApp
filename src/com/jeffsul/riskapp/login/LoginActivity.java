@@ -1,5 +1,6 @@
 package com.jeffsul.riskapp.login;
 
+import com.jeffsul.riskapp.ChallengeFacade;
 import com.jeffsul.riskapp.MainActivity;
 import com.jeffsul.riskapp.R;
 import com.jeffsul.riskapp.R.id;
@@ -44,14 +45,14 @@ public class LoginActivity extends Activity {
 		
 		System.out.println("Username: " + username_input);
 		System.out.println("Password: " + password_input);
-		
-		///
+
+		boolean verfiedLoging = loginMediator.login(username_input, password_input);
 		
 		/// verify login
-		if (loginMediator.login(username_input, password_input))
-		{
-			advanceScreen();
-		}
+		//if (verfiedLoging)
+		//{
+		//	advanceScreen();
+		//}
 		
 		//else
 		// incorrectLogin()
