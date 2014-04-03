@@ -90,7 +90,9 @@
 	<string name="challenge_header_user">User name</string>
 	<string name="challenge_header_status">Challenge status</string>
 	<string name="menu_button">Back to Main Menu</string>
-	<string name="accept_challenge_button">Accepted - Play now!</string>
+	<string name="get_challenges_button">Refresh Challenges</string>
+	<string name="accepted_challenge_button">Accepted - Play now!</string>
+	<string name="received_challenge_button">Accept their challenge!</string>
 	<string name="challenge_table_title">Your Challenges</string>
 	<string name="invalid_user">Invalid username!</string>
 	
