@@ -13,24 +13,30 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.os.AsyncTask; 
+import android.widget.TableLayout;
 
 public class ChallengeFacade extends ChallengeActivity {
 	
 	private ArrayList<Listener> listeners;
-	final static String SERVER_URL = "http://10.20.67.126:1337/serverStub";
+	final static String SERVER_URL = "http://wifinder-syde362.herokuapp.com/serverStub";
+	TableLayout table = (TableLayout) findViewById(R.id.challenge_table);
 	
 	public interface Listener {
 		public void onChallengeResponse(JSONArray response);
 	}
 	
 	public static void createChallenge(final Listener cListener, final String username) {
-		new AsyncTask<Listener, Void, JSONArray>() {
+		new AsyncTask<Listener, Listener, JSONArray>() {
 			final Listener listener = cListener;
 			final String userName = username;
-		
+
+			@Override
+			protected void onPreExecute(){
+				listener.onChallengeResponse(null);
+			}
+			
 			@Override
 			protected JSONArray doInBackground(Listener... listeners) {
-				// Do Server Call - TO-DO: Figure out how to send push notifications and how to send different types of server calls all in this method
 				ArrayList<String> params = new ArrayList();
 				params.add(userName); // name of user being challenged
 				return callServer("create", params);
@@ -39,6 +45,7 @@ public class ChallengeFacade extends ChallengeActivity {
 			@Override
 			protected void onPostExecute(JSONArray response) {
 				listener.onChallengeResponse(response);
+				
 			}
 			
 		}.execute(cListener);

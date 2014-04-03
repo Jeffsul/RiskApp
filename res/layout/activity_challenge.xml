@@ -37,12 +37,20 @@
         android:text="@string/menu_button"
     	android:onClick="menuButtonClicked" />
     
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/get_challenges_button"
+    	android:onClick="getChallenges" />
+    
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:text="@string/challenge_table_title" />
+        android:text="@string/challenge_table_title"
+        android:gravity="center"
+        android:layout_margin="20dp" />
     
     <TableLayout
         android:stretchColumns="0,1"

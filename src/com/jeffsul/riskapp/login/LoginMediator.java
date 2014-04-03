@@ -57,7 +57,7 @@ public class LoginMediator {
 			System.out.println("Response: " + stringResponse);
 			
 			//Response form, will not be used when server is real
-			stringResponse = "{'riskAppLoginResponse':{ 'verified':true, 'username':'" + username + "'} }";
+			//stringResponse = "{'riskAppLoginResponse':{ 'verified':true, 'username':'" + username + "'} }";
 			
 			// collects the desired data from the GET response of the server
 			boolean verified = false;
@@ -70,6 +70,7 @@ public class LoginMediator {
 				usernameResponded = jObject.getString("username");
 			} catch (JSONException e) {
 				System.out.println("Exception during JSON Parse: " + e.toString());
+				usernameResponded = "**ErrorInLogin**";
 		    }
 			System.out.println("verified: " + verified + " username: " + usernameResponded);
 			
@@ -135,8 +136,8 @@ public class LoginMediator {
 			System.out.println("Response: " + stringResponse);
 			
 			//Response form, will not be used when server is real
-			stringResponse = "{'riskAppCAccountResponse':{ 'created':true, 'username':'" + username + "', 'usernameWasTaken': false} }";
-			  
+			//stringResponse = "{'riskAppCAccountResponse':{ 'created':true, 'username':'" + username + "', 'usernameWasTaken': false} }";
+			
 			// collects the desired data from the GET response of the server
 			boolean created = false;
 			String usernameResponded = "null";
@@ -150,6 +151,7 @@ public class LoginMediator {
 				usernameWasTaken = jObject.getBoolean("usernameWasTaken");
 			} catch (JSONException e) {
 				System.out.println("Exception during JSON Parse: " + e.toString());
+				usernameResponded = "**ErrorCreateAccount**";
 		    }
 			System.out.println("created: " + created + " username: " + usernameResponded + " usernameWasTaken: " + usernameWasTaken);
 			
@@ -194,14 +196,14 @@ public class LoginMediator {
 	// sends a GET request to the server with the username and password to login with and returns the GET response
 	private String makeGETLoginRequest(String username, String password)
 	{
-		String loginURL = "http://wifinder-syde362.herokuapp.com/home?RSSI=" + username + "&ID=" + password + "&token=wfs"; 
+		String loginURL = "http://wifinder-syde362.herokuapp.com/serverStubLogin?type=login&usn=" + username + "&pw=" + password; 
 		return makeGETRequest(loginURL);
 	}
 	
 	// sends a GET request to the server with the username and password to create an account with and returns the GET response
 	private String makeGETCAccountRequest(String username, String password)
 	{
-		String cAccountURL = "http://wifinder-syde362.herokuapp.com/home?RSSI=" + username + "&ID=" + password + "&token=wfs"; 
+		String cAccountURL = "http://wifinder-syde362.herokuapp.com/serverStubLogin?type=create&usn=" + username + "&pw=" + password; 
 		return makeGETRequest(cAccountURL);
 	}
 	
