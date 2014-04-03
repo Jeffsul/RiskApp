@@ -116,54 +116,33 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		}
 
 		players = new Player[numPlayers];
-		if (!game.initialized) {
-			initializeGame();
-		} else {
-			loadGame();
-		}
-		setupGame();
-	}
-
-	private void initializeGame() {
-		firstPlayerIndex = (int) (numPlayers * Math.random());
-		index = firstPlayerIndex;
-
-		int[] playerColours = getResources().getIntArray(R.array.player_colours);
-		for (int i = 0; i < numPlayers; i++) {
-			players[i] = new Player(i + 1, "Player " + (i + 1), playerColours[i]);
-		}
-
 		RelativeLayout gamePnl = (RelativeLayout) findViewById(R.id.game_panel);
-		ArrayList<Territory> territories = new ArrayList<Territory>(Arrays.asList(map.getTerritories()));
 		buttonMap = new HashMap<View, Territory>();
 		territoryMap = new HashMap<Territory, TerritoryButton>();
-		int terrCount = territories.size();
 		deck = new ArrayList<Card>();
-		for (int i = 0; i < terrCount; i++) {
-			Territory territ = territories.remove((int) (Math.random() * territories.size()));
+		int i = 0;
+		for (Territory t : map.getTerritories()) {
 			TerritoryButton btn = new TerritoryButton(this);
 			btn.setOnClickListener(this);
 			btn.setOnLongClickListener(this);
-			territ.addListener(btn);
-			territ.setOwner(players[i % numPlayers]);
-			buttonMap.put(btn, territ);
-			territoryMap.put(territ, btn);
-			deck.add(new Card(territ, i % 3));
+			t.addListener(btn);
+			buttonMap.put(btn, t);
+			territoryMap.put(t, btn);
+			deck.add(new Card(t, i % 3));
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(35, 35);
-			params.leftMargin = (int)(territ.x * (600.0/1062.0)) - 20;
-			params.topMargin = (int)(territ.y * (600.0/1062.0)) - 20;
+			params.leftMargin = (int)(t.x * (600.0/1062.0)) - 20;
+			params.topMargin = (int)(t.y * (600.0/1062.0)) - 20;
 			gamePnl.addView(btn, params);
+			i++;
 		}
-
-		saveGame();
-	}
-
-	private void loadGame() {
-		firstPlayerIndex = (int) (numPlayers * Math.random());
-		index = firstPlayerIndex;
-	}
-	
-	private void setupGame() {
+		
+		if (!game.initialized) {
+			initializeGame();
+		} else {
+			loadGame(game);
+		}
+		setupGame();
+		
 		TextView cashInLabel = (TextView) findViewById(R.id.cash_in_label);
 		if (cardType != CardSetting.REGULAR) {
 			((ViewGroup) cashInLabel.getParent()).removeView(cashInLabel);
@@ -171,10 +150,44 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			cashInLabel.setText(getResources().getString(R.string.next_cash_in, CASH_IN[0]));
 		}
 		
+		gameLog = new GameLog();
+		gameLog.log(getResources().getString(R.string.log_game_initialized));
+		
+		stateListeners = new ArrayList<StateListener>();
+		stateListeners.add((ActionButton) findViewById(R.id.action_button));
+		stateListeners.add((ActionLabel) findViewById(R.id.action_label));
+		for (Player p : players) {
+			stateListeners.add(p);
+		}
+		changeState(State.PLACE);
+	}
+
+	private void initializeGame() {
+		firstPlayerIndex = (int) (numPlayers * Math.random());
+		index = firstPlayerIndex;
+
+		ArrayList<Territory> territories = new ArrayList<Territory>(Arrays.asList(map.getTerritories()));
+		int terrCount = territories.size();
+		for (int i = 0; i < terrCount; i++) {
+			Territory territ = territories.remove((int) (Math.random() * territories.size()));
+			territ.setOwner(players[i % numPlayers]);
+		}
+
+		saveGame();
+	}
+
+	private void loadGame(Game game) {
+		firstPlayerIndex = 0;
+		index = game.turnCounter;
+	}
+	
+	private void setupGame() {
 		int half = (numPlayers - (numPlayers % 2)) / 2;
 		int panelHeight = getResources().getDisplayMetrics().heightPixels / (half + (numPlayers % 2));
 		ViewGroup sidePanel = (ViewGroup) findViewById(R.id.side_panel_left);
+		int[] playerColours = getResources().getIntArray(R.array.player_colours);
 		for (int i = 0; i < numPlayers; i++) {
+			players[i] = new Player(i + 1, "Player " + (i + 1), playerColours[i]);
 			players[i].setDeployCount(INITIAL_PLACE_COUNT);
 			PlayerPanel playerPnl = (PlayerPanel) getLayoutInflater().inflate(R.layout.player_panel, null);
 			playerPnl.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, panelHeight));
@@ -188,17 +201,6 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		map.setPlayers(players);
 		
 		activePlayer = players[index];
-		
-		gameLog = new GameLog();
-		gameLog.log(getResources().getString(R.string.log_game_initialized));
-		
-		stateListeners = new ArrayList<StateListener>();
-		stateListeners.add((ActionButton) findViewById(R.id.action_button));
-		stateListeners.add((ActionLabel) findViewById(R.id.action_label));
-		for (Player p : players) {
-			stateListeners.add(p);
-		}
-		changeState(State.PLACE);
 	}
 
 	private void changeState(State newState) {

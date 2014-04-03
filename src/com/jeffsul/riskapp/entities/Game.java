@@ -14,6 +14,7 @@ public class Game {
 	public String mapId;
 	public String cardSetting = "regular";
 	public boolean initialized;
+	public int turnCounter;
 
 	public Game() {
 		// TODO(jeffsul): Builder pattern.
@@ -39,6 +40,9 @@ public class Game {
 		}
 		if (c.getColumnIndex(RiskGame.COLUMN_NAME_NUM_PLAYERS) > -1) {
 			game.numPlayers = c.getInt(c.getColumnIndex(RiskGame.COLUMN_NAME_NUM_PLAYERS));
+		}
+		if (c.getColumnIndex(RiskGame.COLUMN_NAME_TURN_COUNTER) > -1) {
+			game.turnCounter = c.getInt(c.getColumnIndex(RiskGame.COLUMN_NAME_TURN_COUNTER));
 		}
 		if (c.getColumnIndex(RiskGame.COLUMN_NAME_INITIALIZED) > -1) {
 			game.initialized = c.getInt(c.getColumnIndex(RiskGame.COLUMN_NAME_INITIALIZED)) == 1;
