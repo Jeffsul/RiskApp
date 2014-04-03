@@ -23,26 +23,25 @@ public class ChallengeFacade extends ChallengeActivity {
 		public void onChallengeResponse(JSONArray response);
 	}
 	
-	public static void createChallenge(final Listener clistener) {
+	public static void createChallenge(final Listener cListener, final String username) {
 		new AsyncTask<Listener, Void, JSONArray>() {
-			final Listener listener = clistener;
+			final Listener listener = cListener;
+			final String userName = username;
 		
 			@Override
 			protected JSONArray doInBackground(Listener... listeners) {
 				// Do Server Call - TO-DO: Figure out how to send push notifications and how to send different types of server calls all in this method
-				for (int i = 0; i <1000; i++){
-					System.out.println(i);
-				}
-				return new JSONArray();
+				ArrayList<String> params = new ArrayList();
+				params.add(userName); // name of user being challenged
+				return callServer("create", params);
 			}
 			
 			@Override
 			protected void onPostExecute(JSONArray response) {
-				// Check if failed, declined, or accepted
 				listener.onChallengeResponse(response);
 			}
 			
-		}.execute(clistener);
+		}.execute(cListener);
 	}
 	
 	public static void getChallenges(final Listener cListener) {
@@ -52,27 +51,7 @@ public class ChallengeFacade extends ChallengeActivity {
 	
 			@Override
 			protected JSONArray doInBackground(Listener...listeners) {
-				HttpClient client = new DefaultHttpClient(new BasicHttpParams());
-				HttpGet httpget = new HttpGet(SERVER_URL);
-				String result = null;
-				
-				try {
-					HttpResponse response = client.execute(httpget);
-				    BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"), 8);
-				    StringBuilder sb = new StringBuilder();
-				    String line = null;
-				    while ((line = reader.readLine()) != null)
-				    {
-				        sb.append(line + "\n");
-				    }
-				    result = sb.toString();
-				    JSONObject jsonObj = new JSONObject(result);
-				    JSONArray challengeArray = jsonObj.getJSONArray("challenges");
-				    return challengeArray;
-				}
-				catch(Exception e) {
-					return null;
-				}
+				return callServer("challenges", null); // get challenges
 			}
 			
 			@Override
@@ -80,5 +59,36 @@ public class ChallengeFacade extends ChallengeActivity {
 				listener.onChallengeResponse(challenges);
 			}
 		}.execute(cListener);
+	}
+	
+	private static JSONArray callServer(String queryString, ArrayList<String> params) {
+		HttpClient client = new DefaultHttpClient(new BasicHttpParams());
+		String qString = SERVER_URL + "?type=" + queryString;
+		
+		if (params != null) {
+			String user = params.get(0);
+			qString += ("&username=" + user);
+		}
+		
+		HttpGet httpget = new HttpGet(qString);
+		String result = null;
+		
+		try {
+			HttpResponse response = client.execute(httpget);
+		    BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"), 8);
+		    StringBuilder sb = new StringBuilder();
+		    String line = null;
+		    while ((line = reader.readLine()) != null)
+		    {
+		        sb.append(line + "\n");
+		    }
+		    result = sb.toString();
+		    JSONObject jsonObj = new JSONObject(result);
+		    JSONArray challengeArray = jsonObj.getJSONArray(queryString);
+		    return challengeArray;
+		}
+		catch(Exception e) {
+			return null;
+		}
 	}
 }

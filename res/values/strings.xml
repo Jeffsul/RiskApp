@@ -85,13 +85,13 @@
     <string name="challenge_user_hint">Enter user name:</string>
     <string name="challenge_user_button">Send Challenge</string>
 	<string name="button_challenge_menu">Challenge Menu</string>
-    <string name="your_name">Your name</string>
     <string name="add_ai_button">Add AI Player</string>
     <string name="add_local_button">Add Local Player</string>
 	<string name="challenge_header_user">User name</string>
 	<string name="challenge_header_status">Challenge status</string>
 	<string name="menu_button">Back to Main Menu</string>
-	<string name="accept_challenge_button">Challenge Accepted - Play now!</string>
+	<string name="accept_challenge_button">Accepted - Play now!</string>
 	<string name="challenge_table_title">Your Challenges</string>
-    
+	<string name="invalid_user">Invalid username!</string>
+	
 </resources>

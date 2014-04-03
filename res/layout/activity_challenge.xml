@@ -18,7 +18,7 @@
         android:text="@string/challenge_title" />
     
     <EditText
-    	android:id="@+id/challenge_user_name"
+    	android:id="@+id/challenge_username"
     	android:layout_width="300dp"
     	android:layout_height="wrap_content"
     	android:hint="@string/challenge_user_hint"
@@ -29,10 +29,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/challenge_user_button"
-    	android:onClick="challengeButtonClicked" />
+    	android:onClick="createChallengeClicked" />
     
     <Button
-        android:id="@+id/button_challenge_user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/menu_button"
