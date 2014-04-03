@@ -19,7 +19,7 @@
     
     <EditText
     	android:id="@+id/challenge_user_name"
-    	android:layout_width="fill_parent"
+    	android:layout_width="300dp"
     	android:layout_height="wrap_content"
     	android:hint="@string/challenge_user_hint"
     	android:inputType="text" />
@@ -29,6 +29,51 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/challenge_user_button"
-    	android:onClick="startActivity" />
+    	android:onClick="challengeButtonClicked" />
+    
+    <Button
+        android:id="@+id/button_challenge_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/menu_button"
+    	android:onClick="menuButtonClicked" />
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:text="@string/challenge_table_title" />
+    
+    <TableLayout
+        android:stretchColumns="0,1"
+        android:id="@+id/challenge_table" 
+        android:layout_weight="1" 
+        android:layout_height="wrap_content" 
+        android:layout_width="match_parent"
+        android:gravity="center">
+        
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:textStyle="bold"
+            android:textSize="16sp" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_header_user" />
+
+            <TextView
+                android:id="@+id/productID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/challenge_header_status" />
+
+        </TableRow>
+    </TableLayout>
     
 </LinearLayout>

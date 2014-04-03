@@ -11,9 +11,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class LoadGameAdapter extends BaseAdapter {
@@ -43,7 +44,8 @@ public class LoadGameAdapter extends BaseAdapter {
 
 	@Override
 	public Object getItem(int position) {
-		return null;
+		Game g = savedGames.get(position);
+		return g.id;
 	}
 
 	@Override
@@ -60,7 +62,7 @@ public class LoadGameAdapter extends BaseAdapter {
 			
 			v = new LinearLayout(context);
 			v.setOrientation(LinearLayout.VERTICAL);
-			v.setLayoutParams(new GridView.LayoutParams(85, 85));
+			v.setLayoutParams(new ListView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 			v.setPadding(8, 8, 8, 8);
 			
 			TextView tv = new TextView(context);
