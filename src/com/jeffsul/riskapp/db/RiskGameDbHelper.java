@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class RiskGameDbHelper extends SQLiteOpenHelper {
-	public static final int DB_VERSION = 3;
+	public static final int DB_VERSION = 5;
 	public static final String DB_NAME = "RiskGame.db";
 	
 	private static final String SQL_CREATE_GAMES = "CREATE TABLE " + RiskGame.TABLE_NAME + " ("
@@ -32,7 +32,7 @@ public class RiskGameDbHelper extends SQLiteOpenHelper {
 	private static final String SQL_CREATE_GAME_TERRITORIES = "CREATE TABLE " + RiskGameTerritories.TABLE_NAME + " ("
 			+ RiskGameTerritories._ID + " INTEGER PRIMARY KEY,"
 			+ RiskGameTerritories.COLUMN_NAME_GAME_ID + " INTEGER,"
-			+ RiskGameTerritories.COLUMN_NAME_OWNER + " STRING,"
+			+ RiskGameTerritories.COLUMN_NAME_OWNER + " INTEGER,"
 			+ RiskGameTerritories.COLUMN_NAME_TERRITORY_ID + " STRING,"
 			+ RiskGameTerritories.COLUMN_NAME_UNITS + " INTEGER)";
 	private static final String SQL_DELETE_GAME_TERRITORIES = "DROP TABLE IF EXISTS " + RiskGameTerritories.TABLE_NAME;

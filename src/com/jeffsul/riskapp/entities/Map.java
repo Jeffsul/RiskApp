@@ -215,6 +215,10 @@ public class Map implements Territory.Listener {
 		}
 		return count;
 	}
+
+	public Territory getTerritory(String name) {
+		return territories.get(name);
+	}
 	
 	public Territory[] getTerritories() {
 		return territories.values().toArray(new Territory[territories.size()]);

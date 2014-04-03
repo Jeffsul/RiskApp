@@ -3,6 +3,8 @@ package com.jeffsul.riskapp.entities;
 import java.util.Date;
 
 import com.jeffsul.riskapp.db.RiskGameContract.RiskGame;
+import com.jeffsul.riskapp.db.RiskGameContract.RiskGamePlayers;
+import com.jeffsul.riskapp.db.RiskGameContract.RiskGameTerritories;
 
 import android.database.Cursor;
 
@@ -15,6 +17,9 @@ public class Game {
 	public String cardSetting = "regular";
 	public boolean initialized;
 	public int turnCounter;
+
+	public Player[] players;
+	public MapTerritory[] territories;
 
 	public Game() {
 		// TODO(jeffsul): Builder pattern.
@@ -48,5 +53,31 @@ public class Game {
 			game.initialized = c.getInt(c.getColumnIndex(RiskGame.COLUMN_NAME_INITIALIZED)) == 1;
 		}
 		return game;
+	}
+
+	public static class Player {
+		public String name;
+		public int pos;
+
+		public static Player fromCursor(Cursor c) {
+			Player p = new Player();
+			p.name = c.getString(c.getColumnIndexOrThrow(RiskGamePlayers.COLUMN_NAME_PLAYER_NAME));
+			p.pos = c.getInt(c.getColumnIndexOrThrow(RiskGamePlayers.COLUMN_NAME_PLAYER_POSITION));
+			return p;
+		}
+	}
+
+	public static class MapTerritory {
+		public String name;
+		public int owner;
+		public int units;
+
+		public static MapTerritory fromCursor(Cursor c) {
+			MapTerritory t = new MapTerritory();
+			t.name = c.getString(c.getColumnIndexOrThrow(RiskGameTerritories.COLUMN_NAME_TERRITORY_ID));
+			t.owner = c.getInt(c.getColumnIndexOrThrow(RiskGameTerritories.COLUMN_NAME_OWNER));
+			t.units = c.getInt(c.getColumnIndexOrThrow(RiskGameTerritories.COLUMN_NAME_UNITS));
+			return t;
+		}
 	}
 }
