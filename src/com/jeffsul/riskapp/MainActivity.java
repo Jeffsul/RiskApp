@@ -31,6 +31,14 @@ public class MainActivity extends Activity implements OnItemSelectedListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		if (getIntent().getBooleanExtra("networked", false)) {
+			Intent intent = new Intent(this, GameActivity.class);
+			intent.putExtra(GameActivity.GAME_ID_EXTRA, saveNewNetworkedGame(getIntent().getStringArrayExtra("players")));
+			startActivity(intent);
+			finish();
+		}
+		
 		setContentView(R.layout.activity_main);
 		
 		Spinner spinner = (Spinner) findViewById(R.id.number_players_spinner);
@@ -86,19 +94,38 @@ public class MainActivity extends Activity implements OnItemSelectedListener {
 		}
 		return gameId;
 	}
+
+	private long saveNewNetworkedGame(String[] playerNames) {
+		RiskGameDbHelper helper = new RiskGameDbHelper(this);
+		SQLiteDatabase db = helper.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put(RiskGame.COLUMN_NAME_CREATED, Long.toString(System.currentTimeMillis()));
+		values.put(RiskGame.COLUMN_NAME_LAST_PLAYED, Long.toString(System.currentTimeMillis()));
+		// int mapSetting = ((Spinner) findViewById(R.id.spinner_cards_setting)).getSelectedItemPosition();
+		values.put(RiskGame.COLUMN_NAME_MAP_ID, "map_classic");
+		//int cardSetting = ((Spinner) findViewById(R.id.spinner_cards_setting)).getSelectedItemPosition();
+		values.put(RiskGame.COLUMN_NAME_TURN_COUNTER, 0);
+		int numPlayers = 2;
+		values.put(RiskGame.COLUMN_NAME_NUM_PLAYERS, numPlayers);
+		long gameId = db.insert(RiskGame.TABLE_NAME, "null", values);
+		System.out.println(gameId);
+		
+		for (int i = 0; i < numPlayers; i++) {
+			ContentValues values2 = new ContentValues();
+			values2.put(RiskGamePlayers.COLUMN_NAME_GAME_ID, gameId);
+			values2.put(RiskGamePlayers.COLUMN_NAME_PLAYER_NAME, playerNames[i]);
+			System.out.println(playerNames[i]);
+			values2.put(RiskGamePlayers.COLUMN_NAME_PLAYER_POSITION, i);
+			db.insert(RiskGamePlayers.TABLE_NAME, "null", values2);
+		}
+		return gameId;
+	}
 	
 	public void sendMessage(View view) {
-		if (view.getId() == R.id.button_challenge_menu) {
-			Intent intent = new Intent(this, ChallengeActivity.class);
-			startActivity(intent);
-		} else if (view.getId() == R.id.button_load_game) {
-			Intent intent = new Intent(this, LoadActivity.class);
-			startActivity(intent);
-		} else {
-			Intent intent = new Intent(this, GameActivity.class);
-			intent.putExtra(GameActivity.GAME_ID_EXTRA, saveNewGame());
-			startActivity(intent);
-		}
+		Intent intent = new Intent(this, GameActivity.class);
+		intent.putExtra(GameActivity.GAME_ID_EXTRA, saveNewGame());
+		startActivity(intent);
+		finish();
 	}
 	
 	private void addPlayer(int n) {				

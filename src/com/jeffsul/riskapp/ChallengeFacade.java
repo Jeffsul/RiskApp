@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.AsyncTask; 
@@ -38,7 +39,14 @@ public class ChallengeFacade {
 			protected JSONArray doInBackground(Listener... listeners) {
 				ArrayList<String> params = new ArrayList();
 				params.add(userName); // name of user being challenged
-				return callServer("create", params);
+				JSONArray response = null;
+				try {
+					response = new JSONArray().put(0, new JSONObject().put("status", "accepted").put("username", "each3ric").put("id", 1));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				return response;
+				//return callServer("create", params);
 			}
 			
 			@Override

@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.EditText;
 
 public class LoginActivity extends Activity {	
-	private static final String SHARED_PREFS_KEY = "com.jeffsul.riskapp.login";
+	public static final String SHARED_PREFS_KEY = "com.jeffsul.riskapp.login";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,9 +96,8 @@ public class LoginActivity extends Activity {
 	{
 		String username = "null";
 		//get the global user
-		SharedPreferences prefs = this.getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
-		String userKey = "com.example.app.user";
-		username = prefs.getString(userKey, "no user found"); 
+		SharedPreferences prefs = getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
+		username = prefs.getString(SHARED_PREFS_KEY, "no user found"); 
 		
 		// if the stored user was not marked as still not logged in
 		if (!(username.equals("**NotLoggedIn**")))
@@ -171,8 +170,7 @@ public class LoginActivity extends Activity {
 		String username = "null";
 		//get the global user
 		SharedPreferences prefs = this.getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
-		String userKey = "com.example.app.user";
-		username = prefs.getString(userKey, "no user found"); 
+		username = prefs.getString(SHARED_PREFS_KEY, "no user found"); 
 		
 		// if the global user was marked as bad, display a message
 		if (username.equals("**UsernameWasTaken**"))

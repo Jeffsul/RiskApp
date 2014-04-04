@@ -3,24 +3,20 @@ package com.jeffsul.riskapp;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.jeffsul.riskapp.login.LoginActivity;
+
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle; 
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NotificationCompat;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -107,8 +103,11 @@ public class ChallengeActivity extends Activity {
 			        .setContentTitle(contentTitle)
 			        .setContentText(contentText);
 
-			Intent resultIntent = new Intent(this, ChallengeActivity.class);
-			// TODO: launch game here for success case
+			Intent resultIntent = new Intent(this, MainActivity.class);
+			resultIntent.putExtra("networked", true);
+			SharedPreferences prefs = getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
+			String myUsername = prefs.getString(LoginActivity.SHARED_PREFS_KEY, null);
+			resultIntent.putExtra("players", new String[] {myUsername, username});
 
 			TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 
@@ -224,13 +223,16 @@ public class ChallengeActivity extends Activity {
         	else {
                 statusText.setText(R.string.received_challenge_button);
         	}
-        	
+        	final String user = username;
         	statusText.setTextColor(Color.parseColor("#0000FF"));
         	statusText.setOnClickListener(new TextView.OnClickListener() {
         		@Override
         		public void onClick(View v) {
-        			Intent intent = new Intent(context, GameActivity.class);
-        			intent.putExtra(GameActivity.GAME_ID_EXTRA, 0);
+        			Intent intent = new Intent(ChallengeActivity.this, MainActivity.class);
+        			intent.putExtra("networked", true);
+        			SharedPreferences prefs = getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
+        			String myUsername = prefs.getString(LoginActivity.SHARED_PREFS_KEY, null);
+        			intent.putExtra("players", new String[] {myUsername, user});
         			startActivity(intent);
         		}
         	});

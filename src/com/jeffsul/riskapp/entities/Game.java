@@ -35,7 +35,10 @@ public class Game {
 	}
 
 	public String getFormattedLastPlayed() {
-		long l = Long.parseLong(lastPlayed);
+		long l = System.currentTimeMillis();
+		try {
+			l = Long.parseLong(lastPlayed);
+		} catch (Exception e) {}
 		Date d = new Date(l);
 		return format.format(d);
 	}
