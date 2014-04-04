@@ -9,10 +9,12 @@ import com.jeffsul.riskapp.entities.Game;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,11 +30,9 @@ public class LoadGameAdapter extends BaseAdapter {
 		SQLiteDatabase db = helper.getReadableDatabase();
 		String[] projection = {RiskGame._ID, RiskGame.COLUMN_NAME_CREATED, RiskGame.COLUMN_NAME_MAP_ID};
 		Cursor c = db.query(RiskGame.TABLE_NAME, projection, null, null, null, null, RiskGame._ID + " DESC");
-		System.out.println("GAMES: " + c.getCount());
 		savedGames = new ArrayList<Game>();
 		
 		while (c.moveToNext()) {
-			System.out.println(c.getInt(c.getColumnIndex(RiskGame._ID)) + " :: " + c.getString(c.getColumnIndex(RiskGame.COLUMN_NAME_CREATED)));
 			savedGames.add(Game.fromCursor(c));
 		}
 	}
@@ -61,12 +61,20 @@ public class LoadGameAdapter extends BaseAdapter {
 			Game g = savedGames.get(position);
 			
 			v = new LinearLayout(context);
-			v.setOrientation(LinearLayout.VERTICAL);
+			v.setOrientation(LinearLayout.HORIZONTAL);
 			v.setLayoutParams(new ListView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 			v.setPadding(8, 8, 8, 8);
 			
+			ImageView iv = new ImageView(context);
+			iv.setBackgroundResource(R.drawable.classic_map_small);
+			int w = 60;
+			LayoutParams ivParams = new LayoutParams(w, (int)((266.0/400.0)*w));
+			iv.setLayoutParams(ivParams);
+			v.addView(iv);
+			
 			TextView tv = new TextView(context);
-			tv.setText(Integer.toString(g.id) + " (" + g.getFormattedDateCreated() + ")");
+			tv.setText(Html.fromHtml("<b>Game: </b>" + Integer.toString(g.id) + "<br><i>Date created: </i>" + g.getFormattedDateCreated()
+					+ ", <i>Last played: </i>" + g.getFormattedLastPlayed()));
 			v.addView(tv);
 		} else {
 			v = (LinearLayout) convertView;

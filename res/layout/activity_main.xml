@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:gravity="center"
+    android:gravity="top"
     android:orientation="vertical"
     tools:context=".MainActivity" >
 
@@ -15,35 +15,7 @@
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:text="@string/risk_title" />
-    
-    <LinearLayout
-        android:id="@+id/player_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
-	    
-	    <LinearLayout
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:orientation="horizontal" >
-	        	        
-		    <Button
-		        android:id="@+id/button_add_ai"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:text="@string/add_ai_button"
-		        android:onClick="sendMessage" />
-		    
-		    <Button
-		        android:id="@+id/button_add_local"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:text="@string/add_local_button"
-	   	        android:onClick="sendMessage" />
-		          
-		 </LinearLayout>
-	</LinearLayout>
+        android:text="@string/create_game_activity_title" />
 	
 	<LinearLayout
 	    android:layout_width="match_parent"
@@ -59,6 +31,14 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
+    
+		<LinearLayout
+	        android:id="@+id/player_list"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" >
+
+		</LinearLayout>
     
     <LinearLayout 
         android:layout_width="match_parent"
@@ -96,18 +76,5 @@
         android:layout_height="wrap_content"
         android:text="@string/play_game_button"
         android:onClick="sendMessage" />
-    
-    <Button
-        android:id="@+id/button_load_game"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/load_game_button" 
-        android:onClick="sendMessage" />
-    
-	<Button
-        android:id="@+id/button_challenge_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/button_challenge_menu"
-    	android:onClick="sendMessage" />
+
 </LinearLayout>

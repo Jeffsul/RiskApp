@@ -1,5 +1,6 @@
 package com.jeffsul.riskapp.entities;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.jeffsul.riskapp.db.RiskGameContract.RiskGame;
@@ -9,6 +10,8 @@ import com.jeffsul.riskapp.db.RiskGameContract.RiskGameTerritories;
 import android.database.Cursor;
 
 public class Game {
+	private static final SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d 'at' HH:mm");
+	
 	public int id;
 	public String created;
 	public String lastPlayed;
@@ -28,7 +31,16 @@ public class Game {
 	public String getFormattedDateCreated() {
 		long l = Long.parseLong(created);
 		Date d = new Date(l);
-		return d.toString();
+		return format.format(d);
+	}
+
+	public String getFormattedLastPlayed() {
+		long l = System.currentTimeMillis();
+		try {
+			l = Long.parseLong(lastPlayed);
+		} catch (Exception e) {}
+		Date d = new Date(l);
+		return format.format(d);
 	}
 
 	public static Game fromCursor(Cursor c) {

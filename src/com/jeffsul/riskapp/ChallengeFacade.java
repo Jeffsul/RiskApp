@@ -10,16 +10,16 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.AsyncTask; 
 import android.widget.TableLayout;
 
-public class ChallengeFacade extends ChallengeActivity {
+public class ChallengeFacade {
 	
 	private ArrayList<Listener> listeners;
-	final static String SERVER_URL = "http://wifinder-syde362.herokuapp.com/serverStub";
-	TableLayout table = (TableLayout) findViewById(R.id.challenge_table);
+	private final static String SERVER_URL = "http://wifinder-syde362.herokuapp.com/serverStub";
 	
 	public interface Listener {
 		public void onChallengeResponse(JSONArray response);
@@ -39,13 +39,19 @@ public class ChallengeFacade extends ChallengeActivity {
 			protected JSONArray doInBackground(Listener... listeners) {
 				ArrayList<String> params = new ArrayList();
 				params.add(userName); // name of user being challenged
-				return callServer("create", params);
+				JSONArray response = null;
+				try {
+					response = new JSONArray().put(0, new JSONObject().put("status", "accepted").put("username", "each3ric").put("id", 1));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				return response;
+				//return callServer("create", params);
 			}
 			
 			@Override
 			protected void onPostExecute(JSONArray response) {
 				listener.onChallengeResponse(response);
-				
 			}
 			
 		}.execute(cListener);

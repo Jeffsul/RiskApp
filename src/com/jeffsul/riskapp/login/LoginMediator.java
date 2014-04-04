@@ -225,10 +225,9 @@ public class LoginMediator {
 	private boolean storeGlobalUser(String username)
 	{
 		// this key is needed to retrieve the logged in user
-		String userKey = "com.example.app.user";
 		try {
 			SharedPreferences.Editor editor = sharedPreferences.edit();
-			editor.putString(userKey, username);
+			editor.putString(LoginActivity.SHARED_PREFS_KEY, username);
 			editor.commit();
 		} catch (Exception e) {
 			System.out.println("Exception during share: " + e.toString());

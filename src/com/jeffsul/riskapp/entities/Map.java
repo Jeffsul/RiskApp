@@ -242,6 +242,16 @@ public class Map implements Territory.Listener {
 		return players;
 	}
 
+	public void triggerRefresh() {
+		for (Player p : players) {
+			for (Listener listener : listeners) {
+				listener.onTroopCountChange(p, getTroopCount(p));
+				listener.onTerritoryCountChange(p, getTerritoryCount(p));
+				listener.onBonusChange(p, calculateBonus(p));
+			}
+		}
+	}
+
 	@Override
 	public void onUnitsChanged(Player player, int units) {
 		for (Listener listener : listeners) {
