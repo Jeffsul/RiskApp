@@ -18,6 +18,7 @@
         <item>Modified Cards</item>
     </string-array>
     <string name="play_game_button">Start Game</string>
+    <string name="create_game_button">Start Local Game</string>
     <string name="load_game_button">Load Game</string>
     
     <string name="action_button_default">Action Button</string>

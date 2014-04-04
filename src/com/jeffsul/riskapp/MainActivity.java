@@ -73,10 +73,14 @@ public class MainActivity extends Activity implements OnItemSelectedListener {
 		int numPlayers = ((Spinner) findViewById(R.id.number_players_spinner)).getSelectedItemPosition() + MIN_NUM_PLAYERS;
 		values.put(RiskGame.COLUMN_NAME_NUM_PLAYERS, numPlayers);
 		long gameId = db.insert(RiskGame.TABLE_NAME, "null", values);
+		
+		ViewGroup playerListView = (ViewGroup) findViewById(R.id.player_list);
 		for (int i = 0; i < numPlayers; i++) {
 			ContentValues values2 = new ContentValues();
 			values2.put(RiskGamePlayers.COLUMN_NAME_GAME_ID, gameId);
-			values2.put(RiskGamePlayers.COLUMN_NAME_PLAYER_NAME, "Player " + i);
+			String name = ((EditText) ((LinearLayout) playerListView.getChildAt(i)).findViewById(R.id.player_name_edittext))
+					.getText().toString();
+			values2.put(RiskGamePlayers.COLUMN_NAME_PLAYER_NAME, name);
 			values2.put(RiskGamePlayers.COLUMN_NAME_PLAYER_POSITION, i);
 			db.insert(RiskGamePlayers.TABLE_NAME, "null", values2);
 		}
@@ -107,6 +111,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener {
 		layout.addView(label);
 	    
 		EditText playerNameField = new EditText(this);
+		playerNameField.setId(R.id.player_name_edittext);
 		playerNameField.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 		playerNameField.setMinWidth(400);
 		playerNameField.setText("Player " + n);
