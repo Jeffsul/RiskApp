@@ -1,5 +1,7 @@
 package com.jeffsul.riskapp;
 
+import com.jeffsul.riskapp.login.LoginActivity;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +17,7 @@ public class LaunchActivity extends Activity {
 	
 	public void sendMessage(View view) {
 		if (view.getId() == R.id.button_challenge_menu) {
-			Intent intent = new Intent(this, ChallengeActivity.class);
+			Intent intent = new Intent(this, LoginActivity.class);
 			startActivity(intent);
 		} else if (view.getId() == R.id.button_load_game) {
 			Intent intent = new Intent(this, LoadActivity.class);
