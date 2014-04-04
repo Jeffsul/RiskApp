@@ -1,7 +1,5 @@
 package com.jeffsul.riskapp.login;
 
-import java.util.ArrayList;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -17,7 +15,7 @@ import android.content.SharedPreferences;
 public class LoginMediator {	
 	
 	// allows access to the sharedPreferences of this application
-	SharedPreferences sharedPreferences;
+	private SharedPreferences sharedPreferences;
 	
 	public LoginMediator(Context context)
 	{
@@ -39,8 +37,8 @@ public class LoginMediator {
 	private class LoginAsyncTask extends AsyncTask<Listener, Void, Listener>
 	{
 		// the username and password attempting to be logged in with
-		String username;
-		String password;
+		private String username;
+		private String password;
 		
 		public LoginAsyncTask(String usn, String pw) {
 	        super();
