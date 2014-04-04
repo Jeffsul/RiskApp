@@ -23,7 +23,7 @@ public class LoginActivity extends Activity {
 		
 		SharedPreferences prefs = getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
 		String username = prefs.getString(SHARED_PREFS_KEY, null);
-		if (username != null) {
+		if (username != null && !username.contains("*")) {
 			advanceScreen();
 		}
 	}
