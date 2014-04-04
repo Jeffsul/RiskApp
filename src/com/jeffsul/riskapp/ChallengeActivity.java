@@ -108,7 +108,7 @@ public class ChallengeActivity extends Activity {
 			        .setContentText(contentText);
 
 			Intent resultIntent = new Intent(this, ChallengeActivity.class);
-			// TODO: launch game here for success case and send challenge notification if it was a challenge sent from someone else
+			// TODO: launch game here for success case
 
 			TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 
@@ -196,6 +196,8 @@ public class ChallengeActivity extends Activity {
 	}
 	
 	private void drawTableRow(TableLayout tl, TableRow row, String username, String status){
+		final Context context = this;
+		
 		if (status.equals("pending") && tl.findViewWithTag(username) != null){
 			Toast toast = Toast.makeText(getApplicationContext(), "You've already challenged " + username + "!", 5);
 			toast.setGravity(Gravity.CENTER, 0, 0);
@@ -227,7 +229,9 @@ public class ChallengeActivity extends Activity {
         	statusText.setOnClickListener(new TextView.OnClickListener() {
         		@Override
         		public void onClick(View v) {
-        			// TODO: enter game
+        			Intent intent = new Intent(context, GameActivity.class);
+        			intent.putExtra(GameActivity.GAME_ID_EXTRA, 0);
+        			startActivity(intent);
         		}
         	});
         }
@@ -240,6 +244,7 @@ public class ChallengeActivity extends Activity {
 	}
 	
 	public void menuButtonClicked(View view) {
-		finish();
+		Intent intent = new Intent(this, MainActivity.class);
+		startActivity(intent);
 	}
 }

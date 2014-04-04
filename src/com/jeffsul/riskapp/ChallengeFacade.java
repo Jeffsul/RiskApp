@@ -44,7 +44,6 @@ public class ChallengeFacade {
 			@Override
 			protected void onPostExecute(JSONArray response) {
 				listener.onChallengeResponse(response);
-				
 			}
 			
 		}.execute(cListener);
