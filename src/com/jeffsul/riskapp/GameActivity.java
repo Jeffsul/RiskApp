@@ -125,8 +125,8 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 			territoryMap.put(t, btn);
 			deck.add(new Card(t, i % 3));
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(35, 35);
-			params.leftMargin = (int)(t.x * (700.0/1062.0)) - 20;
-			params.topMargin = (int)(t.y * (700.0/1062.0)) - 20;
+			params.leftMargin = (int)(t.x * (650.0/1062.0)) - 20;
+			params.topMargin = (int)(t.y * (650.0/1062.0)) - 20;
 			gamePnl.addView(btn, params);
 			i++;
 		}
@@ -195,6 +195,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		for (int i = 0; i < terrCount; i++) {
 			Territory territ = territories.remove((int) (Math.random() * territories.size()));
 			territ.setOwner(players[i % numPlayers]);
+			territ.setUnits(Territory.DEFAULT_UNITS);
 		}
 
 		saveGame();

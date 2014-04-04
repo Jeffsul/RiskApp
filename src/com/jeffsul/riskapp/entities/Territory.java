@@ -12,7 +12,7 @@ import com.jeffsul.riskapp.players.Player;
  * managing the associated UI button element.
  */
 public class Territory {
-	private static final int DEFAULT_UNITS = 3;	
+	public static final int DEFAULT_UNITS = 3;	
 		
 	public String name;
 	public int x;
