@@ -1,6 +1,6 @@
 package com.jeffsul.riskapp.login;
 
-import com.jeffsul.riskapp.MainActivity;
+import com.jeffsul.riskapp.ChallengeActivity;
 import com.jeffsul.riskapp.R;
 
 import android.os.Bundle;
@@ -14,11 +14,18 @@ import android.view.View;
 import android.widget.EditText;
 
 public class LoginActivity extends Activity {	
+	private static final String SHARED_PREFS_KEY = "com.jeffsul.riskapp.login";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
+		
+		SharedPreferences prefs = getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
+		String username = prefs.getString(SHARED_PREFS_KEY, null);
+		if (username != null) {
+			advanceScreen();
+		}
 	}
 	
 	// function invoked when a button on the login screen is clicked
@@ -216,9 +223,10 @@ public class LoginActivity extends Activity {
 	// moves the App to the main menu screen
 	private void advanceScreen()
 	{
-		Intent intent = new Intent(this, MainActivity.class);
+		Intent intent = new Intent(this, ChallengeActivity.class);
 		
 		startActivity(intent);
+		finish();
 	}
 	
 	// displays a dialog box indicating an incorrect login attempt
