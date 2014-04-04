@@ -15,11 +15,10 @@ import org.json.JSONObject;
 import android.os.AsyncTask; 
 import android.widget.TableLayout;
 
-public class ChallengeFacade extends ChallengeActivity {
+public class ChallengeFacade {
 	
 	private ArrayList<Listener> listeners;
-	final static String SERVER_URL = "http://wifinder-syde362.herokuapp.com/serverStub";
-	TableLayout table = (TableLayout) findViewById(R.id.challenge_table);
+	private final static String SERVER_URL = "http://wifinder-syde362.herokuapp.com/serverStub";
 	
 	public interface Listener {
 		public void onChallengeResponse(JSONArray response);
