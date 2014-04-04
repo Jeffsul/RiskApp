@@ -176,6 +176,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 		for (Player p : players) {
 			stateListeners.add(p);
 		}
+		map.triggerRefresh();
 		changeState(nextState);
 		if (nextState == State.DEPLOY) {
 			beginTurn();
