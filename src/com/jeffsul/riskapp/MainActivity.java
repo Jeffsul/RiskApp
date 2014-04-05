@@ -22,6 +22,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+/**
+ * MainActivity is a screen to create a local game.
+ */
 public class MainActivity extends Activity implements OnItemSelectedListener {	
 	private static final int MAX_NUM_PLAYERS = 6;
 	private static final int MIN_NUM_PLAYERS = 2;
@@ -40,7 +43,8 @@ public class MainActivity extends Activity implements OnItemSelectedListener {
 		}
 		
 		setContentView(R.layout.activity_main);
-		
+	
+		// Initialize drop-down game creation options:
 		Spinner spinner = (Spinner) findViewById(R.id.number_players_spinner);
 		CharSequence[] objects = new CharSequence[MAX_NUM_PLAYERS - MIN_NUM_PLAYERS + 1];
 		for (int i = 0; i < objects.length; i++) {
@@ -64,10 +68,11 @@ public class MainActivity extends Activity implements OnItemSelectedListener {
 		cardsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		cardsSpinner.setAdapter(cardsAdapter);
 
-		addPlayer(1);
-		addPlayer(2);
+		for (int i = 0; i < MIN_NUM_PLAYERS; i++) {
+			addPlayer(i + 1);
+		}
 	}
-	
+
 	private long saveNewGame() {
 		RiskGameDbHelper helper = new RiskGameDbHelper(this);
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -120,14 +125,18 @@ public class MainActivity extends Activity implements OnItemSelectedListener {
 		}
 		return gameId;
 	}
-	
+
+	/**
+	 * Handles button click.
+	 * @param view
+	 */
 	public void sendMessage(View view) {
 		Intent intent = new Intent(this, GameActivity.class);
 		intent.putExtra(GameActivity.GAME_ID_EXTRA, saveNewGame());
 		startActivity(intent);
 		finish();
 	}
-	
+
 	private void addPlayer(int n) {				
 		LinearLayout layout = new LinearLayout(this);
 		layout.setOrientation(LinearLayout.HORIZONTAL);

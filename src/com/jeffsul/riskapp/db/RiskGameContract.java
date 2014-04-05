@@ -2,11 +2,17 @@ package com.jeffsul.riskapp.db;
 
 import android.provider.BaseColumns;
 
+/**
+ * RiskGameContract represents a schema for the database.
+ */
 public final class RiskGameContract {
 
 	// Empty constructor to prevent someone from accidentally instantiating it.
 	public RiskGameContract() {}
-	
+
+	/**
+	 * RiskGame represents a schema for the games table.
+	 */
 	public static abstract class RiskGame implements BaseColumns {
 		public static final String TABLE_NAME = "games";
 		public static final String COLUMN_NAME_CREATED = "date_created";
@@ -16,7 +22,10 @@ public final class RiskGameContract {
 		public static final String COLUMN_NAME_TURN_COUNTER = "turn_counter";
 		public static final String COLUMN_NAME_INITIALIZED = "initialized";
 	}
-	
+
+	/**
+	 * RiskGamePlayers represents a schema for the gamePlayers relational table.
+	 */
 	public static abstract class RiskGamePlayers implements BaseColumns {
 		public static final String TABLE_NAME = "gamePlayers";
 		public static final String COLUMN_NAME_GAME_ID = "game_id";
@@ -24,7 +33,10 @@ public final class RiskGameContract {
 		//public static final String COLUMN_NAME_PLAYER_ID = "player_id";
 		public static final String COLUMN_NAME_PLAYER_POSITION = "player_pos";
 	}
-	
+
+	/**
+	 * RiskGameTerritories represents a schema for the gameTerritories relational table.
+	 */
 	public static abstract class RiskGameTerritories implements BaseColumns {
 		public static final String TABLE_NAME = "gameTerritories";
 		public static final String COLUMN_NAME_GAME_ID = "game_id";

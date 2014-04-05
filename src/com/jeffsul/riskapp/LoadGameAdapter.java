@@ -19,6 +19,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+/**
+ * LoadGameAdapter handles the layout and drawing of the saved games list.
+ */
 public class LoadGameAdapter extends BaseAdapter {
 	private Context context;
 	private ArrayList<Game> savedGames;

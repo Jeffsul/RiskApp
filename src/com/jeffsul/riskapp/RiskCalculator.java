@@ -2,6 +2,9 @@ package com.jeffsul.riskapp;
 
 import java.text.NumberFormat;
 
+/**
+ * RiskCalculator is a utility to calculate the dice odds of a battle.
+ */
 public class RiskCalculator {	
 	public static final double W1V1 = 15.0 / 36.0;
 	public static final double L1V1 = 21.0 / 36.0;
@@ -19,7 +22,13 @@ public class RiskCalculator {
 	public static final double T3V2 = 2611.0 / 7776.0;
 	
 	private static NumberFormat format = NumberFormat.getPercentInstance();
-	
+
+	/**
+	 * Returns a string summarizing the odds and likely outcome of a battle.
+	 * @param attackers
+	 * @param defenders
+	 * @return string with victory odds and likeliest outcome.
+	 */
 	public static String getResults(int attackers, int defenders) {
 		double[][] outcome = new double[attackers + 1][defenders + 1];
 		for (int i = 0; i < attackers + 1; i++) {
@@ -47,7 +56,13 @@ public class RiskCalculator {
 		}
 		return "Victory odds: " + format.format(winOdds) + ", Likeliest outcome: " + likelyOutcomeState;
 	}
-	
+
+	/**
+	 * Calculates the odds of winning a battle.
+	 * @param attackers
+	 * @param defenders
+	 * @return the odds as a percent value between 0 and 1.
+	 */
 	public static double getWinningOdds(int attackers, int defenders) {
 		double[][] outcome = new double[attackers + 1][defenders + 1];
 		for (int i = 0; i < attackers + 1; i++) {
@@ -63,7 +78,7 @@ public class RiskCalculator {
 		}
 		return winOdds;
 	}
-	
+
 	private static double getOdds(int a, int d, double[][] outcome, int attackers, int defenders) {
 		if (outcome[a][d] != -1) {
 			return outcome[a][d];

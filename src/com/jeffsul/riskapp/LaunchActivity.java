@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+/**
+ * LaunchActivity is the entry point for the Risk app.
+ */
 public class LaunchActivity extends Activity {
 
 	@Override
@@ -14,7 +17,11 @@ public class LaunchActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_launch);
 	}
-	
+
+	/**
+	 * Handles button click.
+	 * @param view
+	 */
 	public void sendMessage(View view) {
 		if (view.getId() == R.id.button_challenge_menu) {
 			Intent intent = new Intent(this, LoginActivity.class);
