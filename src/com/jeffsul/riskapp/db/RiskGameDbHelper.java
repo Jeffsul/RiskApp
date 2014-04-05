@@ -8,6 +8,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**
+ * RiskGameDbHelper is a helper class to access the RiskGame database.
+ */
 public class RiskGameDbHelper extends SQLiteOpenHelper {
 	public static final int DB_VERSION = 5;
 	public static final String DB_NAME = "RiskGame.db";

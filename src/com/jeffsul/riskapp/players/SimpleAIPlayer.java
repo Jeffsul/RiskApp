@@ -5,6 +5,9 @@ import com.jeffsul.riskapp.GameSettings;
 import com.jeffsul.riskapp.entities.Map;
 import com.jeffsul.riskapp.entities.Territory;
 
+/**
+ * The most basic AI implementation possible.
+ */
 public class SimpleAIPlayer extends AIPlayer {
 
 	public SimpleAIPlayer(int num, int color, GameListener listener, Map map, GameSettings gameSettings) {

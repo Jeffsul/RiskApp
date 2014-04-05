@@ -9,6 +9,9 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+/**
+ * ActionLabel is a UI game component with which the active user is notified about the game state.
+ */
 public class ActionLabel extends TextView implements StateListener {
 
 	public ActionLabel(Context context, AttributeSet attrs) {

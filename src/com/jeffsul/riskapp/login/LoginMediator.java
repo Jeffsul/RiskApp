@@ -12,6 +12,9 @@ import android.os.AsyncTask;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+/**
+ * LoginMediator facilitates communication with the Login server.
+ */
 public class LoginMediator {	
 	
 	// allows access to the sharedPreferences of this application

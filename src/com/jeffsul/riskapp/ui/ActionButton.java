@@ -9,6 +9,9 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.Button;
 
+/**
+ * ActionButton is a UI game component with which the user interacts to change the state.
+ */
 public class ActionButton extends Button implements StateListener {
 
 	public ActionButton(Context context, AttributeSet attrs) {

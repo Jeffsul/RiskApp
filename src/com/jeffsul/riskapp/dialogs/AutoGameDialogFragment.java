@@ -9,6 +9,9 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+/**
+ * AutoGameDialogFragment is a pop-up dialog asking the user what to do if only AI players are alive in the game.
+ */
 public class AutoGameDialogFragment extends DialogFragment {
 	private static final String ARG_TITLE = "dialog_title";
 	private static final String ARG_MESSAGE = "dialog_message";

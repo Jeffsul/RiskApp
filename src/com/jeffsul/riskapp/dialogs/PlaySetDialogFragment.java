@@ -9,6 +9,10 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+/**
+ * PlaySetDialogFragment is a pop-up dialog prompting the user to play a set of cards.
+ *
+ */
 public class PlaySetDialogFragment extends DialogFragment {
 	private static final String ARG_ITEMS = "option_items";
 	private static final String ARG_TROOPS = "troops";

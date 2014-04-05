@@ -9,7 +9,16 @@ import com.jeffsul.riskapp.db.RiskGameContract.RiskGamePlayers;
 import com.jeffsul.riskapp.db.RiskGameContract.RiskGameTerritories;
 import com.jeffsul.riskapp.entities.Game;
 
+/**
+ * RiskGameDbFacade hides game loading operations from the front-end.
+ */
 public class RiskGameDbFacade {
+	/**
+	 * Loads and returns a Game object with the given ID.
+	 * @param context context for the database.
+	 * @param gameId
+	 * @return loaded Game object with gameId.
+	 */
 	public static Game loadGameWithId(Context context, long gameId) {
 		Game game = new Game();
 		RiskGameDbHelper helper = new RiskGameDbHelper(context);

@@ -10,6 +10,9 @@ import com.jeffsul.riskapp.R;
 import com.jeffsul.riskapp.dialogs.AutoGameDialogFragment;
 import com.jeffsul.riskapp.entities.Map;
 
+/**
+ * AIPlayer is the abstract superclass for all AI algorithm implementations.
+ */
 public abstract class AIPlayer extends Player {		
 	protected int imgResId;
 	
@@ -28,7 +31,13 @@ public abstract class AIPlayer extends Player {
 	final public boolean isAI() {
 		return true;
 	}
-	
+
+	/**
+	 * Communicate a pop-up message to the user.
+	 * @param msg
+	 * @param activity
+	 * @param autoGame
+	 */
 	public void message(String msg, Activity activity, boolean autoGame) {
 		if (autoGame) {
 			AutoGameDialogFragment dialogFragment = AutoGameDialogFragment.newInstance(activity.getResources().getString(R.string.ai_player_message_title, name), msg);
@@ -64,9 +73,21 @@ public abstract class AIPlayer extends Player {
 			break;
 		}
 	}
-	
+
+	/**
+	 * AI implementation of placement logic.
+	 */
 	protected abstract void place();
+	/**
+	 * AI implementation of deployment logic.
+	 */
 	protected abstract void deploy();
+	/**
+	 * AI implementation of attack logic.
+	 */
 	protected abstract void attack();
+	/**
+	 * AI implementation of fortification logic.
+	 */
 	protected abstract void fortify();
 }
