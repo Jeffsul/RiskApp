@@ -28,15 +28,27 @@ import android.widget.Toast;
  */
 public class ChallengeActivity extends Activity {
 	
+	/**
+	 * Overriding Activity.onCreate, run when ChallengeActivity launches
+	 * @param savedInstanceState
+	 */
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_challenge);
 		
-		getChallenges(null);
+		getChallenges(null); // load the challenges asynchronously on screen load
 	}	
 	
+	/**
+	 * Method called in onClick of Challenge Menu button, calls ChallengeFacade interface to get list of user's challenges
+	 * @param view
+	 */
+
 	public void getChallenges(View view) {
+
+		// pass in implementation of interface, the onChallengeResponse method for the listener runs on its response
 		ChallengeFacade.Listener cListener = new ChallengeFacade.Listener() {
 			public void onChallengeResponse(JSONArray response) {
 				populateTable(response);
@@ -45,22 +57,27 @@ public class ChallengeActivity extends Activity {
 		ChallengeFacade.getChallenges(cListener);
 	}
 
+	/**
+	 * Method called in onClick of Send Challenge button, calls ChallengeFacade interface to send a challenge request to the web server
+	 * @param view
+	 */
+
 	public void createChallengeClicked(View view) {
 		final TableLayout tl = (TableLayout) findViewById(R.id.challenge_table);
 		final String userName = ((EditText)findViewById(R.id.challenge_username)).getText().toString();
 		
 		ChallengeFacade.Listener cListener = new ChallengeFacade.Listener() {
 			public void onChallengeResponse(JSONArray response) {
-				if (response == null) { // pre-response
+				if (response == null) { // pre-response, create pending row in table
 					int id = (int) Math.random();
 					TableRow row = createTableRow(id);
 					drawTableRow(tl, row, userName, "pending");
 				}
-				else {
+				else { // when the server responds after the call
 					try {
 						JSONObject obj = response.getJSONObject(0);
 						String status = obj.getString("status");
-						if (status.equals("failure")) {
+						if (status.equals("failure")) { // if the username does not exist, create a pop-up
 							Toast toast = Toast.makeText(getApplicationContext(), R.string.invalid_user, Toast.LENGTH_SHORT);
 							toast.setGravity(Gravity.CENTER, 0, 0);
 							toast.show();
@@ -79,6 +96,11 @@ public class ChallengeActivity extends Activity {
 		ChallengeFacade.createChallenge(cListener, userName);
 	}
 	
+	/**
+	 * Method to send Android notification to status bar of mobile device when a response is received from the server
+	 * Called in the onChallengeResponse of the ChallengeFacade.Listener
+	 * @param response
+	 */
 	private void sendNotification(JSONObject response) {
 		String contentTitle = null;
 		String contentText = null;
@@ -94,12 +116,13 @@ public class ChallengeActivity extends Activity {
 				contentTitle = "Risk Challenge Declined";
 				contentText = username + " declined your challenge. Tap to see the menu.";
 			}
-			
+
 			NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
 					.setSmallIcon(R.drawable.ic_launcher)
 					.setContentTitle(contentTitle)
 					.setContentText(contentText);
 
+			// launch a new game when the notification is clicked
 			Intent resultIntent = new Intent(this, MainActivity.class);
 			resultIntent.putExtra("networked", true);
 			SharedPreferences prefs = getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
@@ -120,6 +143,11 @@ public class ChallengeActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Populates the Challenges TableView with rows of challenges (username and status columns)
+	 * @param challenges
+	 */
+
 	private void populateTable(JSONArray challenges) {
 		TableLayout tl = (TableLayout) findViewById(R.id.challenge_table);
 		tl.removeAllViews();
@@ -129,7 +157,7 @@ public class ChallengeActivity extends Activity {
 		}
 		
 		for (int i = 0; i < challenges.length(); i++) {
-			try {
+			try { // parse the JSON response object for username and status, attach a unique ID, create the row
 				JSONObject challenge = challenges.getJSONObject(i);
 				String username = challenge.getString("username");
 				String status = challenge.getString("status");
@@ -142,6 +170,12 @@ public class ChallengeActivity extends Activity {
 			}
 		}
 	}
+
+	/**
+	 * Helper method to create a TableRow given a Challenge's ID
+	 * @param id
+	 * @return the TableRow that was created in this method
+	 */
 	
 	private TableRow createTableRow(int id) {
 		TableRow row = new TableRow(this);
@@ -151,6 +185,11 @@ public class ChallengeActivity extends Activity {
 		row.setId(id);
 		return row;
 	}
+
+	/**
+	 * Update the content of a TableRow containing an unknown Challenge ID - i.e. in a pending state - with new info
+	 * @param rowObj
+	 */
 	
 	private void updateTableRowPending(JSONObject rowObj) {
 		try {
@@ -165,8 +204,13 @@ public class ChallengeActivity extends Activity {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Update the content of a TableRow containing a known Challenge ID with new info
+	 * @param rowObj
+	 */
 	
-	/*private void updateTableRow(JSONObject rowObj) {
+	private void updateTableRow(JSONObject rowObj) {
 		try {
 			TableLayout tl = (TableLayout) findViewById(R.id.challenge_table);
 			String username = rowObj.getString("username");
@@ -178,10 +222,18 @@ public class ChallengeActivity extends Activity {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-	}*/
+	}
 	
+	/**
+	 * Helper to draw a new TableRow in a given existing TableLayout
+	 * @param tl
+	 * @param row
+	 * @param username
+	 * @param status
+	 */
+
 	private void drawTableRow(TableLayout tl, TableRow row, String username, String status){		
-		if (status.equals("pending") && tl.findViewWithTag(username) != null){
+		if (status.equals("pending") && tl.findViewWithTag(username) != null) { // if the tablerow being drawn represents a pending challenge
 			Toast toast = Toast.makeText(getApplicationContext(), "You've already challenged " + username + "!", Toast.LENGTH_SHORT);
 			toast.setGravity(Gravity.CENTER, 0, 0);
 			toast.show();
@@ -194,9 +246,10 @@ public class ChallengeActivity extends Activity {
 		if (status.equals("pending")) {
 			row.setTag(username);
 		}
+
 		TextView statusText = new TextView(this);
-		if (status.equals("accepted") || status.equals("received")) {
-			// if you've sent a challenge that was accepted or if you've received a challenge
+		if (status.equals("accepted") || status.equals("received")) { 
+		// if you've sent a challenge that was accepted or if you've received a challenge, make the status clickable
 			if (status.equals("accepted")) {
 				statusText.setText(R.string.accepted_challenge_button);
 			} else {
@@ -205,8 +258,8 @@ public class ChallengeActivity extends Activity {
 			final String user = username;
 			statusText.setTextColor(Color.parseColor("#0000FF"));
 			statusText.setOnClickListener(new TextView.OnClickListener() {
-				@Override
-				public void onClick(View v) {
+				@Override 
+				public void onClick(View v) { // launch a new game when the text is clicked
 					Intent intent = new Intent(ChallengeActivity.this, MainActivity.class);
 					intent.putExtra("networked", true);
 					SharedPreferences prefs = getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
@@ -215,7 +268,7 @@ public class ChallengeActivity extends Activity {
 					startActivity(intent);
 				}
 			});
-		} else {
+		} else { // if your challenge has been declined or is pending
 			statusText.setText(status);
 		}
 
@@ -223,6 +276,11 @@ public class ChallengeActivity extends Activity {
 		tl.addView(row);
 	}
 	
+	/**
+	 * Called in the onClick of the Back to Menu button; finish the ChallengeActivity and go back to other screen
+	 * @param view
+	 */
+
 	public void menuButtonClicked(View view) {
 		Intent intent = new Intent(this, MainActivity.class);
 		startActivity(intent);

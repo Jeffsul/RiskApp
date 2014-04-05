@@ -74,17 +74,24 @@ public class ChallengeFacade {
 			}
 		}.execute(cListener);
 	}
+
+	/**
+	 * calls the external web server with an HTTP GET request to either create a challenge or get a list of challenges
+	 * @param queryString
+	 * @param params
+	 * @return a server-generated JSON array of data
+	 */
 	
 	private static JSONArray callServer(String queryString, ArrayList<String> params) {
 		HttpClient client = new DefaultHttpClient(new BasicHttpParams());
 		String qString = SERVER_URL + "?type=" + queryString;
 		
-		if (params != null) {
+		if (params != null) { // if the request is to challenge a user
 			String user = params.get(0);
 			qString += "&username=" + user;
 		}
 		
-		try {
+		try { // execute the external server request
 			HttpGet httpget = new HttpGet(qString);
 			HttpResponse response = client.execute(httpget);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"), 8);
