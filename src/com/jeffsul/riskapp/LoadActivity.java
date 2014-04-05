@@ -8,6 +8,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+/**
+ * LoadActivity is a screen for browsing and loading saved games.
+ */
 public class LoadActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

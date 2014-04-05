@@ -34,6 +34,9 @@ import com.jeffsul.riskapp.ui.ActionButton;
 import com.jeffsul.riskapp.ui.ActionLabel;
 import com.jeffsul.riskapp.ui.TerritoryButton;
 
+/**
+ * GameActivity is the screen where Risk gameplay occurs.
+ */
 public class GameActivity extends Activity implements AutoGameDialogFragment.Listener,
 		PlaySetDialogFragment.Listener, View.OnClickListener, View.OnLongClickListener, GameListener {
 	public static final String GAME_ID_EXTRA = "com.jeffsul.risk.GAME_ID";
@@ -42,7 +45,16 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	private static final int CASH_IN_INCREMENT = 5;
 	private static final int INITIAL_PLACE_COUNT = 1;
 
+	/**
+	 * State represents the possible phases which a player's turn can have.
+	 */
 	public static enum State {PLACE, DEPLOY, ATTACK, ADVANCE, FORTIFY};
+	/**
+	 * CardSetting represents all the available Risk card rules for a game to have:
+	 * 	1. REGULAR: the standard incrementing cards rule.
+	 * 	2. NONE: no cards are used in the game.
+	 * 	3. MODIFIED: standard card cash-in increments are used, but cash-in count is kept separately by player.
+	 */
 	public static enum CardSetting {REGULAR, NONE, MODIFIED};
 	
 	private int numPlayers;
@@ -65,7 +77,7 @@ public class GameActivity extends Activity implements AutoGameDialogFragment.Lis
 	private Map map;
 	private HashMap<View, Territory> buttonMap;
 	private HashMap<Territory, TerritoryButton> territoryMap;
-	public CardSetting cardType;
+	private CardSetting cardType;
 	
 	private GameLog gameLog;
 	

@@ -11,6 +11,9 @@ import com.jeffsul.riskapp.entities.Continent;
 import com.jeffsul.riskapp.entities.Map;
 import com.jeffsul.riskapp.entities.Territory;
 
+/**
+ * Original AI player algorithm.
+ */
 public class OriginalAIPlayer extends AIPlayer {
 	private static final double THREAT_LIMIT = 2.0;
 

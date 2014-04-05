@@ -13,6 +13,9 @@ import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.EditText;
 
+/**
+ * LoginActivity is the screen where one can create an account or login.
+ */
 public class LoginActivity extends Activity {	
 	public static final String SHARED_PREFS_KEY = "com.jeffsul.riskapp.login";
 

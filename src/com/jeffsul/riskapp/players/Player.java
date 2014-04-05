@@ -8,6 +8,9 @@ import com.jeffsul.riskapp.RiskCalculator;
 import com.jeffsul.riskapp.StateListener;
 import com.jeffsul.riskapp.entities.Card;
 
+/**
+ * Player represents a player (human or AI) in a game of Risk.
+ */
 public class Player implements StateListener {
 	public static final int TROOPS_DEPLOYED = 0;
 	public static final int TROOPS_KILLED = 1;
@@ -75,7 +78,11 @@ public class Player implements StateListener {
 	public boolean isLiving() {
 		return alive;
 	}
-	
+
+	/**
+	 * Set whether the player is 'alive' or not in the game.
+	 * @param living
+	 */
 	public void setLiving(boolean living) {
 		alive = living;
 		if (!alive) {
@@ -91,7 +98,11 @@ public class Player implements StateListener {
 	public int getDeployCount() {
 		return deployCount;
 	}
-	
+
+	/**
+	 * Set how many troops the player has to deploy.
+	 * @param deployCount
+	 */
 	public void setDeployCount(int deployCount) {
 		this.deployCount = deployCount;
 	}
@@ -99,11 +110,18 @@ public class Player implements StateListener {
 	public void changeDeployCount(int delta) {
 		deployCount += delta;
 	}
-	
+
+	/**
+	 * Set current state (for AI use).
+	 * @param newState
+	 */
 	public void setState(GameActivity.State newState) {
 		state = newState;
 	}
 
+	/**
+	 * Call to initialize the player for a new turn.
+	 */
 	public void resetForTurn() {
 		hasConqueredTerritory = false;
 		deployCount = 0;
@@ -113,6 +131,10 @@ public class Player implements StateListener {
 		hasConqueredTerritory = true;
 	}
 
+	/**
+	 * Whether the player has conquered a territory this turn.
+	 * @return
+	 */
 	public boolean hasConqueredTerritory() {
 		return hasConqueredTerritory;
 	}
@@ -120,13 +142,17 @@ public class Player implements StateListener {
 	public int getCardCount() {
 		return cards.size();
 	}
-	
+
+	/**
+	 * Whether the player has a valid set of cards to play.
+	 * @return
+	 */
 	public boolean hasSet() {
 		Card[] temp = new Card[cards.size()];
 		cards.toArray(temp);
 		return isSet(temp);
 	}
-	
+
 	private static boolean isSet(Card[] cards) {	
 		if (cards.length < 3) {
 			return false;
@@ -193,7 +219,7 @@ public class Player implements StateListener {
 		cards.remove(set[2]);
 		notifyCardCountChange();
 	}
-	
+
 	public void giveCard(Card givenCard) {
 		cards.add(givenCard);
 		notifyCardCountChange();
@@ -237,7 +263,7 @@ public class Player implements StateListener {
 	public int getCurrentStats(int type) {
 		return stats.get(stats.size() - 1)[type];
 	}
-	
+
 	public int[] getStats(int type) {
 		int[] temp = new int[stats.size() - 1];
 		for (int i = 0; i < temp.length; i++)

@@ -8,6 +8,9 @@ import com.jeffsul.riskapp.R;
 import com.jeffsul.riskapp.entities.Territory;
 import com.jeffsul.riskapp.players.Player;
 
+/**
+ * TerritoryButton is the boundary object for a Territory entity object.
+ */
 public class TerritoryButton extends Button implements Territory.Listener {
 	public TerritoryButton(Context context) {
 		super(context);

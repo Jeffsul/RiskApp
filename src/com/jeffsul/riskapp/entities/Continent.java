@@ -20,11 +20,17 @@ public class Continent {
 		this.territs = territs;
 		this.borders = null;
 	}
-	
+
+	/**
+	 * @return The bonus troops provided by holding this entire continent.
+	 */
 	public int getBonus() {
 		return bonus;
 	}
-	
+
+	/**
+	 * @return The number of territories in this continent.
+	 */
 	public int getSize() {
 		return territs.length;
 	}
@@ -36,7 +42,12 @@ public class Continent {
 	public Territory[] getBorders() {
 		return borders;
 	}
-	
+
+	/**
+	 * Get the territories owned by a player in the continent.
+	 * @param player
+	 * @return array of territories owned by player.
+	 */
 	public Territory[] getFriendlyTerritories(Player player) {
 		ArrayList<Territory> friends = new ArrayList<Territory>();
 		for (Territory territ : territs) {
@@ -47,7 +58,12 @@ public class Continent {
 		friends.toArray(friendlyTerrits);
 		return friendlyTerrits;
 	}
-	
+
+	/**
+	 * Get the number of territories owned by a player in the continent.
+	 * @param player
+	 * @return number of territories own by player in continent.
+	 */
 	public int getFriendlyTerritoryCount(Player player) {
 		int count = 0;
 		for (Territory territ : territs) {
@@ -56,7 +72,12 @@ public class Continent {
 		}
 		return count;
 	}
-	
+
+	/**
+	 * 
+	 * @param player
+	 * @return list of territories not owned by the player in this continent.
+	 */
 	public Territory[] getEnemyTerritories(Player player) {
 		ArrayList<Territory> enemies = new ArrayList<Territory>();
 		for (Territory territ : territs) {
@@ -67,7 +88,12 @@ public class Continent {
 		enemies.toArray(enemyTerrits);
 		return enemyTerrits;
 	}
-	
+
+	/**
+	 * 
+	 * @param target
+	 * @return whether target is a territory in this continent.
+	 */
 	public boolean hasTerritory(Territory target) {
 		for (Territory territ : territs) {
 			if (territ == target)

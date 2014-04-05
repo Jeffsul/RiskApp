@@ -8,8 +8,7 @@ import java.util.Set;
 import com.jeffsul.riskapp.players.Player;
 
 /**
- * Territory represents one of the locations on the map, abstractly and by
- * managing the associated UI button element.
+ * Territory represents one of the locations on the map.
  */
 public class Territory {
 	public static final int DEFAULT_UNITS = 3;	
@@ -21,12 +20,24 @@ public class Territory {
 	public Player owner;
 	
 	private Set<Territory> connectors;
-	//private final Button btn;
 	
 	private ArrayList<Listener> listeners;
 	
+	/**
+	 * Interface notified when this territory changes.
+	 */
 	public interface Listener {
+		/**
+		 * Invoked when the number of troops on this territory changes.
+		 * @param player
+		 * @param units
+		 */
 		public void onUnitsChanged(Player player, int units);
+		/**
+		 * Invoked when the owner of this territory changes.
+		 * @param oldOwner
+		 * @param newOwner
+		 */
 		public void onOwnerChanged(Player oldOwner, Player newOwner);
 	}
 	
@@ -43,12 +54,10 @@ public class Territory {
 		listeners.add(listener);
 	}
 
-	// TODO(jeffsul): Implement custom listener.
-	/*public void addMouseListener(OnClickListener listener, OnLongClickListener listener2) {
-		btn.setOnClickListener(listener);
-		btn.setOnLongClickListener(listener2);
-	}*/
-	
+	/**
+	 * Connect this territory to an adjacent one (during map initialization).
+	 * @param connector
+	 */
 	public void addConnector(Territory connector) {
 		connectors.add(connector);
 	}
@@ -72,11 +81,20 @@ public class Territory {
 		}
 		owner = newOwner;
 	}
-	
+
+	/**
+	 * Get the list of adjacent territories.
+	 * @return
+	 */
 	public Territory[] getConnectors() {
 		return connectors.toArray(new Territory[connectors.size()]);
 	}
-	
+
+	/**
+	 * Get the list of adjacent territories owned by the player.
+	 * @param player
+	 * @return
+	 */
 	public Territory[] getFriendlyConnectors(Player player) {
 		ArrayList<Territory> friends = new ArrayList<Territory>();
 		for (Territory conn : connectors) {
@@ -88,7 +106,12 @@ public class Territory {
 		friends.toArray(friendTerrits);
 		return friendTerrits;
 	}
-	
+
+	/**
+	 * Get the list of adjacent territories not owned by the player.
+	 * @param player
+	 * @return
+	 */
 	public Territory[] getEnemyConnectors(Player player) {
 		ArrayList<Territory> enemies = new ArrayList<Territory>();
 		for (Territory conn : connectors) {
@@ -114,7 +137,13 @@ public class Territory {
 		}
 		return false;
 	}
-	
+
+	/**
+	 * Checks whether a territory is "chained" to another, such that you can move from it
+	 * to the other passing through adjacent territories owned by you.
+	 * @param target
+	 * @return
+	 */
 	public boolean isFortifyConnecting(Territory target) {
 		if (isConnecting(target)) {
 			return true;

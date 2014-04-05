@@ -9,6 +9,9 @@ import com.jeffsul.riskapp.R;
 import com.jeffsul.riskapp.entities.Map;
 import com.jeffsul.riskapp.players.Player;
 
+/**
+ * PlayerPanel is a UI Game component displaying current data about some player.
+ */
 public class PlayerPanel extends LinearLayout implements Map.Listener, Player.Listener {
 	private static final int PADDING = 10;
 
@@ -20,6 +23,10 @@ public class PlayerPanel extends LinearLayout implements Map.Listener, Player.Li
 		setPadding(PADDING, PADDING, PADDING, PADDING);
 	}
 
+	/**
+	 * Set the player associated with this panel.
+	 * @param player
+	 */
 	public void setPlayer(Player player) {
 		this.player = player;
 		setBackgroundColor(player.color);

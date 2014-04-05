@@ -16,6 +16,9 @@ import android.content.res.XmlResourceParser;
 
 import com.jeffsul.riskapp.players.Player;
 
+/**
+ * Map handles functionality related to the Risk game board.
+ */
 public class Map implements Territory.Listener {
 	public HashMap<String, Territory> territories;
 	public Set<Continent> continents;
@@ -23,17 +26,35 @@ public class Map implements Territory.Listener {
 	private Player[] players;
 	
 	private ArrayList<Listener> listeners;
-	
+
+	/**
+	 * Interface notified when events affect a particular player.
+	 */
 	public interface Listener {
+		/**
+		 * Invoked when a player's troop count changes.
+		 * @param player
+		 * @param count
+		 */
 		public void onTroopCountChange(Player player, int count);
+		/**
+		 * Invoked when a player's territory count changes.
+		 * @param player
+		 * @param count
+		 */
 		public void onTerritoryCountChange(Player player, int count);
+		/**
+		 * Invoked when a player's bonus changes.
+		 * @param player
+		 * @param bonus
+		 */
 		public void onBonusChange(Player player, int bonus);
 	}
-	
+
 	public void addListener(Listener listener) {
 		listeners.add(listener);
 	}
-	
+
 	public Map(Activity activity, int mapResId) {
 		try {
 			parse(activity.getResources().getXml(mapResId));
@@ -195,7 +216,12 @@ public class Map implements Territory.Listener {
 	public Continent[] getContinents() {
 		return continents.toArray(new Continent[continents.size()]);
 	}
-	
+
+	/**
+	 * Counts the number of territories owned by a player.
+	 * @param p
+	 * @return
+	 */
 	public int getTerritoryCount(Player p) {
 		int count = 0;
 		for (Territory t : territories.values()) {
@@ -205,7 +231,12 @@ public class Map implements Territory.Listener {
 		}
 		return count;
 	}
-	
+
+	/**
+	 * Counts the number of troops that a player has in all.
+	 * @param p
+	 * @return
+	 */
 	public int getTroopCount(Player p) {
 		int count = 0;
 		for (Territory t : territories.values()) {
@@ -216,6 +247,11 @@ public class Map implements Territory.Listener {
 		return count;
 	}
 
+	/**
+	 * Returns the territory with the given name.
+	 * @param name
+	 * @return
+	 */
 	public Territory getTerritory(String name) {
 		return territories.get(name);
 	}
@@ -223,7 +259,12 @@ public class Map implements Territory.Listener {
 	public Territory[] getTerritories() {
 		return territories.values().toArray(new Territory[territories.size()]);
 	}
-	
+
+	/**
+	 * Gets the complete list of territories owned by a player.
+	 * @param p
+	 * @return
+	 */
 	public Territory[] getTerritories(Player p) {
 		Set<Territory> playerTerritories = new HashSet<Territory>();
 		for (Territory t : territories.values()) {
@@ -233,15 +274,24 @@ public class Map implements Territory.Listener {
 		}
 		return playerTerritories.toArray(new Territory[playerTerritories.size()]);
 	}
-	
+
+	/**
+	 * Store list of players.
+	 */
 	public void setPlayers(Player[] players) {
 		this.players = players;
 	}
 
+	/**
+	 * Retrieve list of players.
+	 */
 	public Player[] getPlayers() {
 		return players;
 	}
 
+	/**
+	 * Notify all listeners about every player's current state.
+	 */
 	public void triggerRefresh() {
 		for (Player p : players) {
 			for (Listener listener : listeners) {
