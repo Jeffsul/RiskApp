@@ -10,21 +10,28 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.AsyncTask; 
-import android.widget.TableLayout;
 
+/**
+ * ChallengeFacade facilitates communication with the server regarding challenge requests.
+ */
 public class ChallengeFacade {
-	
-	private ArrayList<Listener> listeners;
 	private final static String SERVER_URL = "http://wifinder-syde362.herokuapp.com/serverStub";
-	
+
+	/**
+	 * Interface for receiving challenge responses from the server.
+	 */
 	public interface Listener {
 		public void onChallengeResponse(JSONArray response);
 	}
-	
+
+	/**
+	 * Initiates a request to create a new challenge.
+	 * @param cListener
+	 * @param username
+	 */
 	public static void createChallenge(final Listener cListener, final String username) {
 		new AsyncTask<Listener, Listener, JSONArray>() {
 			final Listener listener = cListener;
@@ -37,16 +44,9 @@ public class ChallengeFacade {
 			
 			@Override
 			protected JSONArray doInBackground(Listener... listeners) {
-				ArrayList<String> params = new ArrayList();
+				ArrayList<String> params = new ArrayList<String>();
 				params.add(userName); // name of user being challenged
-				JSONArray response = null;
-				try {
-					response = new JSONArray().put(0, new JSONObject().put("status", "accepted").put("username", "each3ric").put("id", 1));
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				return response;
-				//return callServer("create", params);
+				return callServer("create", params);
 			}
 			
 			@Override
@@ -56,7 +56,11 @@ public class ChallengeFacade {
 			
 		}.execute(cListener);
 	}
-	
+
+	/**
+	 * Initiates a request to return all active challenges.
+	 * @param cListener
+	 */
 	public static void getChallenges(final Listener cListener) {
 		new AsyncTask<Listener, Void, JSONArray>() {
 		

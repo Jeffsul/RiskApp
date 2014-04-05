@@ -23,6 +23,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * ChallengeActivity is a screen where challenges can be issued and reviewed.
+ */
 public class ChallengeActivity extends Activity {
 	
 	@Override
