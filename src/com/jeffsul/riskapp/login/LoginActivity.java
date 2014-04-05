@@ -21,6 +21,7 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		
+		// checks if a user is already logged in, if so it can bypass the login screen
 		SharedPreferences prefs = getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
 		String username = prefs.getString(SHARED_PREFS_KEY, null);
 		if (username != null && !username.contains("*")) {
@@ -91,7 +92,7 @@ public class LoginActivity extends Activity {
 		}
 	}
 	
-	// this function is called when the listener is invoked
+	// this function is called when the listener is invoked by a login event
 	private void loginResponded()
 	{
 		String username = "null";
@@ -164,7 +165,7 @@ public class LoginActivity extends Activity {
 		}
 	}
 	
-	// the method called when a server response is obtained
+	// the method called when a server response is obtained after a login attempt
 	public void cAccountResponded()
 	{
 		String username = "null";

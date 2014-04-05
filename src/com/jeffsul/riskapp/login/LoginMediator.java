@@ -109,7 +109,7 @@ public class LoginMediator {
 	// create account elements ====================================================================================
 
 	// executes the CAccountAsyncTask
-	public void attemptCAccount(Listener listener, String username, String password) {
+	private void attemptCAccount(Listener listener, String username, String password) {
 		new CAccountAsyncTask(username, password).execute(listener);
 	}
 	
@@ -206,6 +206,9 @@ public class LoginMediator {
 	}
 	
 	// creates and sends the GET request object to the provided URL
+	// here there is a contract with the server that the GET request contains a 'type', 'usn' and 'pw' element
+	// the 'type' being either login or create, there is also the contract that neither the username or password
+	// contain spaces or certain characters including '*' as this may affect database querying
 	private String makeGETRequest(String url)
 	{
 		HttpResponse response = null;
