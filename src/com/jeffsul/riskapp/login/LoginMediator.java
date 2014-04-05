@@ -20,12 +20,16 @@ public class LoginMediator {
 	// allows access to the sharedPreferences of this application
 	private SharedPreferences sharedPreferences;
 	
+	// constructor
+	// @Param context
+	// the context of an Activity class
 	public LoginMediator(Context context)
 	{
 		// gets the shared preference from the input context (context of an Activity)
 		sharedPreferences = context.getSharedPreferences("com.jeffsul.riskapp", Context.MODE_PRIVATE);
 	}
 	
+	// listener passed to the AsyncTask
 	public interface Listener {
 		public void onResponse(); //login response or create account response
 	}
@@ -33,16 +37,23 @@ public class LoginMediator {
 	// login elements ====================================================================================
 	
 	// executes the LoginAsyncTask
+	//@Param listener
+	//@Param username
+	//@Param password
 	private void attemptLogin(Listener listener, String username, String password) {
 		new LoginAsyncTask(username, password).execute(listener);
 	}
 
+	// runs a background task asyncronously with the applications threads
 	private class LoginAsyncTask extends AsyncTask<Listener, Void, Listener>
 	{
 		// the username and password attempting to be logged in with
 		private String username;
 		private String password;
 		
+		// constructor
+		// @Param usn
+		// @Param pw
 		public LoginAsyncTask(String usn, String pw) {
 	        super();
 	        
@@ -51,6 +62,7 @@ public class LoginMediator {
 	    }
 		
 		@Override
+		// runs in the background along side the main thread
 		protected Listener doInBackground(Listener... listeners)
 		{
 			// creates a GET request, sent to the web hosted server
@@ -112,6 +124,9 @@ public class LoginMediator {
 	// create account elements ====================================================================================
 
 	// executes the CAccountAsyncTask
+	//@Param listener
+	//@Param username
+	//@Param password
 	private void attemptCAccount(Listener listener, String username, String password) {
 		new CAccountAsyncTask(username, password).execute(listener);
 	}
@@ -130,6 +145,7 @@ public class LoginMediator {
 	    }
 		
 		@Override
+		// runs in the background as a parallel thread
 		protected Listener doInBackground(Listener... listeners) 
 		{
 			// creates a GET request, sent to the web hosted server
@@ -195,6 +211,8 @@ public class LoginMediator {
 	}
 	
 	// sends a GET request to the server with the username and password to login with and returns the GET response
+	//@Param username
+	//@Param password
 	private String makeGETLoginRequest(String username, String password)
 	{
 		String loginURL = "http://wifinder-syde362.herokuapp.com/serverStubLogin?type=login&usn=" + username + "&pw=" + password; 
@@ -202,6 +220,8 @@ public class LoginMediator {
 	}
 	
 	// sends a GET request to the server with the username and password to create an account with and returns the GET response
+	//@Param username
+	//@Param password
 	private String makeGETCAccountRequest(String username, String password)
 	{
 		String cAccountURL = "http://wifinder-syde362.herokuapp.com/serverStubLogin?type=create&usn=" + username + "&pw=" + password; 
@@ -212,6 +232,7 @@ public class LoginMediator {
 	// here there is a contract with the server that the GET request contains a 'type', 'usn' and 'pw' element
 	// the 'type' being either login or create, there is also the contract that neither the username or password
 	// contain spaces or certain characters including '*' as this may affect database querying
+	//@Param url
 	private String makeGETRequest(String url)
 	{
 		HttpResponse response = null;
@@ -228,6 +249,7 @@ public class LoginMediator {
 	}
 	
 	// stores a username as the globally logged in user of the App
+	//@Param username
 	private boolean storeGlobalUser(String username)
 	{
 		// this key is needed to retrieve the logged in user
@@ -242,12 +264,18 @@ public class LoginMediator {
 	}
 	
 	// public method that tries to login with the given parameters
+	//@Param username
+	//@Param password
+	//@Param loginListener
 	public void login(String username, String password, Listener loginListener)
 	{
 		this.attemptLogin(loginListener, username, password);
 	}
 	
 	// public method that tries to create an account with the given parameters
+	//@Param username
+	//@Param password
+	//@Param loginListener
 	public void createAccount(String username, String password, Listener caccountListener)
 	{
 		this.attemptCAccount(caccountListener, username, password);

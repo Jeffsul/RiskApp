@@ -32,7 +32,9 @@ public class LoginActivity extends Activity {
 		}
 	}
 	
-	// function invoked when a button on the login screen is clicked
+	/* function invoked when a button on the login screen is clicked
+	 * @Param View
+	*/
 	public void loginScreenButtonClicked(View view)
 	{
 		// if the login button was the one pressed
@@ -214,6 +216,8 @@ public class LoginActivity extends Activity {
 	// UI elements ====================================================================================
 
 	// gets the text from a editText field on the UI by its ID
+	// @Param id
+	// returns the input of the text edit
 	private String getTextboxText(int id)
 	{
 		EditText editText = (EditText) findViewById(id);
@@ -238,6 +242,7 @@ public class LoginActivity extends Activity {
 	}
 	
 	// creates an 'ok' dialog box with an inputed message
+	// @Param message
 	private void createDialogBox (String message)
 	{
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
