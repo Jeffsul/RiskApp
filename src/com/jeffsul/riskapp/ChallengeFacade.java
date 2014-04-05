@@ -12,13 +12,16 @@ import org.apache.http.params.BasicHttpParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import android.os.AsyncTask; 
+import android.os.AsyncTask;
 
 /**
  * ChallengeFacade facilitates communication with the server regarding challenge requests.
  */
 public class ChallengeFacade {
-	private final static String SERVER_URL = "http://wifinder-syde362.herokuapp.com/serverStub";
+	private static final String SERVER_URL = "http://wifinder-syde362.herokuapp.com/serverStub";
+
+	private static final String QUERY_TYPE_CREATE = "create";
+	private static final String QUERY_TYPE_CHALLENGES = "challenges";
 
 	/**
 	 * Interface for receiving challenge responses from the server.
@@ -34,24 +37,21 @@ public class ChallengeFacade {
 	 */
 	public static void createChallenge(final Listener cListener, final String username) {
 		new AsyncTask<Listener, Listener, JSONArray>() {
-			final Listener listener = cListener;
-			final String userName = username;
-
 			@Override
 			protected void onPreExecute(){
-				listener.onChallengeResponse(null);
+				cListener.onChallengeResponse(null);
 			}
 			
 			@Override
 			protected JSONArray doInBackground(Listener... listeners) {
 				ArrayList<String> params = new ArrayList<String>();
-				params.add(userName); // name of user being challenged
-				return callServer("create", params);
+				params.add(username); // name of user being challenged
+				return callServer(QUERY_TYPE_CREATE, params);
 			}
 			
 			@Override
 			protected void onPostExecute(JSONArray response) {
-				listener.onChallengeResponse(response);
+				cListener.onChallengeResponse(response);
 			}
 			
 		}.execute(cListener);
@@ -63,17 +63,14 @@ public class ChallengeFacade {
 	 */
 	public static void getChallenges(final Listener cListener) {
 		new AsyncTask<Listener, Void, JSONArray>() {
-		
-			final Listener listener = cListener;
-	
 			@Override
 			protected JSONArray doInBackground(Listener...listeners) {
-				return callServer("challenges", null); // get challenges
+				return callServer(QUERY_TYPE_CHALLENGES, null); // get challenges
 			}
 			
 			@Override
 			protected void onPostExecute(JSONArray challenges) {
-				listener.onChallengeResponse(challenges);
+				cListener.onChallengeResponse(challenges);
 			}
 		}.execute(cListener);
 	}
@@ -84,28 +81,21 @@ public class ChallengeFacade {
 		
 		if (params != null) {
 			String user = params.get(0);
-			qString += ("&username=" + user);
+			qString += "&username=" + user;
 		}
-		
-		HttpGet httpget = new HttpGet(qString);
-		String result = null;
 		
 		try {
+			HttpGet httpget = new HttpGet(qString);
 			HttpResponse response = client.execute(httpget);
-		    BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"), 8);
-		    StringBuilder sb = new StringBuilder();
-		    String line = null;
-		    while ((line = reader.readLine()) != null)
-		    {
-		        sb.append(line + "\n");
-		    }
-		    result = sb.toString();
-		    JSONObject jsonObj = new JSONObject(result);
-		    JSONArray challengeArray = jsonObj.getJSONArray(queryString);
-		    return challengeArray;
-		}
-		catch(Exception e) {
-			return null;
-		}
+			BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"), 8);
+			StringBuilder sb = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+			}
+			JSONObject jsonObj = new JSONObject(sb.toString());
+			return jsonObj.getJSONArray(queryString);
+		} catch (Exception e) {}
+		return null;
 	}
 }
