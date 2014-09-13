@@ -32,8 +32,6 @@ public class ChallengeFacade {
 
 	/**
 	 * Initiates a request to create a new challenge.
-	 * @param cListener
-	 * @param username
 	 */
 	public static void createChallenge(final Listener cListener, final String username) {
 		new AsyncTask<Listener, Listener, JSONArray>() {
@@ -59,7 +57,6 @@ public class ChallengeFacade {
 
 	/**
 	 * Initiates a request to return all active challenges.
-	 * @param cListener
 	 */
 	public static void getChallenges(final Listener cListener) {
 		new AsyncTask<Listener, Void, JSONArray>() {
@@ -77,15 +74,12 @@ public class ChallengeFacade {
 
 	/**
 	 * calls the external web server with an HTTP GET request to either create a challenge or get a list of challenges
-	 * @param queryString
-	 * @param params
 	 * @return a server-generated JSON array of data
 	 */
-	
 	private static JSONArray callServer(String queryString, ArrayList<String> params) {
 		HttpClient client = new DefaultHttpClient(new BasicHttpParams());
 		String qString = SERVER_URL + "?type=" + queryString;
-		
+
 		if (params != null) { // if the request is to challenge a user
 			String user = params.get(0);
 			qString += "&username=" + user;

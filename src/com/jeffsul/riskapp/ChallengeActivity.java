@@ -30,24 +30,18 @@ public class ChallengeActivity extends Activity {
 	
 	/**
 	 * Overriding Activity.onCreate, run when ChallengeActivity launches
-	 * @param savedInstanceState
 	 */
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_challenge);
-		
 		getChallenges(null); // load the challenges asynchronously on screen load
 	}	
 	
 	/**
 	 * Method called in onClick of Challenge Menu button, calls ChallengeFacade interface to get list of user's challenges
-	 * @param view
 	 */
-
 	public void getChallenges(View view) {
-
 		// pass in implementation of interface, the onChallengeResponse method for the listener runs on its response
 		ChallengeFacade.Listener cListener = new ChallengeFacade.Listener() {
 			public void onChallengeResponse(JSONArray response) {
@@ -59,9 +53,7 @@ public class ChallengeActivity extends Activity {
 
 	/**
 	 * Method called in onClick of Send Challenge button, calls ChallengeFacade interface to send a challenge request to the web server
-	 * @param view
 	 */
-
 	public void createChallengeClicked(View view) {
 		final TableLayout tl = (TableLayout) findViewById(R.id.challenge_table);
 		final String userName = ((EditText)findViewById(R.id.challenge_username)).getText().toString();
@@ -99,7 +91,6 @@ public class ChallengeActivity extends Activity {
 	/**
 	 * Method to send Android notification to status bar of mobile device when a response is received from the server
 	 * Called in the onChallengeResponse of the ChallengeFacade.Listener
-	 * @param response
 	 */
 	private void sendNotification(JSONObject response) {
 		String contentTitle = null;
@@ -145,9 +136,7 @@ public class ChallengeActivity extends Activity {
 	
 	/**
 	 * Populates the Challenges TableView with rows of challenges (username and status columns)
-	 * @param challenges
 	 */
-
 	private void populateTable(JSONArray challenges) {
 		TableLayout tl = (TableLayout) findViewById(R.id.challenge_table);
 		tl.removeAllViews();
@@ -173,10 +162,8 @@ public class ChallengeActivity extends Activity {
 
 	/**
 	 * Helper method to create a TableRow given a Challenge's ID
-	 * @param id
 	 * @return the TableRow that was created in this method
 	 */
-	
 	private TableRow createTableRow(int id) {
 		TableRow row = new TableRow(this);
 		TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
@@ -188,9 +175,7 @@ public class ChallengeActivity extends Activity {
 
 	/**
 	 * Update the content of a TableRow containing an unknown Challenge ID - i.e. in a pending state - with new info
-	 * @param rowObj
 	 */
-	
 	private void updateTableRowPending(JSONObject rowObj) {
 		try {
 			TableLayout tl = (TableLayout) findViewById(R.id.challenge_table);
@@ -209,7 +194,6 @@ public class ChallengeActivity extends Activity {
 	 * Update the content of a TableRow containing a known Challenge ID with new info
 	 * @param rowObj
 	 */
-	
 	private void updateTableRow(JSONObject rowObj) {
 		try {
 			TableLayout tl = (TableLayout) findViewById(R.id.challenge_table);
@@ -226,12 +210,7 @@ public class ChallengeActivity extends Activity {
 	
 	/**
 	 * Helper to draw a new TableRow in a given existing TableLayout
-	 * @param tl
-	 * @param row
-	 * @param username
-	 * @param status
 	 */
-
 	private void drawTableRow(TableLayout tl, TableRow row, String username, String status){		
 		if (status.equals("pending") && tl.findViewWithTag(username) != null) { // if the tablerow being drawn represents a pending challenge
 			Toast toast = Toast.makeText(getApplicationContext(), "You've already challenged " + username + "!", Toast.LENGTH_SHORT);
@@ -280,7 +259,6 @@ public class ChallengeActivity extends Activity {
 	 * Called in the onClick of the Back to Menu button; finish the ChallengeActivity and go back to other screen
 	 * @param view
 	 */
-
 	public void menuButtonClicked(View view) {
 		Intent intent = new Intent(this, MainActivity.class);
 		startActivity(intent);
